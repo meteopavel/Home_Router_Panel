@@ -119,10 +119,10 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 
 echo "🔁 Перезапуск сервиса"
-sudo systemctl restart "$DEPLOY_SERVICE"
+sudo -n systemctl restart "$DEPLOY_SERVICE"
 
 echo "📊 Статус сервиса"
-sudo systemctl status "$DEPLOY_SERVICE" --no-pager --lines=20
+sudo -n systemctl status "$DEPLOY_SERVICE" --no-pager --lines=20
 
 echo "✅ Server deploy completed"
 EOF
