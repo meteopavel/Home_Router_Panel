@@ -318,6 +318,98 @@ h2 {
     text-align: center;
 }
 
+/* Buttons cleanup */
+
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+
+    color: var(--text);
+    background: rgba(30, 41, 59, 0.75);
+
+    font: inherit;
+    font-weight: 600;
+    line-height: 1;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.button:hover {
+    text-decoration: none;
+    cursor: pointer;
+    background: rgba(51, 65, 85, 0.9);
+    border-color: rgba(148, 163, 184, 0.45);
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.button:visited {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.button-primary {
+    color: #ffffff;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    border-color: rgba(96, 165, 250, 0.7);
+}
+
+.button-primary:hover {
+    color: #ffffff;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    border-color: rgba(147, 197, 253, 0.9);
+}
+
+.button-primary:visited {
+    color: #ffffff;
+}
+
+.button-small {
+    padding: 8px 14px;
+    font-size: 14px;
+}
+
+/* Disabled state only for real disabled buttons */
+button.button:disabled,
+button.button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+button.button:disabled:hover,
+button.button[disabled]:hover {
+    cursor: not-allowed;
+    background: rgba(30, 41, 59, 0.75);
+    border-color: var(--border);
+}
+
+/* Links styled as buttons must never look disabled */
+a.button,
+a.button:hover,
+a.button:visited,
+a.button:active {
+    text-decoration: none;
+    cursor: pointer;
+}
+
 @media (max-width: 860px) {
     .grid-3 {
         grid-template-columns: 1fr;
