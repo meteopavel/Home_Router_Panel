@@ -1,0 +1,13 @@
+server:
+  host: "127.0.0.1"
+  port: 8000
+
+app:
+  title: "Home Router Panel"
+
+services:
+  zapret: "zapret"
+  amnezia: "awg-quick@awg0"
+
+hotlists:
+  zapret_main: "/opt/zapret/ipset/zapret-hosts-user.txt"

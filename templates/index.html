@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="card">
+    <h1>{{ title }}</h1>
+    <p class="muted">
+        Локальная панель управления домашним Linux-роутером.
+    </p>
+</section>
+
+<section class="card">
+    <h2>Конфигурация</h2>
+
+    <div class="grid">
+        <div>
+            <div class="label">Zapret service</div>
+            <div class="value">{{ config.services.zapret }}</div>
+        </div>
+
+        <div>
+            <div class="label">Amnezia service</div>
+            <div class="value">{{ config.services.amnezia }}</div>
+        </div>
+
+        <div>
+            <div class="label">Zapret hotlist</div>
+            <div class="value">{{ config.hotlists.zapret_main }}</div>
+        </div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Status</h2>
+    <div class="status ok">Application is running</div>
+</section>
+{% endblock %}

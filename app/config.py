@@ -1,0 +1,22 @@
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+
+CONFIG_PATH = Path("config.yaml")
+
+
+def load_config() -> dict[str, Any]:
+    if not CONFIG_PATH.exists():
+        raise RuntimeError(
+            "config.yaml not found. Copy config.example.yaml to config.yaml"
+        )
+
+    with CONFIG_PATH.open("r", encoding="utf-8") as file:
+        data = yaml.safe_load(file)
+
+    if data is None:
+        return {}
+
+    return data
