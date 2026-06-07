@@ -1,5 +1,7 @@
+import shutil
 import subprocess
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -12,14 +14,41 @@ class ServiceStatus:
     is_active: bool
 
 
+def find_systemctl() -> str | None:
+    systemctl_path = shutil.which("systemctl")
+
+    if systemctl_path:
+        return systemctl_path
+
+    fallback_paths = [
+        "/usr/bin/systemctl",
+        "/bin/systemctl",
+    ]
+
+    for path in fallback_paths:
+        if Path(path).exists():
+            return path
+
+    return None
+
+
 def get_systemd_service_state(unit: str) -> str:
+    systemctl = find_systemctl()
+
+    if systemctl is None:
+        return "systemctl_not_found"
+
     try:
         result = subprocess.run(
-            ["systemctl", "is-active", unit],
+            [systemctl, "is-active", unit],
             capture_output=True,
             text=True,
             timeout=3,
             check=False,
+            env={
+                "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "LANG": "C",
+            },
         )
 
         state = result.stdout.strip()
@@ -27,10 +56,13 @@ def get_systemd_service_state(unit: str) -> str:
         if state:
             return state
 
+        stderr = result.stderr.strip()
+
+        if stderr:
+            return "unknown"
+
         return "unknown"
 
-    except FileNotFoundError:
-        return "systemctl_not_found"
     except subprocess.TimeoutExpired:
         return "timeout"
     except Exception:
