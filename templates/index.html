@@ -98,8 +98,13 @@
     </div>
 
     <div class="actions">
-        <button class="button" disabled>Перезапустить zapret</button>
-        <button class="button" disabled>Перезапустить Amnezia</button>
+        <form method="post" action="/services/zapret/restart" class="inline-form">
+            <button class="button" type="submit">Перезапустить zapret</button>
+        </form>
+
+        <form method="post" action="/services/amnezia/restart" class="inline-form">
+            <button class="button" type="submit">Перезапустить Amnezia</button>
+        </form>
         {% if hotlists %}
             <a class="button button-primary" href="/hotlists/{{ hotlists[0].name }}">
                 Открыть hotlist

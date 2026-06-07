@@ -410,6 +410,11 @@ a.button:active {
     cursor: pointer;
 }
 
+.inline-form {
+    display: inline-flex;
+    margin: 0;
+}
+
 @media (max-width: 860px) {
     .grid-3 {
         grid-template-columns: 1fr;

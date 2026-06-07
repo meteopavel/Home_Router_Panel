@@ -115,3 +115,37 @@ def get_services_status(config: dict) -> list[ServiceStatus]:
         )
 
     return result
+
+
+def get_service_unit(config: dict, service_name: str) -> str | None:
+    services = config.get("services", {})
+    service_config = services.get(service_name)
+
+    if service_config is None:
+        return None
+
+    if isinstance(service_config, str):
+        return service_config
+
+    if isinstance(service_config, dict):
+        return (
+            service_config.get("unit")
+            or service_config.get("service")
+            or service_config.get("name")
+        )
+
+    return None
+
+
+def restart_service(config: dict, service_name: str) -> subprocess.CompletedProcess:
+    unit = get_service_unit(config, service_name)
+
+    if unit is None:
+        raise ValueError(f"Unknown service: {service_name}")
+
+    return subprocess.run(
+        ["sudo", "systemctl", "restart", unit],
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )

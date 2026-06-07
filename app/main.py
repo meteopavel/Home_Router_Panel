@@ -1,13 +1,13 @@
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.config import load_config
 from app.hotlists import get_hotlists_config, read_hotlist
-from app.services import get_services_status
-
+from app.services import get_services_status, restart_service
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 STATIC_DIR = PROJECT_ROOT / "static"
@@ -55,6 +55,24 @@ def hotlist_view(request: Request, name: str):
             "hotlist": hotlist,
         },
     )
+
+
+@app.post("/services/{name}/restart")
+def service_restart(name: str):
+    config = load_config()
+
+    try:
+        result = restart_service(config, name)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Service not found")
+
+    if result.returncode != 0:
+        raise HTTPException(
+            status_code=500,
+            detail=result.stderr.strip() or result.stdout.strip() or "Restart failed",
+        )
+
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.get("/health")
