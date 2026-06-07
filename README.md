@@ -21,7 +21,7 @@ Home Router Panel — веб-панель для домашнего роутер
 - запуск панели через `systemd`;
 - `nginx` как reverse proxy перед `uvicorn`;
 - HTML-шаблоны через `templates`;
-- статические стили через `static/style.css`;
+- статические стили через `static/` (разбиты по файлам);
 - конфигурация через `.env` и `config.yaml`;
 - отображение главной страницы панели;
 - отображение страницы hotlists;
@@ -72,7 +72,12 @@ Home_Router_Panel/
 │   ├── main.py
 │   └── services.py
 ├── static/
-│   └── style.css
+│   ├── style.css
+│   ├── variables.css
+│   ├── base.css
+│   ├── layout.css
+│   ├── components.css
+│   └── buttons.css
 ├── templates/
 │   ├── base.html
 │   ├── hotlist.html
@@ -184,17 +189,39 @@ Home_Router_Panel/
 
 ### `static/style.css`
 
-Основной файл стилей веб-морды.
+Точка входа стилей. Содержит только `@import` остальных CSS-файлов в нужном порядке.
 
-Отвечает за внешний вид:
+---
 
-- layout;
-- карточек;
-- кнопок;
-- статусов;
-- таблиц;
-- цветовой схемы;
-- адаптацию интерфейса.
+### `static/variables.css`
+
+CSS-переменные (`--bg`, `--text`, `--border`, `--radius-*`, `--bg-*`, `--font-mono` и др.).
+
+Единственное место для изменения цветовой схемы, радиусов и фонов.
+
+---
+
+### `static/base.css`
+
+Базовый сброс и типографика: `*`, `body`, `h1`, `h2`, `p`.
+
+---
+
+### `static/layout.css`
+
+Структура страницы: `.page`, `.header`, `.eyebrow`, `.header-badge`, `.content`, `.grid`, `.footer`, media queries.
+
+---
+
+### `static/components.css`
+
+UI-компоненты: карточки, секции, строки сервисов, пилюли статусов, hotlist-вью, пустое состояние.
+
+---
+
+### `static/buttons.css`
+
+Стили кнопок: `.button`, состояния hover/active/disabled, `.inline-form`.
 
 ---
 
@@ -456,7 +483,7 @@ Python-логика панели находится не в nginx, а в FastAPI
 - Работа с systemd-сервисами находится в `app/services.py`.
 - Логика hotlists находится в `app/hotlists.py`.
 - HTML-шаблоны находятся в `templates`.
-- CSS находится в `static/style.css`.
+- CSS разбит по файлам в `static/`: `variables.css` → `base.css` → `layout.css` → `components.css` → `buttons.css`; `style.css` — точка входа с `@import`.
 - Для системных команд использовать абсолютные пути.
 - Для `sudo` использовать `/usr/bin/sudo`.
 - Для `systemctl` использовать `/usr/bin/systemctl`.

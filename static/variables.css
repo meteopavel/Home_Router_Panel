@@ -1,0 +1,32 @@
+:root {
+    /* Colors */
+    --bg: #101827;
+    --panel: #172033;
+    --panel-soft: #1f2b44;
+    --text: #e8edf7;
+    --muted: #97a3b6;
+    --border: rgba(255, 255, 255, 0.08);
+    --green: #4ade80;
+    --blue: #60a5fa;
+    --blue-dark: #2563eb;
+    --red: #f87171;
+    --yellow: #facc15;
+
+    /* Shadows */
+    --shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
+
+    /* Backgrounds */
+    --bg-card: linear-gradient(180deg, rgba(31, 43, 68, 0.95), rgba(23, 32, 51, 0.95));
+    --bg-row: rgba(16, 24, 39, 0.45);
+    --bg-btn: rgba(30, 41, 59, 0.75);
+    --bg-btn-hover: rgba(51, 65, 85, 0.9);
+
+    /* Border radii */
+    --radius-card: 22px;
+    --radius-row: 16px;
+    --radius-btn: 12px;
+    --radius-pill: 999px;
+
+    /* Font stacks */
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}

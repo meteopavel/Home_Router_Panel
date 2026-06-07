@@ -1,0 +1,70 @@
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+
+    border: 1px solid var(--border);
+    border-radius: var(--radius-btn);
+    padding: 12px 16px;
+
+    color: var(--text);
+    background: var(--bg-btn);
+
+    font: inherit;
+    font-weight: 600;
+    line-height: 1;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease,
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.button:hover {
+    text-decoration: none;
+    background: var(--bg-btn-hover);
+    border-color: rgba(148, 163, 184, 0.45);
+}
+
+.button:active {
+    transform: translateY(1px);
+}
+
+.button:visited {
+    color: var(--text);
+    text-decoration: none;
+}
+
+button.button:disabled,
+button.button[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+button.button:disabled:hover,
+button.button[disabled]:hover {
+    background: var(--bg-btn);
+    border-color: var(--border);
+    cursor: not-allowed;
+}
+
+a.button,
+a.button:hover,
+a.button:visited,
+a.button:active {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.inline-form {
+    display: inline-flex;
+    margin: 0;
+}
