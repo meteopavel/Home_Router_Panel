@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./deploy-local.sh*)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.venv/**)",
+      "Bash(cat ~/.* *)",
+      "Bash(cat /etc/*)",
+      "Bash(cat /var/*)",
+      "Bash(ls ~/)",
+      "Bash(ls ~/.* *)",
+      "Bash(find / *)",
+      "Bash(find /etc *)",
+      "Bash(find /var *)",
+      "Bash(find /home *)"
+    ]
+  }
+}
