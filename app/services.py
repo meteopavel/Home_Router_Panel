@@ -144,7 +144,7 @@ def restart_service(config: dict, service_name: str) -> subprocess.CompletedProc
         raise ValueError(f"Unknown service: {service_name}")
 
     return subprocess.run(
-        ["sudo", "-n", "systemctl", "restart", unit],
+        ["/usr/bin/sudo", "-n", "/usr/bin/systemctl", "restart", unit],
         capture_output=True,
         text=True,
         timeout=30,
