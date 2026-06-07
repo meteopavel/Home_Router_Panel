@@ -90,6 +90,11 @@ def hotlist_edit_save(name: str, content: str = Form(default="")):
     except ValueError:
         raise HTTPException(status_code=404, detail="Hotlist not found")
 
+    try:
+        restart_service(config, "zapret")
+    except Exception:
+        pass
+
     return RedirectResponse(url=f"/hotlists/{name}/edit", status_code=303)
 
 

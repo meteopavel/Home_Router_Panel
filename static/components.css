@@ -101,12 +101,13 @@
 .actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
 }
 
 .pill {
     padding: 7px 10px;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-btn);
     background: rgba(96, 165, 250, 0.12);
     color: #bfdbfe;
     border: 1px solid rgba(96, 165, 250, 0.22);
