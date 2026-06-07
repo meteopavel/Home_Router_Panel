@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+# home-router-awg-config — helper for Home Router Panel AWG tab
+#
+# УСТАНОВКА:
+#   sudo cp scripts/home-router-awg-config /usr/local/sbin/
+#   sudo chmod 755 /usr/local/sbin/home-router-awg-config
+#   sudo chown root:root /usr/local/sbin/home-router-awg-config
+#
+# SUDOERS (одна строка):
+#   panel-user ALL=(root) NOPASSWD: /usr/local/sbin/home-router-awg-config
+#
+# Замените panel-user на имя пользователя, от которого работает панель.
+
+set -euo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+AWG_SERVICE="awg-quick@awg0.service"
+AWG_IFACE="awg0"
+LAN_IFACE="enp2s0"
+ROUTING_UP="/usr/local/sbin/tg-vpn-routing-up.sh"
+
+ACTION="${1:-}"
+
+case "$ACTION" in
+
+    status)
+        echo "service_state=$(systemctl is-active "$AWG_SERVICE" 2>/dev/null || echo unknown)"
+        echo "service_since=$(systemctl show "$AWG_SERVICE" -p ActiveEnterTimestamp --value 2>/dev/null || echo '')"
+        addr=$(ip addr show "$AWG_IFACE" 2>/dev/null | awk '/inet /{print $2}' | head -1 || true)
+        echo "interface_address=${addr:-not found}"
+        port=$(awg show "$AWG_IFACE" listen-port 2>/dev/null | tr -d '[:space:]' || true)
+        echo "listening_port=${port:-}"
+        if ip route show table 100 2>/dev/null | grep -q .; then
+            echo "route_table_100=yes"
+        else
+            echo "route_table_100=no"
+        fi
+        if ip rule show 2>/dev/null | grep -q 'fwmark 0x66'; then
+            echo "ip_rule_fwmark=yes"
+        else
+            echo "ip_rule_fwmark=no"
+        fi
+        echo "ip_forward=$(sysctl -n net.ipv4.ip_forward 2>/dev/null || echo unknown)"
+        ;;
+
+    awg-show)
+        # Никогда не выводим private key и preshared key
+        awg show "$AWG_IFACE" 2>/dev/null \
+            | grep -v -iE 'private key|preshared key' \
+            || echo "Интерфейс $AWG_IFACE недоступен"
+        ;;
+
+    start)
+        systemctl start "$AWG_SERVICE"
+        echo "Started $AWG_SERVICE"
+        ;;
+
+    stop)
+        systemctl stop "$AWG_SERVICE"
+        echo "Stopped $AWG_SERVICE"
+        ;;
+
+    restart)
+        systemctl restart "$AWG_SERVICE"
+        echo "Restarted $AWG_SERVICE"
+        ;;
+
+    apply)
+        if [[ ! -x "$ROUTING_UP" ]]; then
+            echo "Ошибка: $ROUTING_UP не найден или не исполняемый" >&2
+            exit 1
+        fi
+        "$ROUTING_UP"
+        echo "Маршрутизация применена"
+        ;;
+
+    diagnostics)
+        echo "=== ip rule ==="
+        ip rule show 2>/dev/null || echo "(пусто)"
+
+        echo ""
+        echo "=== ip route table 100 ==="
+        ip route show table 100 2>/dev/null || echo "(пусто)"
+
+        echo ""
+        echo "=== iptables mangle PREROUTING ==="
+        iptables-save -t mangle 2>/dev/null \
+            | grep -E 'PREROUTING|tg_nets|figma_nets|claude_nets|0x66' \
+            | grep -v '^#' \
+            || echo "(пусто)"
+
+        echo ""
+        echo "=== iptables nat (awg0) ==="
+        iptables-save -t nat 2>/dev/null \
+            | grep -E "$AWG_IFACE|MASQUERADE" \
+            | grep -v '^#' \
+            || echo "(пусто)"
+
+        echo ""
+        echo "=== iptables mangle PREROUTING (счётчики) ==="
+        iptables -t mangle -nvL PREROUTING 2>/dev/null || echo "(ошибка)"
+        ;;
+
+    lan-neigh)
+        ip neigh show dev "$LAN_IFACE" 2>/dev/null || true
+        ;;
+
+    check-route)
+        TARGET="${2:-}"
+        if [[ -z "$TARGET" ]]; then
+            echo "Ошибка: укажите домен или IP" >&2
+            exit 1
+        fi
+        # Валидация — только hostname/IP символы
+        if ! echo "$TARGET" | grep -qE '^[a-zA-Z0-9._-]+$'; then
+            echo "Ошибка: недопустимые символы в $TARGET" >&2
+            exit 1
+        fi
+
+        echo "=== Резолвинг: $TARGET ==="
+        RESOLVED=$(getent ahostsv4 "$TARGET" 2>/dev/null | awk '{print $1}' | sort -u || true)
+        if [[ -z "$RESOLVED" ]]; then
+            echo "Не удалось зарезолвить: $TARGET"
+        else
+            echo "$RESOLVED"
+        fi
+
+        if [[ -n "$RESOLVED" ]]; then
+            echo ""
+            echo "=== Маршрут через VPN (mark 0x66 → table 100) ==="
+            while IFS= read -r ip; do
+                [[ -z "$ip" ]] && continue
+                route=$(ip route get "$ip" mark 0x66 2>/dev/null | head -1 || echo "нет маршрута")
+                echo "$ip → $route"
+            done <<< "$RESOLVED"
+
+            echo ""
+            echo "=== Обычный маршрут ==="
+            while IFS= read -r ip; do
+                [[ -z "$ip" ]] && continue
+                route=$(ip route get "$ip" 2>/dev/null | head -1 || echo "нет маршрута")
+                echo "$ip → $route"
+            done <<< "$RESOLVED"
+        fi
+        ;;
+
+    *)
+        echo "Неизвестное действие: '$ACTION'" >&2
+        echo "Допустимые: status awg-show start stop restart apply diagnostics lan-neigh check-route" >&2
+        exit 1
+        ;;
+esac

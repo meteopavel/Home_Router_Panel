@@ -5,6 +5,18 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.amnezia import (
+    LIST_META,
+    add_mac_to_vpn,
+    check_route,
+    get_awg_show,
+    get_awg_status,
+    get_diagnostics,
+    get_lan_devices,
+    read_awg_list,
+    run_awg_action,
+    write_awg_list,
+)
 from app.config import load_config
 from app.hotlists import get_hotlists_config, read_hotlist, write_hotlist
 from app.services import get_services_status, restart_service
@@ -96,6 +108,57 @@ def hotlist_edit_save(name: str, content: str = Form(default="")):
         pass
 
     return RedirectResponse(url=f"/hotlists/{name}/edit", status_code=303)
+
+
+@app.get("/amnezia")
+def amnezia_view(request: Request, target: str = ""):
+    status = get_awg_status()
+    awg_show = get_awg_show()
+    lists = {name: read_awg_list(name) for name in LIST_META}
+    lan_devices = get_lan_devices()
+    diagnostics = get_diagnostics()
+
+    check_result = None
+    if target:
+        check_result = check_route(target)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="amnezia.html",
+        context={
+            "title": "AmneziaWG",
+            "status": status,
+            "awg_show": awg_show,
+            "lists": lists,
+            "list_meta": LIST_META,
+            "lan_devices": lan_devices,
+            "diagnostics": diagnostics,
+            "check_target": target,
+            "check_result": check_result,
+            "active_tab": "amnezia",
+        },
+    )
+
+
+@app.post("/amnezia/service/{action}")
+def amnezia_service_action(action: str):
+    run_awg_action(action)
+    return RedirectResponse(url="/amnezia", status_code=303)
+
+
+@app.post("/amnezia/lists/{name}")
+def amnezia_list_save(name: str, content: str = Form(default="")):
+    try:
+        write_awg_list(name, content)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Unknown list")
+    return RedirectResponse(url="/amnezia", status_code=303)
+
+
+@app.post("/amnezia/devices/add-mac")
+def amnezia_add_mac(mac: str = Form(default="")):
+    add_mac_to_vpn(mac)
+    return RedirectResponse(url="/amnezia", status_code=303)
 
 
 @app.post("/services/{name}/restart")

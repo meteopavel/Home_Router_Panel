@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block content %}
+
+{# ── Status ────────────────────────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <div class="section-header">
+        <div>
+            <h2>Статус AWG</h2>
+        </div>
+        <div class="actions">
+            <a href="/amnezia" class="button button-secondary">Обновить</a>
+        </div>
+    </div>
+
+    {% if not status.available %}
+        <div class="empty-state" style="text-align:left;">
+            <strong>Helper недоступен</strong><br>
+            <span style="font-family: var(--font-mono); font-size: 13px; color: var(--muted);">
+                {{ status.error or "Неизвестная ошибка" }}
+            </span><br><br>
+            Установите <code>scripts/home-router-awg-config</code> в <code>/usr/local/sbin/</code>
+            и добавьте строку в sudoers.
+        </div>
+    {% else %}
+        <div class="service-list">
+            <div class="service-row">
+                <div class="service-main">
+                    <div class="service-name">awg-quick@awg0</div>
+                    <div class="service-unit">
+                        {% if status.service_since %}с {{ status.service_since }}{% endif %}
+                    </div>
+                </div>
+                <div class="actions">
+                    {% set state = status.get('service_state', 'unknown') %}
+                    {% if state == 'active' %}
+                        <span class="pill pill-green">active</span>
+                    {% elif state == 'failed' %}
+                        <span class="pill pill-red">failed</span>
+                    {% elif state == 'inactive' %}
+                        <span class="pill pill-gray">inactive</span>
+                    {% else %}
+                        <span class="pill pill-yellow">{{ state }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="service-row">
+                <div class="service-main">
+                    <div class="service-name">Интерфейс awg0</div>
+                    <div class="service-unit">
+                        {{ status.get('interface_address', '—') }}
+                        {% if status.get('listening_port') %}
+                            &nbsp;·&nbsp;порт {{ status.listening_port }}
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="actions">
+                    {% if status.get('interface_address', 'not found') != 'not found' %}
+                        <span class="pill pill-green">up</span>
+                    {% else %}
+                        <span class="pill pill-gray">down</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="service-row">
+                <div class="service-main">
+                    <div class="service-name">Таблица маршрутов 100</div>
+                </div>
+                <div class="actions">
+                    {% if status.get('route_table_100') == 'yes' %}
+                        <span class="pill pill-green">настроена</span>
+                    {% else %}
+                        <span class="pill pill-yellow">пусто</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="service-row">
+                <div class="service-main">
+                    <div class="service-name">ip rule fwmark 0x66</div>
+                </div>
+                <div class="actions">
+                    {% if status.get('ip_rule_fwmark') == 'yes' %}
+                        <span class="pill pill-green">есть</span>
+                    {% else %}
+                        <span class="pill pill-yellow">нет</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="service-row">
+                <div class="service-main">
+                    <div class="service-name">net.ipv4.ip_forward</div>
+                </div>
+                <div class="actions">
+                    {% if status.get('ip_forward') == '1' %}
+                        <span class="pill pill-green">1 (включён)</span>
+                    {% else %}
+                        <span class="pill pill-red">{{ status.get('ip_forward', '—') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if awg_show %}
+            <details style="margin-top: 16px;">
+                <summary class="details-summary">awg show awg0</summary>
+                <pre class="code-block">{{ awg_show }}</pre>
+            </details>
+        {% endif %}
+    {% endif %}
+</section>
+
+{# ── Controls ──────────────────────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <h2 style="margin-bottom: 16px;">Управление</h2>
+    <div class="actions">
+        <form method="post" action="/amnezia/service/restart">
+            <button type="submit" class="button">Перезапустить AWG</button>
+        </form>
+        <form method="post" action="/amnezia/service/start">
+            <button type="submit" class="button button-secondary">Запустить</button>
+        </form>
+        <form method="post" action="/amnezia/service/stop">
+            <button type="submit" class="button button-secondary">Остановить</button>
+        </form>
+        <form method="post" action="/amnezia/service/apply">
+            <button type="submit" class="button button-secondary">Применить маршрутизацию</button>
+        </form>
+    </div>
+    <p style="color: var(--muted); font-size: 13px; margin-top: 12px;">
+        «Применить маршрутизацию» — выполняет <code>tg-vpn-routing-up.sh</code>:
+        пересоздаёт ipset и правила iptables из файлов ниже.
+    </p>
+</section>
+
+{# ── Lists ─────────────────────────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <h2 style="margin-bottom: 6px;">Что идёт через VPN</h2>
+    <p style="color: var(--muted); margin-bottom: 20px;">
+        Файлы читаются скриптом маршрутизации при применении.
+        После сохранения нажмите «Применить маршрутизацию».
+    </p>
+
+    {% for name, meta in list_meta.items() %}
+        <details class="list-details" {% if loop.first %}open{% endif %}>
+            <summary class="details-summary">
+                <strong>{{ meta.title }}</strong>
+                <span class="details-hint">{{ meta.hint }}</span>
+            </summary>
+            <div style="padding: 16px 0 4px;">
+                <form method="post" action="/amnezia/lists/{{ name }}">
+                    <textarea name="content" class="editor" style="min-height: 200px;">{{ lists[name] }}</textarea>
+                    <div class="editor-actions">
+                        <button type="submit" class="button">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </details>
+        {% if not loop.last %}<div style="height: 12px;"></div>{% endif %}
+    {% endfor %}
+</section>
+
+{# ── LAN devices ───────────────────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <div class="section-header">
+        <div>
+            <h2>LAN устройства</h2>
+            <p>ip neigh show dev enp2s0</p>
+        </div>
+    </div>
+
+    {% if lan_devices %}
+        <div class="service-list">
+            {% for dev in lan_devices %}
+                <div class="service-row">
+                    <div class="service-main">
+                        <div class="service-name">{{ dev.ip }}</div>
+                        <div class="service-unit">{{ dev.mac }}</div>
+                    </div>
+                    <div class="actions">
+                        {% if dev.state == 'REACHABLE' %}
+                            <span class="pill pill-green">{{ dev.state }}</span>
+                        {% elif dev.state in ['STALE', 'DELAY', 'PROBE'] %}
+                            <span class="pill pill-yellow">{{ dev.state }}</span>
+                        {% else %}
+                            <span class="pill pill-gray">{{ dev.state }}</span>
+                        {% endif %}
+                        <form method="post" action="/amnezia/devices/add-mac" style="display:inline;">
+                            <input type="hidden" name="mac" value="{{ dev.mac }}">
+                            <button type="submit" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">
+                                + VPN
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            Устройства не найдены — helper недоступен или arp-таблица пуста
+        </div>
+    {% endif %}
+</section>
+
+{# ── Route check ───────────────────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <h2 style="margin-bottom: 16px;">Проверить домен / IP</h2>
+    <form method="get" action="/amnezia" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start;">
+        <input
+            type="text"
+            name="target"
+            value="{{ check_target }}"
+            placeholder="example.com или 1.2.3.4"
+            class="text-input"
+        >
+        <button type="submit" class="button">Проверить</button>
+        {% if check_target %}
+            <a href="/amnezia" class="button button-secondary">Сбросить</a>
+        {% endif %}
+    </form>
+
+    {% if check_result %}
+        <pre class="code-block" style="margin-top: 16px;">{{ check_result }}</pre>
+    {% endif %}
+</section>
+
+{# ── Diagnostics ───────────────────────────────────────────────── #}
+<section class="section">
+    <details>
+        <summary class="details-summary"><strong>Диагностика маршрутизации</strong></summary>
+        {% if diagnostics %}
+            <pre class="code-block" style="margin-top: 16px;">{{ diagnostics }}</pre>
+        {% else %}
+            <div class="empty-state" style="margin-top: 16px;">Helper недоступен</div>
+        {% endif %}
+    </details>
+</section>
+
+{% endblock %}
