@@ -77,7 +77,8 @@ Home_Router_Panel/
 │   ├── base.css
 │   ├── layout.css
 │   ├── components.css
-│   └── buttons.css
+│   ├── buttons.css
+│   └── favicon.svg
 ├── templates/
 │   ├── base.html
 │   ├── hotlist.html
