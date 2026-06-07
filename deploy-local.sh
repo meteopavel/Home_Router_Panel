@@ -11,6 +11,21 @@ ENV_FILE="$PROJECT_ROOT/.env"
 
 cd "$PROJECT_ROOT"
 
+# Parse args: [-q|--quiet] [commit message]
+QUIET=0
+COMMIT_MSG=""
+for arg in "$@"; do
+    case "$arg" in
+        -q|--quiet) QUIET=1 ;;
+        *) COMMIT_MSG="$arg" ;;
+    esac
+done
+COMMIT_MSG="${COMMIT_MSG:-$DEFAULT_COMMIT_MSG}"
+
+log() {
+    if [[ "$QUIET" -eq 0 ]]; then echo "$@"; fi
+}
+
 get_env() {
     local var_name="$1"
     local env_file="$2"
@@ -33,9 +48,9 @@ require_env() {
     fi
 }
 
-echo "🚀 Home_Router_Panel deploy"
-echo "📁 Project root: $PROJECT_ROOT"
-echo "----------------------------------------"
+log "🚀 Home_Router_Panel deploy"
+log "📁 Project root: $PROJECT_ROOT"
+log "----------------------------------------"
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "❌ Файл .env не найден: $ENV_FILE"
@@ -58,74 +73,70 @@ require_env "DEPLOY_APP_DIR" "$DEPLOY_APP_DIR"
 require_env "DEPLOY_SERVICE" "$DEPLOY_SERVICE"
 require_env "DEPLOY_BRANCH" "$DEPLOY_BRANCH"
 
-COMMIT_MSG="${1:-$DEFAULT_COMMIT_MSG}"
+log "🔧 Deploy config:"
+log "   User:    $DEPLOY_USER"
+log "   Host:    $DEPLOY_HOST"
+log "   Port:    $DEPLOY_PORT"
+log "   App dir: $DEPLOY_APP_DIR"
+log "   Service: $DEPLOY_SERVICE"
+log "   Branch:  $DEPLOY_BRANCH"
+log "----------------------------------------"
 
-echo "🔧 Deploy config:"
-echo "   User:    $DEPLOY_USER"
-echo "   Host:    $DEPLOY_HOST"
-echo "   Port:    $DEPLOY_PORT"
-echo "   App dir: $DEPLOY_APP_DIR"
-echo "   Service: $DEPLOY_SERVICE"
-echo "   Branch:  $DEPLOY_BRANCH"
-echo "----------------------------------------"
-
-echo "🔐 Проверка SSH-доступа к серверу..."
-
+log "🔐 Проверка SSH-доступа к серверу..."
 ssh -p "$DEPLOY_PORT" \
     -o ConnectTimeout=5 \
     "${DEPLOY_USER}@${DEPLOY_HOST}" \
-    "echo 'SSH connection OK'"
+    "echo 'SSH connection OK'" > /dev/null
+log "✅ SSH-доступ к серверу есть"
+log "----------------------------------------"
 
-echo "✅ SSH-доступ к серверу есть"
-echo "----------------------------------------"
-
-echo "📦 Этап 1/2: commit & push"
-
+log "📦 Этап 1/2: commit & push"
 git add .
-
 if ! git diff --staged --quiet; then
-    git commit -m "$COMMIT_MSG"
-    git push origin "$DEPLOY_BRANCH"
-    echo "✅ Изменения закоммичены и отправлены"
+    GIT_Q=""
+    [[ "$QUIET" -eq 1 ]] && GIT_Q="-q"
+    git commit $GIT_Q -m "$COMMIT_MSG"
+    git push $GIT_Q origin "$DEPLOY_BRANCH"
+    echo "✅ Закоммичено: $COMMIT_MSG"
 else
-    echo "⚠️ Нет изменений для коммита"
-    echo "📤 Делаю git push на всякий случай..."
-    git push origin "$DEPLOY_BRANCH"
+    log "⚠️ Нет изменений для коммита"
+    GIT_Q=""
+    [[ "$QUIET" -eq 1 ]] && GIT_Q="-q"
+    git push $GIT_Q origin "$DEPLOY_BRANCH"
 fi
 
-echo "----------------------------------------"
+log "----------------------------------------"
+log "🖥️ Этап 2/2: server deploy"
 
-echo "🖥️ Этап 2/2: server deploy"
-
-ssh -p "$DEPLOY_PORT" "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<EOF
+run_remote() {
+    ssh -p "$DEPLOY_PORT" "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<EOF
 set -euo pipefail
 
-echo "📁 Переход в директорию проекта"
 cd "$DEPLOY_APP_DIR"
+git fetch origin "$DEPLOY_BRANCH" -q
+git checkout "$DEPLOY_BRANCH" -q
+git pull origin "$DEPLOY_BRANCH" -q
 
-echo "🔄 Обновление репозитория"
-git fetch origin "$DEPLOY_BRANCH"
-git checkout "$DEPLOY_BRANCH"
-git pull origin "$DEPLOY_BRANCH"
-
-echo "🐍 Проверка virtualenv"
 if [[ ! -d ".venv" ]]; then
     python3 -m venv .venv
 fi
 
-echo "📦 Обновление зависимостей"
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+python -m pip install --upgrade pip -q
+python -m pip install -r requirements.txt -q
 
-echo "🔁 Перезапуск сервиса"
 sudo -n systemctl restart "$DEPLOY_SERVICE"
-
-echo "📊 Статус сервиса"
-sudo -n systemctl status "$DEPLOY_SERVICE" --no-pager --lines=20
-
+sudo -n systemctl status "$DEPLOY_SERVICE" --no-pager --lines=5
 echo "✅ Server deploy completed"
 EOF
+}
 
-echo "----------------------------------------"
+if [[ "$QUIET" -eq 1 ]]; then
+    DEPLOY_OUT=$(run_remote 2>&1) || { echo "❌ Ошибка деплоя:"; echo "$DEPLOY_OUT"; exit 1; }
+    echo "$DEPLOY_OUT" | grep -E "Active:|✅ Server deploy"
+else
+    run_remote
+fi
+
+log "----------------------------------------"
 echo "✅ Деплой завершён успешно"
