@@ -208,22 +208,6 @@ h2 {
     gap: 10px;
 }
 
-.button {
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
-    color: var(--muted);
-    background: rgba(255, 255, 255, 0.04);
-    font: inherit;
-    cursor: not-allowed;
-}
-
-.button-primary {
-    background: var(--blue-dark);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.12);
-}
-
 .footer {
     color: var(--muted);
     text-align: center;
@@ -265,11 +249,6 @@ h2 {
     background: rgba(148, 163, 184, 0.12);
     color: #cbd5e1;
     border-color: rgba(148, 163, 184, 0.28);
-}
-
-.button-small {
-    padding: 8px 14px;
-    font-size: 14px;
 }
 
 .hotlist-view {

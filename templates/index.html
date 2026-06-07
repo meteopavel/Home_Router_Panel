@@ -81,7 +81,7 @@
                     <div class="config-value">{{ hotlist.path }}</div>
                 </div>
 
-                <a class="button button-small button-primary" href="/hotlists/{{ hotlist.name }}">
+                <a class="button" href="/hotlists/{{ hotlist.name }}">
                     Открыть
                 </a>
             </div>
@@ -106,11 +106,11 @@
             <button class="button" type="submit">Перезапустить Amnezia</button>
         </form>
         {% if hotlists %}
-            <a class="button button-primary" href="/hotlists/{{ hotlists[0].name }}">
+            <a class="button" href="/hotlists/{{ hotlists[0].name }}">
                 Открыть hotlist
             </a>
         {% else %}
-            <button class="button button-primary" disabled>Открыть hotlist</button>
+            <button class="button" disabled>Открыть hotlist</button>
         {% endif %}
     </div>
 </section>
