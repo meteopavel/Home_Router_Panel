@@ -1,36 +1,32 @@
-{% extends "base.html" %}
-
-{% block content %}
-<section class="card">
-    <h1>{{ title }}</h1>
-    <p class="muted">
-        Локальная панель управления домашним Linux-роутером.
-    </p>
-</section>
-
-<section class="card">
-    <h2>Конфигурация</h2>
-
-    <div class="grid">
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+<div class="page">
+    <header class="header">
         <div>
-            <div class="label">Zapret service</div>
-            <div class="value">{{ config.services.zapret }}</div>
+            <div class="eyebrow">Локальная панель</div>
+            <h1>{{ title }}</h1>
         </div>
 
-        <div>
-            <div class="label">Amnezia service</div>
-            <div class="value">{{ config.services.amnezia }}</div>
+        <div class="header-badge">
+            <span class="status-dot status-dot-green"></span>
+            Онлайн
         </div>
+    </header>
 
-        <div>
-            <div class="label">Zapret hotlist</div>
-            <div class="value">{{ config.hotlists.zapret_main }}</div>
-        </div>
-    </div>
-</section>
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
 
-<section class="card">
-    <h2>Status</h2>
-    <div class="status ok">Application is running</div>
-</section>
-{% endblock %}
+    <footer class="footer">
+        Home Router Panel · local network only
+    </footer>
+</div>
+</body>
+</html>
