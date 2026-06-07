@@ -231,6 +231,42 @@ h2 {
     margin-top: 24px;
 }
 
+.service-main {
+    min-width: 0;
+}
+
+.service-unit {
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+    margin-top: 6px;
+    word-break: break-all;
+}
+
+.pill-green {
+    background: rgba(74, 222, 128, 0.12);
+    color: #bbf7d0;
+    border-color: rgba(74, 222, 128, 0.28);
+}
+
+.pill-red {
+    background: rgba(248, 113, 113, 0.12);
+    color: #fecaca;
+    border-color: rgba(248, 113, 113, 0.28);
+}
+
+.pill-yellow {
+    background: rgba(250, 204, 21, 0.12);
+    color: #fef08a;
+    border-color: rgba(250, 204, 21, 0.28);
+}
+
+.pill-gray {
+    background: rgba(148, 163, 184, 0.12);
+    color: #cbd5e1;
+    border-color: rgba(148, 163, 184, 0.28);
+}
+
 @media (max-width: 860px) {
     .grid-3 {
         grid-template-columns: 1fr;

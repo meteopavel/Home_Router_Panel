@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.config import load_config
+from app.services import get_services_status
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -22,6 +23,7 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 @app.get("/")
 def index(request: Request):
     config = load_config()
+    services = get_services_status(config)
 
     return templates.TemplateResponse(
         request=request,
@@ -29,6 +31,7 @@ def index(request: Request):
         context={
             "title": config.get("app", {}).get("title", "Home Router Panel"),
             "config": config,
+            "services": services,
         },
     )
 

@@ -1,32 +1,101 @@
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
-</head>
-<body>
-<div class="page">
-    <header class="header">
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="grid grid-3">
+    <article class="card">
+        <div class="card-label">Состояние панели</div>
+        <div class="card-title">Работает</div>
+        <p class="card-text">
+            FastAPI приложение запущено и отвечает на запросы.
+        </p>
+    </article>
+
+    <article class="card">
+        <div class="card-label">Сервер</div>
+        <div class="card-title">
+            {{ config.server.host }}:{{ config.server.port }}
+        </div>
+        <p class="card-text">
+            Адрес и порт приложения из config.yaml.
+        </p>
+    </article>
+
+    <article class="card">
+        <div class="card-label">Доступ</div>
+        <div class="card-title">Локальная сеть</div>
+        <p class="card-text">
+            Панель предназначена для использования внутри домашней сети.
+        </p>
+    </article>
+</section>
+
+<section class="section">
+    <div class="section-header">
         <div>
-            <div class="eyebrow">Локальная панель</div>
-            <h1>{{ title }}</h1>
+            <h2>Сервисы</h2>
+            <p>Реальные статусы systemd-сервисов на сервере.</p>
         </div>
+    </div>
 
-        <div class="header-badge">
-            <span class="status-dot status-dot-green"></span>
-            Онлайн
+    <div class="service-list">
+        {% for service in services %}
+            <div class="service-row">
+                <div class="service-main">
+                    <div class="service-name">{{ service.name }}</div>
+                    <div class="service-desc">{{ service.description }}</div>
+                    <div class="service-unit">{{ service.unit }}</div>
+                </div>
+
+                {% if service.state == "active" %}
+                    <span class="pill pill-green">active</span>
+                {% elif service.state == "inactive" %}
+                    <span class="pill pill-gray">inactive</span>
+                {% elif service.state == "failed" %}
+                    <span class="pill pill-red">failed</span>
+                {% elif service.state == "not_configured" %}
+                    <span class="pill pill-yellow">not configured</span>
+                {% elif service.state == "systemctl_not_found" %}
+                    <span class="pill pill-yellow">no systemctl</span>
+                {% else %}
+                    <span class="pill pill-yellow">{{ service.state }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Hotlists</h2>
+            <p>Файлы списков, которые панель будет читать и редактировать.</p>
         </div>
-    </header>
+    </div>
 
-    <main class="content">
-        {% block content %}{% endblock %}
-    </main>
+    <div class="config-box">
+        {% for name, path in config.hotlists.items() %}
+            <div class="config-row">
+                <span class="config-key">{{ name }}</span>
+                <span class="config-value">{{ path }}</span>
+            </div>
+        {% endfor %}
+    </div>
+</section>
 
-    <footer class="footer">
-        Home Router Panel · local network only
-    </footer>
-</div>
-</body>
-</html>
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Управление</h2>
+            <p>На следующем шаге добавим кнопки перезапуска сервисов и просмотр hotlist.</p>
+        </div>
+    </div>
+
+    <div class="actions">
+        <button class="button" disabled>Перезапустить zapret</button>
+        <button class="button" disabled>Перезапустить Amnezia</button>
+        <button class="button button-primary" disabled>Открыть hotlist</button>
+    </div>
+</section>
+
+{% endblock %}
