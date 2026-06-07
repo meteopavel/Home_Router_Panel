@@ -62,49 +62,30 @@ Home Router Panel — веб-панель для домашнего роутер
 
 ## Структура проекта
 
-`Home_Router_Panel/`
-
-`├── .venv/`
-
-`├── app/`
-
-`│   ├── __init__.py`
-
-`│   ├── config.py`
-
-`│   ├── hotlists.py`
-
-`│   ├── main.py`
-
-`│   └── services.py`
-
-`├── static/`
-
-`│   └── style.css`
-
-`├── templates/`
-
-`│   ├── base.html`
-
-`│   ├── hotlist.html`
-
-`│   └── index.html`
-
-`├── .env`
-
-`├── .env.example`
-
-`├── .gitignore`
-
-`├── config.example.yaml`
-
-`├── config.yaml`
-
-`├── deploy-local.sh`
-
-`├── README.md`
-
-`└── requirements.txt`
+```
+Home_Router_Panel/
+├── .venv/
+├── app/
+│   ├── __init__.py
+│   ├── config.py
+│   ├── hotlists.py
+│   ├── main.py
+│   └── services.py
+├── static/
+│   └── style.css
+├── templates/
+│   ├── base.html
+│   ├── hotlist.html
+│   └── index.html
+├── .env
+├── .env.example
+├── .gitignore
+├── config.example.yaml
+├── config.yaml
+├── deploy-local.sh
+├── README.md
+└── requirements.txt
+```
 
 ---
 
