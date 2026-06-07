@@ -60,6 +60,41 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.tabs {
+    display: flex;
+    gap: 2px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+}
+
+.tab {
+    padding: 10px 20px;
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    line-height: 1;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.tab:hover {
+    color: var(--text);
+    text-decoration: none;
+}
+
+.tab:visited {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.tab-active,
+.tab-active:visited {
+    color: var(--text);
+    border-bottom-color: var(--blue);
+}
+
 .footer {
     color: var(--muted);
     text-align: center;

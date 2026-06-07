@@ -21,6 +21,11 @@
         </div>
     </header>
 
+    <nav class="tabs">
+        <a class="tab {% if active_tab == 'overview' %}tab-active{% endif %}" href="/">Обзор</a>
+        <a class="tab {% if active_tab == 'zapret' %}tab-active{% endif %}" href="/zapret">zapret</a>
+    </nav>
+
     <main class="content">
         {% block content %}{% endblock %}
     </main>

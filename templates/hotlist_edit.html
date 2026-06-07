@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>{{ hotlist.name }}</h2>
+            <p>{{ hotlist.path }}</p>
+        </div>
+        <a class="button" href="/zapret">Назад</a>
+    </div>
+
+    <form method="post" action="/hotlists/{{ hotlist.name }}/edit">
+        <textarea class="editor" name="content">{{ hotlist.text }}</textarea>
+        <div class="actions editor-actions">
+            <button class="button" type="submit">Сохранить</button>
+            <a class="button" href="/zapret">Отмена</a>
+        </div>
+    </form>
+</section>
+
+{% endblock %}

@@ -7,6 +7,7 @@ class HotlistContent:
     name: str
     path: str
     lines: list[str]
+    text: str
 
 
 def get_hotlists_config(config: dict) -> list[dict]:
@@ -39,4 +40,16 @@ def read_hotlist(config: dict, name: str) -> HotlistContent | None:
         name=name,
         path=path,
         lines=content.splitlines(),
+        text=content,
     )
+
+
+def write_hotlist(config: dict, name: str, content: str) -> None:
+    hotlists = config.get("hotlists", {})
+
+    if name not in hotlists:
+        raise ValueError(f"Hotlist not found: {name}")
+
+    path = Path(hotlists[name])
+    normalized = content.replace("\r\n", "\n").replace("\r", "\n")
+    path.write_text(normalized, encoding="utf-8")

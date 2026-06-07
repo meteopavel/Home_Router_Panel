@@ -47,71 +47,29 @@
                     <div class="service-unit">{{ service.unit }}</div>
                 </div>
 
-                {% if service.state == "active" %}
-                    <span class="pill pill-green">active</span>
-                {% elif service.state == "inactive" %}
-                    <span class="pill pill-gray">inactive</span>
-                {% elif service.state == "failed" %}
-                    <span class="pill pill-red">failed</span>
-                {% elif service.state == "not_configured" %}
-                    <span class="pill pill-yellow">not configured</span>
-                {% elif service.state == "systemctl_not_found" %}
-                    <span class="pill pill-yellow">no systemctl</span>
-                {% else %}
-                    <span class="pill pill-yellow">{{ service.state }}</span>
-                {% endif %}
-            </div>
-        {% endfor %}
-    </div>
-</section>
+                <div class="actions">
+                    {% if service.state == "active" %}
+                        <span class="pill pill-green">active</span>
+                    {% elif service.state == "inactive" %}
+                        <span class="pill pill-gray">inactive</span>
+                    {% elif service.state == "failed" %}
+                        <span class="pill pill-red">failed</span>
+                    {% elif service.state == "not_configured" %}
+                        <span class="pill pill-yellow">not configured</span>
+                    {% elif service.state == "systemctl_not_found" %}
+                        <span class="pill pill-yellow">no systemctl</span>
+                    {% else %}
+                        <span class="pill pill-yellow">{{ service.state }}</span>
+                    {% endif %}
 
-<section class="section">
-    <div class="section-header">
-        <div>
-            <h2>Hotlists</h2>
-            <p>Файлы списков, которые панель будет читать и редактировать.</p>
-        </div>
-    </div>
-
-    <div class="config-box">
-        {% for hotlist in hotlists %}
-            <div class="config-row">
-                <div>
-                    <div class="config-key">{{ hotlist.name }}</div>
-                    <div class="config-value">{{ hotlist.path }}</div>
+                    {% if service.state not in ["not_configured", "systemctl_not_found"] %}
+                        <form method="post" action="/services/{{ service.key }}/restart" class="inline-form">
+                            <button class="button button-small" type="submit">Перезапустить</button>
+                        </form>
+                    {% endif %}
                 </div>
-
-                <a class="button" href="/hotlists/{{ hotlist.name }}">
-                    Открыть
-                </a>
             </div>
         {% endfor %}
-    </div>
-</section>
-
-<section class="section">
-    <div class="section-header">
-        <div>
-            <h2>Управление</h2>
-            <p>На следующем шаге добавим кнопки перезапуска сервисов и просмотр hotlist.</p>
-        </div>
-    </div>
-
-    <div class="actions">
-        <form method="post" action="/services/zapret/restart" class="inline-form">
-            <button class="button" type="submit">Перезапустить zapret</button>
-        </form>
-
-        <form method="post" action="/services/amnezia/restart" class="inline-form">
-            <button class="button" type="submit">Перезапустить Amnezia</button>
-        </form>
-        {% if hotlists %}
-            <a class="button" href="/hotlists/{{ hotlists[0].name }}">
-                Открыть hotlist
-            </a>
-        {% else %}
-            <button class="button" disabled>Открыть hotlist</button>
-        {% endif %}
     </div>
 </section>
 

@@ -1,12 +1,12 @@
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.config import load_config
-from app.hotlists import get_hotlists_config, read_hotlist
+from app.hotlists import get_hotlists_config, read_hotlist, write_hotlist
 from app.services import get_services_status, restart_service
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -25,7 +25,6 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 def index(request: Request):
     config = load_config()
     services = get_services_status(config)
-    hotlists = get_hotlists_config(config)
 
     return templates.TemplateResponse(
         request=request,
@@ -34,13 +33,37 @@ def index(request: Request):
             "title": config.get("app", {}).get("title", "Home Router Panel"),
             "config": config,
             "services": services,
+            "active_tab": "overview",
+        },
+    )
+
+
+@app.get("/zapret")
+def zapret_view(request: Request):
+    config = load_config()
+    hotlists = get_hotlists_config(config)
+    services = get_services_status(config)
+    zapret_service = next((s for s in services if s.key == "zapret"), None)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="zapret.html",
+        context={
+            "title": "zapret",
             "hotlists": hotlists,
+            "zapret_service": zapret_service,
+            "active_tab": "zapret",
         },
     )
 
 
 @app.get("/hotlists/{name}")
-def hotlist_view(request: Request, name: str):
+def hotlist_view(name: str):
+    return RedirectResponse(url=f"/hotlists/{name}/edit", status_code=302)
+
+
+@app.get("/hotlists/{name}/edit")
+def hotlist_edit_view(request: Request, name: str):
     config = load_config()
     hotlist = read_hotlist(config, name)
 
@@ -49,12 +72,25 @@ def hotlist_view(request: Request, name: str):
 
     return templates.TemplateResponse(
         request=request,
-        name="hotlist.html",
+        name="hotlist_edit.html",
         context={
-            "title": f"Hotlist: {hotlist.name}",
+            "title": f"Редактировать: {hotlist.name}",
             "hotlist": hotlist,
+            "active_tab": "zapret",
         },
     )
+
+
+@app.post("/hotlists/{name}/edit")
+def hotlist_edit_save(name: str, content: str = Form(default="")):
+    config = load_config()
+
+    try:
+        write_hotlist(config, name, content)
+    except ValueError:
+        raise HTTPException(status_code=404, detail="Hotlist not found")
+
+    return RedirectResponse(url=f"/hotlists/{name}/edit", status_code=303)
 
 
 @app.post("/services/{name}/restart")
@@ -77,6 +113,4 @@ def service_restart(name: str):
 
 @app.get("/health")
 def health():
-    return {
-        "status": "ok",
-    }
+    return {"status": "ok"}
