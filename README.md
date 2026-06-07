@@ -1,21 +1,21 @@
-# Home Router Panel
+# 🏠 Home Router Panel
 
-Home Router Panel — веб-панель для домашнего роутера или небольшого домашнего сервера.
+Веб-панель для домашнего роутера или небольшого домашнего сервера.
 
-Панель предназначена для управления системными сервисами через веб-интерфейс:
+Предназначена для управления системными сервисами через веб-интерфейс:
 
 - просмотр статусов сервисов;
 - перезапуск выбранных systemd unit;
 - управление `zapret`;
 - управление `AmneziaWG` / `AWG` / `WireGuard`;
 - отображение hotlist-страниц;
-- дальнейшее расширение функций домашнего роутера.
+- дальнейшее расширение функций.
 
 ---
 
-## Текущее состояние
+## ✅ Текущее состояние
 
-На данный момент реализовано:
+Реализовано:
 
 - FastAPI-приложение панели;
 - запуск панели через `systemd`;
@@ -29,13 +29,14 @@ Home Router Panel — веб-панель для домашнего роутер
 - кнопки перезапуска системных сервисов;
 - рестарт `zapret` через кнопку на морде;
 - рестарт `AWG/WireGuard` unit через кнопку на морде;
-- безопасный вызов `systemctl` через ограниченный `sudoers`.
+- безопасный вызов `systemctl` через ограниченный `sudoers`;
+- SVG-иконка вкладки браузера.
 
 Кнопки рестарта на веб-морде проверены и работают.
 
 ---
 
-## Стек
+## 🛠️ Стек
 
 - Python 3.12
 - FastAPI
@@ -48,19 +49,15 @@ Home Router Panel — веб-панель для домашнего роутер
 
 ---
 
-## Расположение проекта
+## 📍 Расположение проекта
 
-Код проекта расположен в:
+Код: `/opt/Home_Router_Panel`
 
-`/opt/Home_Router_Panel`
-
-Виртуальное окружение расположено в:
-
-`/opt/Home_Router_Panel/.venv`
+Виртуальное окружение: `/opt/Home_Router_Panel/.venv`
 
 ---
 
-## Структура проекта
+## 🗂️ Структура проекта
 
 ```
 Home_Router_Panel/
@@ -95,467 +92,175 @@ Home_Router_Panel/
 
 ---
 
-## Назначение основных файлов
+## 📄 Назначение основных файлов
 
-### `app/main.py`
+### ⚙️ Backend — `app/`
 
-Основной файл FastAPI-приложения.
+**`main.py`** — маршруты FastAPI, подключение шаблонов и static-файлов, обработчики кнопок на морде.
 
-В нём находится:
+**`config.py`** — загрузка настроек из `.env` и `config.yaml`. Через конфигурацию задаются параметры панели и управляемые сервисы.
 
-- создание приложения FastAPI;
-- подключение шаблонов;
-- подключение static-файлов;
-- маршруты главной страницы;
-- обработчики действий с веб-морды;
-- вызовы функций управления сервисами.
+**`services.py`** — логика управления systemd: получение статуса, перезапуск сервисов через `subprocess`. Использует абсолютные пути `/usr/bin/sudo` и `/usr/bin/systemctl`, `sudo` с флагом `-n`.
+
+**`hotlists.py`** — подготовка и отображение hotlist-страниц.
 
 ---
 
-### `app/config.py`
+### 🖥️ Шаблоны — `templates/`
 
-Файл работы с конфигурацией проекта.
+**`base.html`** — общий HTML-каркас: подключение CSS, иконки, общие элементы интерфейса.
 
-Используется для загрузки настроек из:
+**`index.html`** — главная страница: карточки состояния, статусы сервисов, кнопки управления.
 
-- `.env`;
-- `config.yaml`.
-
-Через конфигурацию задаются параметры панели и управляемые systemd-сервисы.
+**`hotlist.html`** — страница просмотра отдельного hotlist.
 
 ---
 
-### `app/services.py`
+### 🎨 Стили — `static/`
 
-Файл логики управления системными сервисами.
+**`style.css`** — точка входа, содержит только `@import` остальных файлов.
 
-Используется для:
+**`variables.css`** — все CSS-переменные (`--bg`, `--text`, `--border`, `--radius-*`, `--bg-*`, `--font-mono` и др.). Единственное место для изменения цветовой схемы.
 
-- получения статуса systemd unit;
-- перезапуска разрешённых сервисов;
-- выполнения системных команд через `subprocess`;
-- работы с `systemctl`.
+**`base.css`** — сброс и типографика: `*`, `body`, `h1`, `h2`, `p`.
 
-Для вызова системных команд используются абсолютные пути:
+**`layout.css`** — структура страницы: `.page`, `.header`, `.grid`, `.footer`, media queries.
 
-- `/usr/bin/sudo`;
-- `/usr/bin/systemctl`.
+**`components.css`** — UI-компоненты: карточки, строки сервисов, пилюли статусов, hotlist-вью, пустое состояние.
 
-`sudo` используется с флагом `-n`, чтобы не было интерактивного запроса пароля.
+**`buttons.css`** — стили кнопок: `.button`, состояния hover/active/disabled, `.inline-form`.
+
+**`favicon.svg`** — иконка вкладки браузера. SVG-роутер с антеннами в цветах панели.
 
 ---
 
-### `app/hotlists.py`
+### 🔧 Конфигурация
 
-Файл логики hotlist-страниц.
+**`.env`** — секреты и параметры конкретной установки. Не коммитится.
 
-Используется для подготовки и отображения списков, связанных с hotlists.
+**`.env.example`** — шаблон для новой установки.
 
----
+**`config.yaml`** — список управляемых сервисов, hotlist-файлов и параметров панели.
 
-### `templates/base.html`
-
-Базовый HTML-шаблон панели.
-
-Содержит общую структуру страницы:
-
-- HTML-каркас;
-- подключение CSS;
-- общие элементы интерфейса;
-- блоки, которые переиспользуются другими шаблонами.
+**`config.example.yaml`** — шаблон конфига для новой машины.
 
 ---
 
-### `templates/index.html`
+### 🚀 Скрипты
 
-Главная страница веб-панели.
-
-На ней отображаются:
-
-- основные блоки панели;
-- статусы сервисов;
-- кнопки управления сервисами;
-- элементы управления `zapret`;
-- элементы управления `AWG/WireGuard`.
-
----
-
-### `templates/hotlist.html`
-
-Страница hotlists.
-
-Используется для отображения hotlist-информации отдельным экраном панели.
-
----
-
-### `static/style.css`
-
-Точка входа стилей. Содержит только `@import` остальных CSS-файлов в нужном порядке.
-
----
-
-### `static/variables.css`
-
-CSS-переменные (`--bg`, `--text`, `--border`, `--radius-*`, `--bg-*`, `--font-mono` и др.).
-
-Единственное место для изменения цветовой схемы, радиусов и фонов.
-
----
-
-### `static/base.css`
-
-Базовый сброс и типографика: `*`, `body`, `h1`, `h2`, `p`.
-
----
-
-### `static/layout.css`
-
-Структура страницы: `.page`, `.header`, `.eyebrow`, `.header-badge`, `.content`, `.grid`, `.footer`, media queries.
-
----
-
-### `static/components.css`
-
-UI-компоненты: карточки, секции, строки сервисов, пилюли статусов, hotlist-вью, пустое состояние.
-
----
-
-### `static/buttons.css`
-
-Стили кнопок: `.button`, состояния hover/active/disabled, `.inline-form`.
-
----
-
-### `.env`
-
-Локальный файл переменных окружения.
-
-Используется для настроек конкретной установки.
-
-Этот файл не должен быть публичным шаблоном конфигурации.
-
----
-
-### `.env.example`
-
-Пример `.env`-файла.
-
-Используется как шаблон для новой установки.
-
----
-
-### `config.yaml`
-
-Локальный YAML-конфиг панели.
-
-Содержит реальные настройки текущей установки.
-
-Может включать:
-
-- список управляемых сервисов;
-- отображаемые названия;
-- имена systemd unit;
-- параметры hotlists;
-- дополнительные настройки панели.
-
----
-
-### `config.example.yaml`
-
-Пример YAML-конфига.
-
-Используется как шаблон для настройки проекта на новой машине.
-
----
-
-### `deploy-local.sh`
-
-Локальный скрипт деплоя.
-
-Используется для обновления проекта на сервере и применения изменений.
+**`deploy-local.sh`** — деплой на сервер: git commit + push, обновление на сервере, перезапуск сервиса.
 
 ```
 ./deploy-local.sh -q "Commit message"
 ```
 
-Флаг `-q` включает тихий режим: выводит только статус сервиса и итог. Без флага — полный лог.
+Флаг `-q` — тихий режим: выводит только статус сервиса и итог. Без флага — полный лог.
 
-Типичные задачи скрипта:
-
-- git commit и push изменений;
-- обновление файлов проекта на сервере;
-- установка зависимостей;
-- перезапуск systemd-сервиса панели.
+**`requirements.txt`** — зависимости Python для установки в виртуальное окружение.
 
 ---
 
-### `requirements.txt`
+## 🏗️ Архитектура работы
 
-Список Python-зависимостей проекта.
-
-Используется для установки зависимостей в виртуальное окружение.
-
----
-
-### `.gitignore`
-
-Файл исключений Git.
-
-В нём должны быть исключены:
-
-- виртуальное окружение;
-- локальные секреты;
-- временные файлы;
-- кеши Python;
-- локальные конфиги, если они не должны попадать в репозиторий.
-
----
-
-## Архитектура работы
-
-Схема работы панели:
+```
+Браузер → nginx → uvicorn → FastAPI → systemd (через sudo)
+```
 
 1. Пользователь открывает веб-морду в браузере.
-2. `nginx` принимает HTTP-запрос.
-3. `nginx` проксирует запрос в `uvicorn`.
-4. `uvicorn` обслуживает FastAPI-приложение.
-5. FastAPI рендерит HTML-шаблоны из `templates`.
-6. Браузер получает HTML и CSS из `static`.
-7. При нажатии кнопок управления запрос уходит в backend.
-8. Backend вызывает функции из `app/services.py`.
-9. `app/services.py` вызывает `systemctl` через разрешённый `sudo`.
-10. `systemd` выполняет действие над нужным unit.
+2. `nginx` принимает запрос и проксирует в `uvicorn`.
+3. `uvicorn` обслуживает FastAPI-приложение.
+4. FastAPI рендерит HTML-шаблоны из `templates`.
+5. Браузер получает HTML, CSS и favicon из `static`.
+6. При нажатии кнопок запрос уходит в backend.
+7. Backend вызывает функции из `app/services.py`.
+8. `services.py` вызывает `systemctl` через разрешённый `sudo`.
+9. `systemd` выполняет действие над нужным unit.
 
 ---
 
-## nginx
+## 🔀 nginx
 
-`nginx` используется как reverse proxy.
-
-Его задача:
-
-- принять HTTP-запрос от браузера;
-- проксировать запрос на локальный `uvicorn`;
-- вернуть ответ пользователю.
-
-Python-логика панели находится не в nginx, а в FastAPI-приложении.
+Используется как reverse proxy: принимает HTTP от браузера и проксирует на локальный `uvicorn`. Python-логика находится в FastAPI, не в nginx.
 
 ---
 
-## systemd-сервис панели
+## ⚙️ systemd-сервис панели
 
-Панель запускается как systemd-сервис.
+Панель работает как systemd-сервис — поднимается автоматически после перезагрузки сервера.
 
-Это значит, что приложение работает постоянно и автоматически поднимается после перезагрузки сервера, если сервис включён в автозагрузку.
-
-Логи панели доступны через journal systemd.
+Логи: `sudo journalctl -u home-router-panel.service -f`
 
 ---
 
-## Управление сервисами из панели
+## 🔒 Управление сервисами и sudoers
 
-Панель управляет только заранее разрешёнными systemd unit.
+Панель управляет только заранее разрешёнными unit. Сейчас: `zapret` и `AWG/WireGuard`.
 
-Сейчас через морду используются действия для:
+Рестарт выполняется командой:
 
-- `zapret`;
-- `AWG/WireGuard`.
+```
+/usr/bin/sudo -n /usr/bin/systemctl restart SERVICE_UNIT
+```
 
-Рестарт выполняется через команду вида:
+Sudoers-файл: `/etc/sudoers.d/home-router-panel`
 
-`/usr/bin/sudo -n /usr/bin/systemctl restart SERVICE_UNIT`
+Редактировать через: `sudo visudo -f /etc/sudoers.d/home-router-panel`
 
-Важно:
+Разрешать только конкретные unit:
 
-- используются абсолютные пути к бинарникам;
-- `sudo` запускается с флагом `-n`;
-- права выдаются только на конкретные команды;
-- панель не должна иметь полный root-доступ.
+- `zapret` / `zapret.service`
+- `awg-quick@awg0` / `awg-quick@awg0.service`
 
----
-
-## sudoers
-
-Для разрешения рестарта сервисов используется отдельный sudoers-файл:
-
-`/etc/sudoers.d/home-router-panel`
-
-Редактировать его нужно через:
-
-`sudo visudo -f /etc/sudoers.d/home-router-panel`
-
-В sudoers должны быть разрешены только конкретные команды рестарта нужных unit.
-
-Например, только:
-
-- рестарт `zapret`;
-- рестарт `zapret.service`;
-- рестарт `awg-quick@awg0`;
-- рестарт `awg-quick@awg0.service`.
-
-Пользователь в sudoers должен совпадать с пользователем, от которого запущен systemd-сервис панели.
+Пользователь в sudoers должен совпадать с пользователем systemd-сервиса панели (`systemctl cat home-router-panel.service`).
 
 ---
 
-## Проверка работы морды
+## 📋 Полезные команды
 
-### Проверить, что сервис панели запущен
+### Панель
 
-`systemctl status home-router-panel.service`
+```bash
+systemctl status home-router-panel.service   # статус
+sudo journalctl -u home-router-panel.service -f  # логи
+```
 
----
+### nginx
 
-### Смотреть лог панели
+```bash
+systemctl status nginx
+curl -I http://127.0.0.1
+```
 
-`sudo journalctl -u home-router-panel.service -f`
+### zapret
 
----
+```bash
+sudo journalctl -u zapret.service -f
+systemctl show zapret.service -p ActiveEnterTimestamp
+systemctl list-units --type=service | grep -Ei "zapret"
+```
 
-### Проверить, что nginx запущен
+### AWG / WireGuard
 
-`systemctl status nginx`
-
----
-
-### Проверить доступность страницы локально на сервере
-
-`curl -I http://127.0.0.1`
-
-Если nginx настроен на конкретный домен или порт, использовать соответствующий адрес.
-
----
-
-### Проверить лог zapret при нажатии кнопки
-
-`sudo journalctl -u zapret.service -f`
-
-После запуска команды нажать кнопку рестарта `zapret` на веб-морде.
-
-В логе должны появиться свежие записи.
+```bash
+sudo journalctl -u awg-quick@awg0.service -f
+systemctl show awg-quick@awg0.service -p ActiveEnterTimestamp
+systemctl list-units --type=service | grep -Ei "awg|amnezia|wg|wireguard"
+```
 
 ---
 
-### Проверить время последнего старта zapret
+## 📏 Правила разработки
 
-`systemctl show zapret.service -p ActiveEnterTimestamp`
-
-После нажатия кнопки рестарта время должно обновиться.
-
----
-
-### Проверить лог AWG/WireGuard при нажатии кнопки
-
-`sudo journalctl -u awg-quick@awg0.service -f`
-
-После запуска команды нажать кнопку рестарта AWG/WireGuard на веб-морде.
-
-В логе должны появиться свежие записи.
-
----
-
-### Проверить время последнего старта AWG/WireGuard
-
-`systemctl show awg-quick@awg0.service -p ActiveEnterTimestamp`
-
-После нажатия кнопки рестарта время должно обновиться.
-
----
-
-## Проверка доступных unit
-
-Посмотреть unit, связанные с `zapret`:
-
-`systemctl list-units --type=service | grep -Ei "zapret"`
-
-Посмотреть unit, связанные с AWG/WireGuard:
-
-`systemctl list-units --type=service | grep -Ei "awg|amnezia|wg|wireguard"`
-
----
-
-## Проверка пользователя панели
-
-Посмотреть systemd unit панели:
-
-`systemctl cat home-router-panel.service`
-
-Если в unit указан `User=`, sudoers должен быть настроен именно для этого пользователя.
-
----
-
-## Правила разработки
-
-- Основная логика FastAPI находится в `app/main.py`.
-- Работа с конфигурацией находится в `app/config.py`.
-- Работа с systemd-сервисами находится в `app/services.py`.
-- Логика hotlists находится в `app/hotlists.py`.
-- HTML-шаблоны находятся в `templates`.
-- CSS разбит по файлам в `static/`: `variables.css` → `base.css` → `layout.css` → `components.css` → `buttons.css`; `style.css` — точка входа с `@import`.
-- Для системных команд использовать абсолютные пути.
-- Для `sudo` использовать `/usr/bin/sudo`.
-- Для `systemctl` использовать `/usr/bin/systemctl`.
-- Всегда использовать `sudo` с флагом `-n`.
+- Основная логика FastAPI — `app/main.py`.
+- Работа с конфигурацией — `app/config.py`.
+- Работа с сервисами — `app/services.py`.
+- Логика hotlists — `app/hotlists.py`.
+- HTML-шаблоны — `templates/`.
+- CSS разбит по файлам в `static/`; `style.css` — точка входа с `@import`.
+- Для системных команд использовать абсолютные пути (`/usr/bin/sudo`, `/usr/bin/systemctl`).
+- `sudo` всегда с флагом `-n`.
 - Не выдавать панели полный root-доступ.
 - В sudoers разрешать только конкретные команды.
-- Ошибки backend смотреть через journal systemd-сервиса панели.
-- nginx считать reverse proxy, а не местом диагностики Python-логики.
 - После изменения backend-кода перезапускать сервис панели.
 - После изменения systemd unit выполнять `daemon-reload`.
-
----
-
-## Полезные команды для сверки работы
-
-Статус панели:
-
-`systemctl status home-router-panel.service`
-
-Лог панели:
-
-`sudo journalctl -u home-router-panel.service -f`
-
-Статус nginx:
-
-`systemctl status nginx`
-
-Лог `zapret`:
-
-`sudo journalctl -u zapret.service -f`
-
-Время последнего старта `zapret`:
-
-`systemctl show zapret.service -p ActiveEnterTimestamp`
-
-Лог AWG/WireGuard:
-
-`sudo journalctl -u awg-quick@awg0.service -f`
-
-Время последнего старта AWG/WireGuard:
-
-`systemctl show awg-quick@awg0.service -p ActiveEnterTimestamp`
-
-Проверка unit `zapret`:
-
-`systemctl list-units --type=service | grep -Ei "zapret"`
-
-Проверка unit AWG/WireGuard:
-
-`systemctl list-units --type=service | grep -Ei "awg|amnezia|wg|wireguard"`
-
-Посмотреть unit панели:
-
-`systemctl cat home-router-panel.service`
-
----
-
-## Текущее важное знание
-
-Кнопки рестарта на морде работают.
-
-Панель управляет сервисами через FastAPI backend, который вызывает `systemctl` через ограниченный `sudo`.
-
-Реальную работу кнопок удобно сверять через:
-
-- journal нужного systemd unit;
-- `ActiveEnterTimestamp`;
-- статус systemd-сервиса панели.
+- Ошибки backend смотреть через journal, не через nginx.
