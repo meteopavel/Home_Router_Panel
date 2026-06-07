@@ -7,9 +7,7 @@
 #   sudo chown root:root /usr/local/sbin/home-router-awg-config
 #
 # SUDOERS (одна строка):
-#   panel-user ALL=(root) NOPASSWD: /usr/local/sbin/home-router-awg-config
-#
-# Замените panel-user на имя пользователя, от которого работает панель.
+#   meteopavel ALL=(root) NOPASSWD: /usr/local/sbin/home-router-awg-config
 
 set -euo pipefail
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -85,9 +83,13 @@ case "$ACTION" in
         echo ""
         echo "=== iptables mangle PREROUTING ==="
         iptables-save -t mangle 2>/dev/null \
-            | grep -E 'PREROUTING|tg_nets|figma_nets|claude_nets|0x66' \
+            | grep -E 'PREROUTING|TG_VPN_ROUTING|tg_nets|figma_nets|claude_nets|0x66' \
             | grep -v '^#' \
             || echo "(пусто)"
+
+        echo ""
+        echo "=== iptables mangle TG_VPN_ROUTING (счётчики) ==="
+        iptables -t mangle -nvL TG_VPN_ROUTING 2>/dev/null || echo "(цепочка не существует)"
 
         echo ""
         echo "=== iptables nat (awg0) ==="
@@ -95,10 +97,6 @@ case "$ACTION" in
             | grep -E "$AWG_IFACE|MASQUERADE" \
             | grep -v '^#' \
             || echo "(пусто)"
-
-        echo ""
-        echo "=== iptables mangle PREROUTING (счётчики) ==="
-        iptables -t mangle -nvL PREROUTING 2>/dev/null || echo "(ошибка)"
         ;;
 
     lan-neigh)
