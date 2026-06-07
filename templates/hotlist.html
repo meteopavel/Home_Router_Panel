@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Hotlist: {{ hotlist.name }}</h2>
+            <p>{{ hotlist.path }}</p>
+        </div>
+
+        <a class="button" href="/">Назад</a>
+    </div>
+
+    {% if hotlist.lines %}
+        <div class="hotlist-view">
+            {% for line in hotlist.lines %}
+                <div class="hotlist-line">
+                    <span class="hotlist-line-number">{{ loop.index }}</span>
+                    <span class="hotlist-line-text">{{ line }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            Файл пустой.
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

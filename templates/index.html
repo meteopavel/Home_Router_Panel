@@ -74,10 +74,16 @@
     </div>
 
     <div class="config-box">
-        {% for name, path in config.hotlists.items() %}
+        {% for hotlist in hotlists %}
             <div class="config-row">
-                <span class="config-key">{{ name }}</span>
-                <span class="config-value">{{ path }}</span>
+                <div>
+                    <div class="config-key">{{ hotlist.name }}</div>
+                    <div class="config-value">{{ hotlist.path }}</div>
+                </div>
+
+                <a class="button button-small button-primary" href="/hotlists/{{ hotlist.name }}">
+                    Открыть
+                </a>
             </div>
         {% endfor %}
     </div>
@@ -94,7 +100,13 @@
     <div class="actions">
         <button class="button" disabled>Перезапустить zapret</button>
         <button class="button" disabled>Перезапустить Amnezia</button>
-        <button class="button button-primary" disabled>Открыть hotlist</button>
+        {% if hotlists %}
+            <a class="button button-primary" href="/hotlists/{{ hotlists[0].name }}">
+                Открыть hotlist
+            </a>
+        {% else %}
+            <button class="button button-primary" disabled>Открыть hotlist</button>
+        {% endif %}
     </div>
 </section>
 

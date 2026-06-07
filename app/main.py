@@ -1,10 +1,11 @@
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.config import load_config
+from app.hotlists import get_hotlists_config, read_hotlist
 from app.services import get_services_status
 
 
@@ -24,6 +25,7 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 def index(request: Request):
     config = load_config()
     services = get_services_status(config)
+    hotlists = get_hotlists_config(config)
 
     return templates.TemplateResponse(
         request=request,
@@ -32,6 +34,25 @@ def index(request: Request):
             "title": config.get("app", {}).get("title", "Home Router Panel"),
             "config": config,
             "services": services,
+            "hotlists": hotlists,
+        },
+    )
+
+
+@app.get("/hotlists/{name}")
+def hotlist_view(request: Request, name: str):
+    config = load_config()
+    hotlist = read_hotlist(config, name)
+
+    if hotlist is None:
+        raise HTTPException(status_code=404, detail="Hotlist not found")
+
+    return templates.TemplateResponse(
+        request=request,
+        name="hotlist.html",
+        context={
+            "title": f"Hotlist: {hotlist.name}",
+            "hotlist": hotlist,
         },
     )
 
