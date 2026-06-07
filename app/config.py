@@ -4,7 +4,8 @@ from typing import Any
 import yaml
 
 
-CONFIG_PATH = Path("config.yaml")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+CONFIG_PATH = PROJECT_ROOT / "config.yaml"
 
 
 def load_config() -> dict[str, Any]:
