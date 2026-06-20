@@ -30,5 +30,6 @@ exec /usr/bin/tar \
   /usr/local \
   /srv \
   /boot \
-| /usr/bin/ssh -i "$MAC_SSH_KEY" -o BatchMode=yes "$MAC_USER@$MAC_HOST" \
+| /usr/bin/ssh -i "$MAC_SSH_KEY" -o BatchMode=yes -o StrictHostKeyChecking=accept-new \
+  -o UserKnownHostsFile=/home/meteopavel/.ssh/known_hosts "$MAC_USER@$MAC_HOST" \
   "mkdir -p ~/router-backups && cat > ~/router-backups/$BACKUP_NAME"
