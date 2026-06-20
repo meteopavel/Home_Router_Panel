@@ -12,6 +12,7 @@ LIST_FILES = {
     "figma_domains": AWG_CONFIG_DIR / "figma_domains.txt",
     "claude_domains": AWG_CONFIG_DIR / "claude_domains.txt",
     "bebra_domains": AWG_CONFIG_DIR / "bebra_domains.txt",
+    "ss_server_ips": AWG_CONFIG_DIR / "ss_server_ips.txt",
     "vpn_device_macs": AWG_CONFIG_DIR / "vpn_device_macs.txt",
 }
 
@@ -31,6 +32,10 @@ LIST_META = {
     "bebra_domains": {
         "title": "Bebra домены",
         "hint": "Домены, чьи IP резолвятся и идут через VPN",
+    },
+    "ss_server_ips": {
+        "title": "SS-серверы (прямой маршрут)",
+        "hint": "IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)",
     },
     "vpn_device_macs": {
         "title": "Устройства по MAC",

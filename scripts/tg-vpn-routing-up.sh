@@ -18,6 +18,7 @@
 #   /etc/home-router-panel/awg/figma_domains.txt
 #   /etc/home-router-panel/awg/claude_domains.txt
 #   /etc/home-router-panel/awg/bebra_domains.txt
+#   /etc/home-router-panel/awg/ss_server_ips.txt   — IP SS-серверов (маршрутизируются через awg0 напрямую)
 #   /etc/home-router-panel/awg/vpn_device_macs.txt
 
 set -euo pipefail
@@ -161,6 +162,22 @@ done < <(read_conf_lines "bebra_domains.txt")
 log "  bebra_nets: $count IP"
 
 iptables -t mangle -A "$CHAIN" -m set --match-set bebra_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+
+# ── Статические маршруты для SS-серверов ─────────────────────────────────────
+# IP SS-серверов заблокированы в РФ — маршрутизируем их через awg0 напрямую
+# (трафик ss-local идёт через OUTPUT, не через PREROUTING, поэтому ipset не поможет).
+
+log "Статические маршруты для SS-серверов из $CONF_DIR/ss_server_ips.txt..."
+count=0
+while IFS= read -r ip; do
+    if ip route get "$ip" 2>/dev/null | grep -q "dev $AWG_IFACE"; then
+        true  # маршрут уже есть
+    else
+        ip route replace "$ip" dev "$AWG_IFACE"
+        (( count++ )) || true
+    fi
+done < <(read_conf_lines "ss_server_ips.txt")
+log "  SS-маршрутов добавлено: $count"
 
 # ── MAC-устройства ────────────────────────────────────────────────────────────
 # MAC-правила добавляем в цепочку напрямую.
