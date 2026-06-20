@@ -199,6 +199,56 @@ def backup_run():
     return RedirectResponse(url="/?backup=ok", status_code=303)
 
 
+@app.get("/capture")
+def capture_traffic(request: Request, mac: str = "", seconds: int = 15, count: int = 200):
+    mac = mac.strip().lower()
+    output = ""
+    error = ""
+
+    if mac:
+        import re
+        if not re.match(r"^([0-9a-f]{2}:){5}[0-9a-f]{2}$", mac):
+            error = f"Некорректный MAC-адрес: {mac}"
+        else:
+            try:
+                result = subprocess.run(
+                    [
+                        "/usr/bin/sudo", "-n", "/usr/bin/tcpdump",
+                        "-i", "enp2s0",
+                        "-n", "-q",
+                        "-c", str(min(count, 500)),
+                        "ether", "host", mac,
+                    ],
+                    capture_output=True, text=True,
+                    timeout=min(seconds, 120) + 5,
+                )
+                output = result.stdout + result.stderr
+            except subprocess.TimeoutExpired as e:
+                stdout = e.stdout or ""
+                stderr = e.stderr or ""
+                if isinstance(stdout, bytes):
+                    stdout = stdout.decode("utf-8", errors="replace")
+                if isinstance(stderr, bytes):
+                    stderr = stderr.decode("utf-8", errors="replace")
+                output = stdout + stderr + f"\n--- захват остановлен после {seconds}с ---"
+            except Exception as e:
+                error = str(e)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="capture.html",
+        context={
+            "title": "Перехват трафика",
+            "mac": mac,
+            "seconds": seconds,
+            "count": count,
+            "output": output,
+            "error": error,
+            "active_tab": "amnezia",
+        },
+    )
+
+
 @app.get("/health")
 def health():
     return {"status": "ok"}
