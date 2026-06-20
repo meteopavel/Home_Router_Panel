@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block content %}
+
+{# ── Status & Controls ─────────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <div class="section-header">
+        <div>
+            <h2>dnsmasq</h2>
+            <p>DHCP-сервер · 192.168.100.x · enp2s0</p>
+        </div>
+        <div class="actions">
+            {% if state == 'active' %}
+                <span class="pill pill-green">active</span>
+            {% elif state == 'failed' %}
+                <span class="pill pill-red">failed</span>
+            {% else %}
+                <span class="pill pill-yellow">{{ state }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if msg %}
+        <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(74,222,128,0.1);
+                    border: 1px solid rgba(74,222,128,0.25); border-radius: var(--radius-btn);
+                    font-size: 13px; color: var(--green);">
+            {% if msg == 'saved' %}Резервация сохранена. Нажмите «Перезагрузить» для применения.
+            {% elif msg == 'removed' %}Резервация удалена. Нажмите «Перезагрузить» для применения.
+            {% elif msg == 'reloaded' %}dnsmasq перезагружен.
+            {% elif msg == 'restarted' %}dnsmasq перезапущен.
+            {% else %}{{ msg }}{% endif %}
+        </div>
+    {% endif %}
+
+    <div class="actions">
+        <form method="post" action="/dnsmasq/service/reload">
+            <button type="submit" class="button"
+                    data-tooltip="Применить изменения конфига без обрыва текущих аренд (SIGHUP)">
+                Перезагрузить
+            </button>
+        </form>
+        <form method="post" action="/dnsmasq/service/restart">
+            <button type="submit" class="button button-secondary"
+                    data-tooltip="Полный перезапуск — все аренды обнуляются">
+                Перезапустить
+            </button>
+        </form>
+        <a href="/dnsmasq" class="button button-secondary">Обновить</a>
+    </div>
+</section>
+
+{# ── Static Reservations ───────────────────────────────────── #}
+<section class="section" style="margin-bottom: 20px;">
+    <h2 style="margin-bottom: 6px;">Статические резервации</h2>
+    <p style="color: var(--muted); margin-bottom: 20px; font-size: 13px;">
+        Файл: <code>{{ static_file }}</code> — подключите через
+        <code>conf-file={{ static_file }}</code> в dnsmasq.conf
+    </p>
+
+    {% if static_entries %}
+        <div class="service-list" style="margin-bottom: 20px;">
+            {% for e in static_entries %}
+                <div class="service-row">
+                    <div class="service-main">
+                        <div class="service-name">
+                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                        </div>
+                        <div class="service-unit">{{ e.mac }}</div>
+                    </div>
+                    <div class="actions">
+                        <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                            <input type="hidden" name="mac" value="{{ e.mac }}">
+                            <button type="submit" class="button button-secondary"
+                                    style="padding: 6px 12px; font-size: 12px;"
+                                    data-tooltip="Удалить резервацию для этого MAC">
+                                Удалить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state" style="margin-bottom: 20px;">Нет статических резерваций</div>
+    {% endif %}
+
+    {# Add form #}
+    <details>
+        <summary class="details-summary"><strong>Добавить резервацию</strong></summary>
+        <div style="padding: 16px 0 4px;">
+            <form method="post" action="/dnsmasq/static/add"
+                  style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                <div>
+                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">MAC-адрес</label>
+                    <input type="text" name="mac" placeholder="aa:bb:cc:dd:ee:ff" class="text-input"
+                           style="width: 180px; font-family: var(--font-mono);">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">IP-адрес</label>
+                    <input type="text" name="ip" placeholder="192.168.100.10" class="text-input"
+                           style="width: 160px; font-family: var(--font-mono);">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">Имя (опционально)</label>
+                    <input type="text" name="hostname" placeholder="my-device" class="text-input"
+                           style="width: 160px;">
+                </div>
+                <button type="submit" class="button">Добавить</button>
+            </form>
+        </div>
+    </details>
+</section>
+
+{# ── Active Leases ─────────────────────────────────────────── #}
+<section class="section">
+    <h2 style="margin-bottom: 6px;">Активные аренды</h2>
+    <p style="color: var(--muted); margin-bottom: 20px; font-size: 13px;">
+        {{ leases|length }} аренд · <code>/var/lib/misc/dnsmasq.leases</code>
+    </p>
+
+    {% if leases %}
+        <div class="service-list">
+            {% for lease in leases %}
+                {% set is_static = static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
+                <div class="service-row">
+                    <div class="service-main">
+                        <div class="service-name">
+                            {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
+                        </div>
+                        <div class="service-unit">{{ lease.mac }} · до {{ lease.expiry }}</div>
+                    </div>
+                    <div class="actions">
+                        {% if is_static %}
+                            <span class="pill pill-green" data-tooltip="Для этого устройства задан статический IP">статич.</span>
+                        {% else %}
+                            <form method="post" action="/dnsmasq/static/add" style="display:inline;">
+                                <input type="hidden" name="mac" value="{{ lease.mac }}">
+                                <input type="hidden" name="ip" value="{{ lease.ip }}">
+                                <input type="hidden" name="hostname" value="{{ lease.hostname }}">
+                                <button type="submit" class="button button-secondary"
+                                        style="padding: 6px 12px; font-size: 12px;"
+                                        data-tooltip="Закрепить текущий IP {{ lease.ip }} за этим MAC навсегда">
+                                    Закрепить IP
+                                </button>
+                            </form>
+                        {% endif %}
+                        <a href="/capture?mac={{ lease.mac }}&seconds=15&count=200"
+                           class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                           data-tooltip="Перехватить трафик этого устройства через tcpdump">
+                            Захватить
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            Нет активных аренд — файл <code>/var/lib/misc/dnsmasq.leases</code> недоступен или пуст
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

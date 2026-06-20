@@ -6,6 +6,15 @@ from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
+from app.dnsmasq import (
+    add_static,
+    get_dnsmasq_state,
+    read_leases,
+    read_static,
+    reload_dnsmasq,
+    remove_static,
+    restart_dnsmasq,
+)
 from app.amnezia import (
     LIST_META,
     add_mac_to_vpn,
@@ -247,6 +256,51 @@ def capture_traffic(request: Request, mac: str = "", seconds: int = 15, count: i
             "active_tab": "amnezia",
         },
     )
+
+
+@app.get("/dnsmasq")
+def dnsmasq_view(request: Request, msg: str = ""):
+    return templates.TemplateResponse(
+        request=request,
+        name="dnsmasq.html",
+        context={
+            "title": "dnsmasq",
+            "active_tab": "dnsmasq",
+            "state": get_dnsmasq_state(),
+            "leases": read_leases(),
+            "static_entries": read_static(),
+            "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
+            "msg": msg,
+        },
+    )
+
+
+@app.post("/dnsmasq/static/add")
+def dnsmasq_static_add(
+    mac: str = Form(default=""),
+    ip: str = Form(default=""),
+    hostname: str = Form(default=""),
+):
+    add_static(mac, ip, hostname)
+    return RedirectResponse(url="/dnsmasq?msg=saved", status_code=303)
+
+
+@app.post("/dnsmasq/static/remove")
+def dnsmasq_static_remove(mac: str = Form(default="")):
+    remove_static(mac)
+    return RedirectResponse(url="/dnsmasq?msg=removed", status_code=303)
+
+
+@app.post("/dnsmasq/service/reload")
+def dnsmasq_service_reload():
+    reload_dnsmasq()
+    return RedirectResponse(url="/dnsmasq?msg=reloaded", status_code=303)
+
+
+@app.post("/dnsmasq/service/restart")
+def dnsmasq_service_restart():
+    restart_dnsmasq()
+    return RedirectResponse(url="/dnsmasq?msg=restarted", status_code=303)
 
 
 @app.get("/health")
