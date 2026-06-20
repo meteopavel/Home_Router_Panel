@@ -59,10 +59,11 @@
     {# System reservations from /etc/dnsmasq.d/ #}
     {% if system_static %}
         <p style="color: var(--muted); font-size: 12px; margin-bottom: 8px;">
-            Системные (из <code>/etc/dnsmasq.d/</code>, только просмотр):
+            Системные (из <code>/etc/dnsmasq.d/</code>):
         </p>
-        <div class="service-list" style="margin-bottom: 20px;">
+        <div class="service-list" style="margin-bottom: 8px;">
             {% for e in system_static %}
+                {% set already_managed = static_entries | selectattr('mac', 'equalto', e.mac) | list | length > 0 %}
                 <div class="service-row">
                     <div class="service-main">
                         <div class="service-name">
@@ -71,11 +72,27 @@
                         <div class="service-unit">{{ e.mac }} · {{ e.source }}</div>
                     </div>
                     <div class="actions">
-                        <span class="pill pill-gray" data-tooltip="Файл в /etc/dnsmasq.d/ — редактируйте вручную">системный</span>
+                        {% if already_managed %}
+                            <span class="pill pill-green" data-tooltip="Уже перенесена в управляемый файл">импортирована</span>
+                        {% else %}
+                            <form method="post" action="/dnsmasq/static/add" style="display:inline;">
+                                <input type="hidden" name="mac" value="{{ e.mac }}">
+                                <input type="hidden" name="ip" value="{{ e.ip }}">
+                                <input type="hidden" name="hostname" value="{{ e.hostname }}">
+                                <button type="submit" class="button button-secondary"
+                                        style="padding: 6px 12px; font-size: 12px;"
+                                        data-tooltip="Скопировать в dnsmasq-static.conf — после этого можно удалить {{ e.source }}">
+                                    Импортировать
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
         </div>
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 20px;">
+            После импорта всех записей удалите исходный файл из <code>/etc/dnsmasq.d/</code> и нажмите «Перезагрузить».
+        </p>
     {% endif %}
 
     {# Panel-managed reservations #}
