@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 LEASES_FILE = Path("/var/lib/misc/dnsmasq.leases")
-STATIC_FILE = Path("/etc/home-router-panel/dnsmasq-static.conf")
+STATIC_FILE = Path("/etc/home-router-panel/awg/dnsmasq-static.conf")
 
 
 @dataclass
@@ -50,6 +50,32 @@ def read_leases() -> list[Lease]:
         return leases
     except Exception:
         return []
+
+
+DNSMASQ_D = Path("/etc/dnsmasq.d")
+
+
+def read_system_static() -> list[dict]:
+    """Read dhcp-host entries from /etc/dnsmasq.d/*.conf (read-only, for display)."""
+    entries = []
+    if not DNSMASQ_D.exists():
+        return entries
+    try:
+        for conf in sorted(DNSMASQ_D.glob("*.conf")):
+            for line in conf.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line.startswith("dhcp-host="):
+                    continue
+                value = line[len("dhcp-host="):]
+                parts = value.split(",")
+                mac = parts[0].strip().lower() if parts else ""
+                ip = parts[1].strip() if len(parts) > 1 else ""
+                hostname = parts[2].strip() if len(parts) > 2 else ""
+                if re.match(r"^([0-9a-f]{2}:){5}[0-9a-f]{2}$", mac):
+                    entries.append({"mac": mac, "ip": ip, "hostname": hostname, "source": conf.name})
+    except Exception:
+        pass
+    return entries
 
 
 def read_static() -> list[StaticEntry]:

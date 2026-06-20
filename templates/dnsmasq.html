@@ -56,7 +56,33 @@
         <code>conf-file={{ static_file }}</code> в dnsmasq.conf
     </p>
 
+    {# System reservations from /etc/dnsmasq.d/ #}
+    {% if system_static %}
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 8px;">
+            Системные (из <code>/etc/dnsmasq.d/</code>, только просмотр):
+        </p>
+        <div class="service-list" style="margin-bottom: 20px;">
+            {% for e in system_static %}
+                <div class="service-row">
+                    <div class="service-main">
+                        <div class="service-name">
+                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                        </div>
+                        <div class="service-unit">{{ e.mac }} · {{ e.source }}</div>
+                    </div>
+                    <div class="actions">
+                        <span class="pill pill-gray" data-tooltip="Файл в /etc/dnsmasq.d/ — редактируйте вручную">системный</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Panel-managed reservations #}
     {% if static_entries %}
+        <p style="color: var(--muted); font-size: 12px; margin-bottom: 8px;">
+            Управляемые панелью (<code>dnsmasq-static.conf</code>):
+        </p>
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
                 <div class="service-row">
@@ -79,7 +105,7 @@
                 </div>
             {% endfor %}
         </div>
-    {% else %}
+    {% elif not system_static %}
         <div class="empty-state" style="margin-bottom: 20px;">Нет статических резерваций</div>
     {% endif %}
 
@@ -120,7 +146,9 @@
     {% if leases %}
         <div class="service-list">
             {% for lease in leases %}
-                {% set is_static = static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
+                {% set is_managed = static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
+                {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
+                {% set is_static = is_managed or is_system %}
                 <div class="service-row">
                     <div class="service-main">
                         <div class="service-name">
