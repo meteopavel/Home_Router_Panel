@@ -100,10 +100,32 @@ def get_diagnostics() -> Optional[str]:
     return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
 
 
+DNSMASQ_LEASES = Path("/var/lib/misc/dnsmasq.leases")
+
+
+def _read_dnsmasq_leases() -> dict[str, str]:
+    """Return MAC→hostname map from dnsmasq leases file."""
+    if not DNSMASQ_LEASES.exists():
+        return {}
+    try:
+        result = {}
+        for line in DNSMASQ_LEASES.read_text(encoding="utf-8").splitlines():
+            parts = line.split()
+            if len(parts) >= 4:
+                mac = parts[1].lower()
+                hostname = parts[3] if parts[3] != "*" else ""
+                if hostname:
+                    result[mac] = hostname
+        return result
+    except Exception:
+        return {}
+
+
 def get_lan_devices() -> list[dict]:
     result = _run_helper("lan-neigh")
     if result.returncode != 0:
         return []
+    leases = _read_dnsmasq_leases()
     devices = []
     for line in result.stdout.strip().splitlines():
         parts = line.split()
@@ -118,7 +140,8 @@ def get_lan_devices() -> list[dict]:
             if part in ("REACHABLE", "STALE", "FAILED", "DELAY", "PROBE", "NOARP", "PERMANENT"):
                 state = part
         if mac:
-            devices.append({"ip": ip, "mac": mac, "state": state})
+            hostname = leases.get(mac.lower(), "")
+            devices.append({"ip": ip, "mac": mac, "state": state, "hostname": hostname})
     return devices
 
 
