@@ -1,0 +1,34 @@
+#!/bin/bash
+set -o pipefail
+
+MAC_USER="Work"
+MAC_HOST="mac.local"
+MAC_SSH_KEY="/home/meteopavel/.ssh/home_router_panel_deploy"
+BACKUP_NAME="homerouter-$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
+
+exec /usr/bin/tar \
+  --xattrs \
+  --acls \
+  --numeric-owner \
+  --ignore-failed-read \
+  --warning=no-file-changed \
+  -czpf - \
+  --exclude="/home/meteopavel/router-backups" \
+  --exclude="/home/meteopavel/.cache" \
+  --exclude="/home/meteopavel/.local/share/Trash" \
+  --exclude="/tmp" \
+  --exclude="/var/tmp" \
+  --exclude="/var/cache" \
+  --exclude="/var/log/*.log" \
+  /etc \
+  /home/meteopavel \
+  /opt \
+  /var/lib \
+  /var/spool \
+  /var/backups \
+  /root \
+  /usr/local \
+  /srv \
+  /boot \
+| /usr/bin/ssh -i "$MAC_SSH_KEY" -o BatchMode=yes "$MAC_USER@$MAC_HOST" \
+  "mkdir -p ~/router-backups && cat > ~/router-backups/$BACKUP_NAME"
