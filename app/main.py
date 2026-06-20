@@ -260,7 +260,7 @@ def capture_traffic(request: Request, mac: str = "", seconds: int = 15, count: i
 
 
 @app.get("/dnsmasq")
-def dnsmasq_view(request: Request, msg: str = ""):
+def dnsmasq_view(request: Request, msg: str = "", edit: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="dnsmasq.html",
@@ -273,12 +273,23 @@ def dnsmasq_view(request: Request, msg: str = ""):
             "system_static": read_system_static(),
             "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
             "msg": msg,
+            "edit_mac": edit.strip().lower(),
         },
     )
 
 
 @app.post("/dnsmasq/static/add")
 def dnsmasq_static_add(
+    mac: str = Form(default=""),
+    ip: str = Form(default=""),
+    hostname: str = Form(default=""),
+):
+    add_static(mac, ip, hostname)
+    return RedirectResponse(url="/dnsmasq?msg=saved", status_code=303)
+
+
+@app.post("/dnsmasq/static/update")
+def dnsmasq_static_update(
     mac: str = Form(default=""),
     ip: str = Form(default=""),
     hostname: str = Form(default=""),

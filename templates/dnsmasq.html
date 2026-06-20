@@ -102,23 +102,46 @@
         </p>
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
-                <div class="service-row">
-                    <div class="service-main">
-                        <div class="service-name">
-                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
-                        </div>
-                        <div class="service-unit">{{ e.mac }}</div>
-                    </div>
-                    <div class="actions">
-                        <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                <div class="service-row" style="flex-wrap: wrap; gap: 12px;">
+                    {% if edit_mac == e.mac %}
+                        {# Edit mode #}
+                        <form method="post" action="/dnsmasq/static/update"
+                              style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1;">
                             <input type="hidden" name="mac" value="{{ e.mac }}">
-                            <button type="submit" class="button button-secondary"
-                                    style="padding: 6px 12px; font-size: 12px;"
-                                    data-tooltip="Удалить резервацию для этого MAC">
-                                Удалить
-                            </button>
+                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
+                                   style="width: 160px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px;">
+                            <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input"
+                                   style="width: 160px; padding: 6px 10px; font-size: 13px;" placeholder="имя (опционально)">
+                            <div style="color: var(--muted); font-size: 12px; font-family: var(--font-mono);">{{ e.mac }}</div>
+                            <div class="actions">
+                                <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
+                                <a href="/dnsmasq" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                            </div>
                         </form>
-                    </div>
+                    {% else %}
+                        {# View mode #}
+                        <div class="service-main">
+                            <div class="service-name">
+                                {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                            </div>
+                            <div class="service-unit">{{ e.mac }}</div>
+                        </div>
+                        <div class="actions">
+                            <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary"
+                               style="padding: 6px 12px; font-size: 12px;"
+                               data-tooltip="Изменить IP или имя устройства">
+                                Изменить
+                            </a>
+                            <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                                <input type="hidden" name="mac" value="{{ e.mac }}">
+                                <button type="submit" class="button button-secondary button-danger"
+                                        style="padding: 6px 12px; font-size: 12px;"
+                                        data-tooltip="Удалить резервацию для этого MAC">
+                                    Удалить
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
