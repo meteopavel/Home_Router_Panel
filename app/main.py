@@ -278,29 +278,56 @@ def dnsmasq_view(request: Request, msg: str = "", edit: str = ""):
     )
 
 
+def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac: str = ""):
+    return templates.TemplateResponse(
+        request=request,
+        name="dnsmasq.html",
+        context={
+            "title": "dnsmasq",
+            "active_tab": "dnsmasq",
+            "state": get_dnsmasq_state(),
+            "leases": read_leases(),
+            "static_entries": read_static(),
+            "system_static": read_system_static(),
+            "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
+            "msg": msg,
+            "error": error,
+            "edit_mac": edit_mac,
+        },
+    )
+
+
 @app.post("/dnsmasq/static/add")
 def dnsmasq_static_add(
+    request: Request,
     mac: str = Form(default=""),
     ip: str = Form(default=""),
     hostname: str = Form(default=""),
 ):
-    add_static(mac, ip, hostname)
+    ok, err = add_static(mac, ip, hostname)
+    if not ok:
+        return _dnsmasq_response(request, error=err)
     return RedirectResponse(url="/dnsmasq?msg=saved", status_code=303)
 
 
 @app.post("/dnsmasq/static/update")
 def dnsmasq_static_update(
+    request: Request,
     mac: str = Form(default=""),
     ip: str = Form(default=""),
     hostname: str = Form(default=""),
 ):
-    add_static(mac, ip, hostname)
+    ok, err = add_static(mac, ip, hostname)
+    if not ok:
+        return _dnsmasq_response(request, error=err, edit_mac=mac.strip().lower())
     return RedirectResponse(url="/dnsmasq?msg=saved", status_code=303)
 
 
 @app.post("/dnsmasq/static/remove")
-def dnsmasq_static_remove(mac: str = Form(default="")):
-    remove_static(mac)
+def dnsmasq_static_remove(request: Request, mac: str = Form(default="")):
+    ok, err = remove_static(mac)
+    if not ok:
+        return _dnsmasq_response(request, error=err)
     return RedirectResponse(url="/dnsmasq?msg=removed", status_code=303)
 
 

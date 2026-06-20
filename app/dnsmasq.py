@@ -7,6 +7,47 @@ from pathlib import Path
 LEASES_FILE = Path("/var/lib/misc/dnsmasq.leases")
 STATIC_FILE = Path("/etc/home-router-panel/awg/dnsmasq-static.conf")
 
+# Valid dnsmasq hostname: ASCII letters, digits, hyphens only. No spaces, no unicode.
+_HOSTNAME_RE = re.compile(r'^[a-zA-Z0-9\-]{1,63}$')
+_IP_RE = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
+
+
+def validate_entry(mac: str, ip: str, hostname: str) -> str | None:
+    """Return error string if invalid, None if ok."""
+    mac = mac.strip().lower()
+    if not re.match(r'^([0-9a-f]{2}:){5}[0-9a-f]{2}$', mac):
+        return f"Некорректный MAC-адрес: {mac!r}"
+    if ip:
+        if not _IP_RE.match(ip.strip()):
+            return f"Некорректный IP-адрес: {ip!r}"
+        parts = ip.strip().split(".")
+        if not all(0 <= int(p) <= 255 for p in parts):
+            return f"IP-адрес вне допустимого диапазона: {ip!r}"
+    if hostname:
+        h = hostname.strip()
+        if not _HOSTNAME_RE.match(h):
+            bad = [c for c in h if not re.match(r'[a-zA-Z0-9\-]', c)]
+            return (
+                f"Недопустимые символы в имени: {set(bad)} — "
+                f"только латиница, цифры и дефис (без пробелов, кириллицы, скобок)"
+            )
+    return None
+
+
+def _test_config() -> tuple[bool, str]:
+    """Run dnsmasq --test to validate current config. Returns (ok, output)."""
+    try:
+        result = subprocess.run(
+            ["/usr/bin/dnsmasq", "--test"],
+            capture_output=True, text=True, timeout=5,
+        )
+        output = (result.stdout + result.stderr).strip()
+        return result.returncode == 0, output
+    except FileNotFoundError:
+        return True, ""  # dnsmasq not in PATH locally — skip test
+    except Exception as e:
+        return False, str(e)
+
 
 @dataclass
 class Lease:
@@ -102,7 +143,8 @@ def read_static() -> list[StaticEntry]:
         return []
 
 
-def write_static(entries: list[StaticEntry]) -> None:
+def write_static(entries: list[StaticEntry]) -> tuple[bool, str]:
+    """Write static entries. Returns (ok, error_or_empty)."""
     STATIC_FILE.parent.mkdir(parents=True, exist_ok=True)
     lines = ["# Home Router Panel — DHCP static reservations", "# dhcp-host=MAC,IP,hostname", ""]
     for e in entries:
@@ -111,32 +153,41 @@ def write_static(entries: list[StaticEntry]) -> None:
             parts.append(e.hostname)
         lines.append("dhcp-host=" + ",".join(parts))
     lines.append("")
+    backup = STATIC_FILE.read_text(encoding="utf-8") if STATIC_FILE.exists() else None
     STATIC_FILE.write_text("\n".join(lines), encoding="utf-8")
+    ok, msg = _test_config()
+    if not ok:
+        if backup is not None:
+            STATIC_FILE.write_text(backup, encoding="utf-8")
+        else:
+            STATIC_FILE.unlink(missing_ok=True)
+        return False, f"dnsmasq --test провалился, файл откатан: {msg}"
+    return True, ""
 
 
-def add_static(mac: str, ip: str, hostname: str) -> bool:
+def add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]:
+    """Add or update entry. Returns (ok, error_or_empty)."""
     mac = mac.strip().lower()
-    if not re.match(r"^([0-9a-f]{2}:){5}[0-9a-f]{2}$", mac):
-        return False
+    err = validate_entry(mac, ip, hostname)
+    if err:
+        return False, err
     entries = read_static()
     for e in entries:
         if e.mac == mac:
             e.ip = ip.strip()
             e.hostname = hostname.strip()
-            write_static(entries)
-            return True
+            return write_static(entries)
     entries.append(StaticEntry(mac=mac, ip=ip.strip(), hostname=hostname.strip()))
-    write_static(entries)
-    return True
+    return write_static(entries)
 
 
-def remove_static(mac: str) -> bool:
+def remove_static(mac: str) -> tuple[bool, str]:
     mac = mac.strip().lower()
     entries = read_static()
     new = [e for e in entries if e.mac != mac]
     if len(new) == len(entries):
-        return False
-    write_static(new)
+        return False, "Запись не найдена"
+    return write_static(new)
     return True
 
 

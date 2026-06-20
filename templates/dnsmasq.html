@@ -19,6 +19,14 @@
         </div>
     </div>
 
+    {% if error %}
+        <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(248,113,113,0.1);
+                    border: 1px solid rgba(248,113,113,0.35); border-radius: var(--radius-btn);
+                    font-size: 13px; color: var(--red);">
+            {{ error }}
+        </div>
+    {% endif %}
+
     {% if msg %}
         <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(74,222,128,0.1);
                     border: 1px solid rgba(74,222,128,0.25); border-radius: var(--radius-btn);
