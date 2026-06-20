@@ -285,3 +285,37 @@ details[open] > .details-summary::before {
 .text-input::placeholder {
     color: var(--muted);
 }
+
+/* ── Tooltips ────────────────────────────────────────────────── */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: #1e293b;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--text);
+    font-size: 12px;
+    line-height: 1.4;
+    padding: 7px 11px;
+    border-radius: 10px;
+    white-space: normal;
+    width: max-content;
+    max-width: 240px;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 200;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+[data-tooltip]:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}

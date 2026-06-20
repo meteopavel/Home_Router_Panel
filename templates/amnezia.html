@@ -183,28 +183,28 @@
                     </div>
                     <div class="actions">
                         {% if dev.state == 'REACHABLE' %}
-                            <span class="pill pill-green" title="Устройство активно — недавно отвечало на ARP-запрос">{{ dev.state }}</span>
+                            <span class="pill pill-green" data-tooltip="Устройство активно — недавно отвечало на ARP-запрос">{{ dev.state }}</span>
                         {% elif dev.state == 'STALE' %}
-                            <span class="pill pill-yellow" title="Запись устарела — устройство не проверялось, но ранее было доступно">{{ dev.state }}</span>
+                            <span class="pill pill-yellow" data-tooltip="Запись устарела — устройство не проверялось, но ранее было доступно">{{ dev.state }}</span>
                         {% elif dev.state == 'DELAY' %}
-                            <span class="pill pill-yellow" title="Ожидание: ARP-запрос будет отправлен через несколько секунд">{{ dev.state }}</span>
+                            <span class="pill pill-yellow" data-tooltip="Ожидание: ARP-запрос будет отправлен через несколько секунд">{{ dev.state }}</span>
                         {% elif dev.state == 'PROBE' %}
-                            <span class="pill pill-yellow" title="Идёт ARP-проверка доступности устройства">{{ dev.state }}</span>
+                            <span class="pill pill-yellow" data-tooltip="Идёт ARP-проверка доступности устройства">{{ dev.state }}</span>
                         {% elif dev.state == 'FAILED' %}
-                            <span class="pill pill-red" title="Устройство не ответило на ARP — вероятно, недоступно">{{ dev.state }}</span>
+                            <span class="pill pill-red" data-tooltip="Устройство не ответило на ARP — вероятно, недоступно">{{ dev.state }}</span>
                         {% else %}
-                            <span class="pill pill-gray" title="{{ dev.state }}">{{ dev.state }}</span>
+                            <span class="pill pill-gray">{{ dev.state }}</span>
                         {% endif %}
                         <form method="post" action="/amnezia/devices/add-mac" style="display:inline;">
                             <input type="hidden" name="mac" value="{{ dev.mac }}">
                             <button type="submit" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
-                                    title="Добавить MAC в список — весь трафик этого устройства пойдёт через AWG VPN">
+                                    data-tooltip="Добавить MAC в список — весь трафик этого устройства пойдёт через AWG VPN">
                                 + VPN
                             </button>
                         </form>
                         <a href="/capture?mac={{ dev.mac }}&seconds=15&count=200"
                            class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
-                           title="Запустить tcpdump на enp2s0 — перехватить трафик этого устройства для анализа">
+                           data-tooltip="Перехватить трафик этого устройства через tcpdump для анализа">
                             Захватить
                         </a>
                     </div>
