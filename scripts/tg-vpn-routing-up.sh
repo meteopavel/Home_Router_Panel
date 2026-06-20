@@ -17,6 +17,7 @@
 #   /etc/home-router-panel/awg/tg_nets.txt
 #   /etc/home-router-panel/awg/figma_domains.txt
 #   /etc/home-router-panel/awg/claude_domains.txt
+#   /etc/home-router-panel/awg/bebra_domains.txt
 #   /etc/home-router-panel/awg/vpn_device_macs.txt
 
 set -euo pipefail
@@ -145,6 +146,21 @@ done < <(read_conf_lines "claude_domains.txt")
 log "  claude_nets: $count IP"
 
 iptables -t mangle -A "$CHAIN" -m set --match-set claude_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+
+# ── ipset: Bebra ──────────────────────────────────────────────────────────────
+
+log "Резолвинг доменов bebra из $CONF_DIR/bebra_domains.txt..."
+ensure_ipset bebra_nets "hash:ip"
+count=0
+while IFS= read -r domain; do
+    while IFS= read -r ip; do
+        ipset add bebra_nets "$ip" 2>/dev/null || true
+        (( count++ )) || true
+    done < <(getent ahostsv4 "$domain" 2>/dev/null | awk '{print $1}' | sort -u || true)
+done < <(read_conf_lines "bebra_domains.txt")
+log "  bebra_nets: $count IP"
+
+iptables -t mangle -A "$CHAIN" -m set --match-set bebra_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
 
 # ── MAC-устройства ────────────────────────────────────────────────────────────
 # MAC-правила добавляем в цепочку напрямую.

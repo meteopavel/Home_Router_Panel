@@ -11,6 +11,7 @@ LIST_FILES = {
     "tg_nets": AWG_CONFIG_DIR / "tg_nets.txt",
     "figma_domains": AWG_CONFIG_DIR / "figma_domains.txt",
     "claude_domains": AWG_CONFIG_DIR / "claude_domains.txt",
+    "bebra_domains": AWG_CONFIG_DIR / "bebra_domains.txt",
     "vpn_device_macs": AWG_CONFIG_DIR / "vpn_device_macs.txt",
 }
 
@@ -25,6 +26,10 @@ LIST_META = {
     },
     "claude_domains": {
         "title": "Claude / Anthropic домены",
+        "hint": "Домены, чьи IP резолвятся и идут через VPN",
+    },
+    "bebra_domains": {
+        "title": "Bebra домены",
         "hint": "Домены, чьи IP резолвятся и идут через VPN",
     },
     "vpn_device_macs": {
