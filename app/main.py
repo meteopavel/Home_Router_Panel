@@ -105,7 +105,7 @@ def hotlist_edit_view(request: Request, name: str):
 
 
 @app.post("/hotlists/{name}/edit")
-def hotlist_edit_save(name: str, content: str = Form(default="")):
+def hotlist_edit_save(request: Request, name: str, content: str = Form(default="")):
     config = load_config()
 
     try:
@@ -113,12 +113,28 @@ def hotlist_edit_save(name: str, content: str = Form(default="")):
     except ValueError:
         raise HTTPException(status_code=404, detail="Hotlist not found")
 
+    restart_error = ""
     try:
-        restart_service(config, "zapret")
-    except Exception:
-        pass
+        result = restart_service(config, "zapret")
+        if result.returncode != 0:
+            restart_error = result.stderr.strip() or result.stdout.strip() or "zapret не перезапустился"
+    except Exception as e:
+        restart_error = str(e)
 
-    return RedirectResponse(url=f"/hotlists/{name}/edit", status_code=303)
+    if restart_error:
+        hotlist = read_hotlist(config, name)
+        return templates.TemplateResponse(
+            request=request,
+            name="hotlist_edit.html",
+            context={
+                "title": f"Редактировать: {hotlist.name}",
+                "hotlist": hotlist,
+                "active_tab": "zapret",
+                "restart_error": restart_error,
+            },
+        )
+
+    return RedirectResponse(url=f"/hotlists/{name}/edit?saved=1", status_code=303)
 
 
 @app.get("/amnezia")
