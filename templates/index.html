@@ -73,4 +73,22 @@
     </div>
 </section>
 
+<section class="card">
+    <h2 class="section-title">Резервная копия</h2>
+    <p class="section-hint">Создаёт архив /etc, /opt, /home и др. — стримит напрямую на Mac без сохранения на сервере. Занимает несколько минут.</p>
+    <div class="row">
+        <div class="row-info">
+            <span class="row-name">Бэкап → Mac (~/router-backups/)</span>
+        </div>
+        <div class="row-actions">
+            {% if request.query_params.get('backup') == 'ok' %}
+                <span class="pill pill-green">Готово</span>
+            {% endif %}
+            <form method="post" action="/backup/run" class="inline-form">
+                <button class="button" type="submit">Создать бэкап</button>
+            </form>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

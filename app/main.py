@@ -1,4 +1,5 @@
 from pathlib import Path
+import subprocess
 
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -177,6 +178,25 @@ def service_restart(name: str):
         )
 
     return RedirectResponse(url="/", status_code=303)
+
+
+@app.post("/backup/run")
+def backup_run():
+    try:
+        result = subprocess.run(
+            ["/usr/bin/sudo", "-n", "/usr/local/sbin/home-router-backup"],
+            capture_output=True,
+            text=True,
+            timeout=600,
+        )
+    except subprocess.TimeoutExpired:
+        raise HTTPException(status_code=500, detail="Backup timed out after 10 minutes")
+    if result.returncode != 0:
+        raise HTTPException(
+            status_code=500,
+            detail=result.stderr.strip() or "Backup failed",
+        )
+    return RedirectResponse(url="/?backup=ok", status_code=303)
 
 
 @app.get("/health")
