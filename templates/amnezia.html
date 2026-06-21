@@ -144,7 +144,7 @@
     </p>
 
     {% for name, meta in list_meta.items() %}
-        <details class="list-details" {% if loop.first %}open{% endif %}>
+        <details class="list-details">
             <summary class="details-summary">
                 <strong>{{ meta.title }}</strong>
                 <span class="details-hint">{{ meta.hint }}</span>
