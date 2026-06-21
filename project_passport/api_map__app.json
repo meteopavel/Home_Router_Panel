@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-21T09:59:53.905704+00:00",
+  "generated_at": "2026-06-21T10:15:21.514702+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -13,9 +13,9 @@
     "modules": 6,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 54,
+    "functions": 63,
     "methods": 0,
-    "constants": 18
+    "constants": 19
   },
   "modules": [
     {
@@ -25,14 +25,64 @@
       "classes": [],
       "functions": [
         {
+          "name": "load_lists_config",
+          "signature": "load_lists_config() -> list[dict]",
+          "docstring": "Return list of {key, title, hint} dicts. Falls back to defaults if file absent.",
+          "summary": "Return list of {key, title, hint} dicts. Falls back to defaults if file absent.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 24,
+          "end_lineno": 34
+        },
+        {
+          "name": "save_lists_config",
+          "signature": "save_lists_config(lists: list[dict]) -> None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 37,
+          "end_lineno": 41
+        },
+        {
+          "name": "get_list_meta",
+          "signature": "get_list_meta() -> dict",
+          "docstring": "Return {key: {title, hint}} dict for template use.",
+          "summary": "Return {key: {title, hint}} dict for template use.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 44,
+          "end_lineno": 47
+        },
+        {
+          "name": "create_list",
+          "signature": "create_list(key: str, title: str, hint: str) -> tuple[bool, str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 50,
+          "end_lineno": 66
+        },
+        {
+          "name": "delete_list",
+          "signature": "delete_list(key: str) -> tuple[bool, str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 69,
+          "end_lineno": 79
+        },
+        {
           "name": "_run_helper",
           "signature": "_run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess",
           "docstring": null,
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 47,
-          "end_lineno": 66
+          "lineno": 82,
+          "end_lineno": 101
         },
         {
           "name": "get_awg_status",
@@ -41,8 +91,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 69,
-          "end_lineno": 80
+          "lineno": 104,
+          "end_lineno": 115
         },
         {
           "name": "get_awg_show",
@@ -51,8 +101,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 83,
-          "end_lineno": 85
+          "lineno": 118,
+          "end_lineno": 120
         },
         {
           "name": "run_awg_action",
@@ -61,8 +111,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 88,
-          "end_lineno": 95
+          "lineno": 123,
+          "end_lineno": 130
         },
         {
           "name": "get_diagnostics",
@@ -71,8 +121,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 98,
-          "end_lineno": 100
+          "lineno": 133,
+          "end_lineno": 135
         },
         {
           "name": "_read_dnsmasq_leases",
@@ -81,8 +131,8 @@
           "summary": "Return MAC→hostname map from dnsmasq leases file.",
           "kind": "function",
           "decorators": [],
-          "lineno": 106,
-          "end_lineno": 121
+          "lineno": 141,
+          "end_lineno": 156
         },
         {
           "name": "get_lan_devices",
@@ -91,8 +141,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 124,
-          "end_lineno": 145
+          "lineno": 159,
+          "end_lineno": 180
         },
         {
           "name": "check_route",
@@ -101,8 +151,18 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 148,
-          "end_lineno": 152
+          "lineno": 183,
+          "end_lineno": 187
+        },
+        {
+          "name": "_list_path",
+          "signature": "_list_path(name: str) -> Path",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 190,
+          "end_lineno": 194
         },
         {
           "name": "read_awg_list",
@@ -111,8 +171,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 155,
-          "end_lineno": 164
+          "lineno": 197,
+          "end_lineno": 204
         },
         {
           "name": "write_awg_list",
@@ -121,8 +181,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 167,
-          "end_lineno": 174
+          "lineno": 207,
+          "end_lineno": 212
         },
         {
           "name": "add_mac_to_vpn",
@@ -131,8 +191,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 177,
-          "end_lineno": 188
+          "lineno": 215,
+          "end_lineno": 226
         }
       ],
       "constants": [
@@ -140,45 +200,51 @@
           "name": "SUDO",
           "annotation": null,
           "value_repr": "'/usr/bin/sudo'",
-          "lineno": 6
+          "lineno": 7
         },
         {
           "name": "HELPER",
           "annotation": null,
           "value_repr": "'/usr/local/sbin/home-router-awg-config'",
-          "lineno": 7
+          "lineno": 8
         },
         {
           "name": "AWG_CONFIG_DIR",
           "annotation": null,
           "value_repr": "Path('/etc/home-router-panel/awg')",
-          "lineno": 8
+          "lineno": 9
         },
         {
-          "name": "LIST_FILES",
+          "name": "LISTS_CONFIG_FILE",
           "annotation": null,
-          "value_repr": "{'tg_nets': AWG_CONFIG_DIR / 'tg_nets.txt', 'figma_domains': AWG_CONFIG_DIR / 'figma_domains.txt', 'claude_domains': AWG_CONFIG_DIR / 'claude_domains.txt', 'bebra_domains': AWG_CONFIG_DIR / 'bebra_domains.txt', 'ss_server_ips': AWG_CONFIG_DIR / 'ss_server_ips.txt', 'vpn_device_macs': AWG_CONFIG_DIR / 'vpn_device_macs.txt'}",
+          "value_repr": "AWG_CONFIG_DIR / 'lists_config.json'",
           "lineno": 10
         },
         {
-          "name": "LIST_META",
+          "name": "_DEFAULT_LISTS",
           "annotation": null,
-          "value_repr": "{'tg_nets': {'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, 'figma_domains': {'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, 'claude_domains': {'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, 'bebra_domains': {'title': 'Bebra домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, 'ss_server_ips': {'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, 'vpn_device_macs': {'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}}",
-          "lineno": 19
+          "value_repr": "[{'key': 'tg_nets', 'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, {'key': 'figma_domains', 'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'claude_domains', 'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'bebra_domains', 'title': 'Bebra домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'ss_server_ips', 'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, {'key': 'vpn_device_macs', 'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}]",
+          "lineno": 12
+        },
+        {
+          "name": "_KEY_RE",
+          "annotation": null,
+          "value_repr": "re.compile('^[a-z][a-z0-9_]{0,31}$')",
+          "lineno": 21
         },
         {
           "name": "DNSMASQ_LEASES",
           "annotation": null,
           "value_repr": "Path('/var/lib/misc/dnsmasq.leases')",
-          "lineno": 103
+          "lineno": 138
         }
       ],
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 11,
+        "functions": 17,
         "methods": 0,
-        "constants": 6
+        "constants": 7
       }
     },
     {
@@ -592,8 +658,8 @@
           "decorators": [
             "app.get('/')"
           ],
-          "lineno": 49,
-          "end_lineno": 62
+          "lineno": 51,
+          "end_lineno": 64
         },
         {
           "name": "zapret_view",
@@ -604,8 +670,8 @@
           "decorators": [
             "app.get('/zapret')"
           ],
-          "lineno": 66,
-          "end_lineno": 81
+          "lineno": 68,
+          "end_lineno": 83
         },
         {
           "name": "hotlist_view",
@@ -616,8 +682,8 @@
           "decorators": [
             "app.get('/hotlists/{name}')"
           ],
-          "lineno": 85,
-          "end_lineno": 86
+          "lineno": 87,
+          "end_lineno": 88
         },
         {
           "name": "hotlist_edit_view",
@@ -628,8 +694,8 @@
           "decorators": [
             "app.get('/hotlists/{name}/edit')"
           ],
-          "lineno": 90,
-          "end_lineno": 105
+          "lineno": 92,
+          "end_lineno": 107
         },
         {
           "name": "hotlist_edit_save",
@@ -640,20 +706,30 @@
           "decorators": [
             "app.post('/hotlists/{name}/edit')"
           ],
-          "lineno": 109,
-          "end_lineno": 138
+          "lineno": 111,
+          "end_lineno": 140
+        },
+        {
+          "name": "_amnezia_context",
+          "signature": "_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 143,
+          "end_lineno": 161
         },
         {
           "name": "amnezia_view",
-          "signature": "amnezia_view(request: Request, target: str = '')",
+          "signature": "amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '')",
           "docstring": null,
           "summary": null,
           "kind": "function",
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 142,
-          "end_lineno": 168
+          "lineno": 165,
+          "end_lineno": 170
         },
         {
           "name": "amnezia_service_action",
@@ -664,8 +740,8 @@
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 172,
-          "end_lineno": 174
+          "lineno": 174,
+          "end_lineno": 176
         },
         {
           "name": "amnezia_list_save",
@@ -676,8 +752,32 @@
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 178,
-          "end_lineno": 183
+          "lineno": 180,
+          "end_lineno": 185
+        },
+        {
+          "name": "amnezia_list_create",
+          "signature": "amnezia_list_create(request: Request, key: str = Form(default=''), title: str = Form(default=''), hint: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/amnezia/lists-create')"
+          ],
+          "lineno": 189,
+          "end_lineno": 202
+        },
+        {
+          "name": "amnezia_list_delete",
+          "signature": "amnezia_list_delete(request: Request, key: str)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/amnezia/lists-delete/{key}')"
+          ],
+          "lineno": 206,
+          "end_lineno": 214
         },
         {
           "name": "amnezia_add_mac",
@@ -688,8 +788,8 @@
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 187,
-          "end_lineno": 189
+          "lineno": 218,
+          "end_lineno": 220
         },
         {
           "name": "service_restart",
@@ -700,8 +800,8 @@
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 193,
-          "end_lineno": 207
+          "lineno": 224,
+          "end_lineno": 238
         },
         {
           "name": "backup_run",
@@ -712,8 +812,8 @@
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 211,
-          "end_lineno": 226
+          "lineno": 242,
+          "end_lineno": 257
         },
         {
           "name": "capture_traffic",
@@ -724,8 +824,8 @@
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 230,
-          "end_lineno": 276
+          "lineno": 261,
+          "end_lineno": 307
         },
         {
           "name": "_build_dnsmasq_context",
@@ -734,8 +834,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 279,
-          "end_lineno": 303
+          "lineno": 310,
+          "end_lineno": 334
         },
         {
           "name": "dnsmasq_view",
@@ -746,8 +846,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 307,
-          "end_lineno": 317
+          "lineno": 338,
+          "end_lineno": 348
         },
         {
           "name": "_dnsmasq_response",
@@ -756,8 +856,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 320,
-          "end_lineno": 331
+          "lineno": 351,
+          "end_lineno": 362
         },
         {
           "name": "dnsmasq_static_add",
@@ -768,8 +868,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 335,
-          "end_lineno": 344
+          "lineno": 366,
+          "end_lineno": 375
         },
         {
           "name": "dnsmasq_static_update",
@@ -780,8 +880,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 348,
-          "end_lineno": 357
+          "lineno": 379,
+          "end_lineno": 388
         },
         {
           "name": "dnsmasq_static_remove",
@@ -792,8 +892,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 361,
-          "end_lineno": 365
+          "lineno": 392,
+          "end_lineno": 396
         },
         {
           "name": "dnsmasq_service_reload",
@@ -804,8 +904,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 369,
-          "end_lineno": 373
+          "lineno": 400,
+          "end_lineno": 404
         },
         {
           "name": "dnsmasq_service_restart",
@@ -816,8 +916,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 377,
-          "end_lineno": 381
+          "lineno": 408,
+          "end_lineno": 412
         },
         {
           "name": "health",
@@ -828,8 +928,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 385,
-          "end_lineno": 386
+          "lineno": 416,
+          "end_lineno": 417
         }
       ],
       "constants": [
@@ -837,25 +937,25 @@
           "name": "PROJECT_ROOT",
           "annotation": null,
           "value_repr": "Path(__file__).resolve().parent.parent",
-          "lineno": 36
+          "lineno": 38
         },
         {
           "name": "STATIC_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'static'",
-          "lineno": 37
+          "lineno": 39
         },
         {
           "name": "TEMPLATES_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'templates'",
-          "lineno": 38
+          "lineno": 40
         }
       ],
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 21,
+        "functions": 24,
         "methods": 0,
         "constants": 3
       }

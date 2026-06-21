@@ -18,13 +18,15 @@ from app.dnsmasq import (
     restart_dnsmasq,
 )
 from app.amnezia import (
-    LIST_META,
+    create_list,
+    delete_list,
     add_mac_to_vpn,
     check_route,
     get_awg_show,
     get_awg_status,
     get_diagnostics,
     get_lan_devices,
+    get_list_meta,
     read_awg_list,
     run_awg_action,
     write_awg_list,
@@ -138,33 +140,33 @@ def hotlist_edit_save(request: Request, name: str, content: str = Form(default="
     return RedirectResponse(url=f"/hotlists/{name}/edit?saved=1", status_code=303)
 
 
-@app.get("/amnezia")
-def amnezia_view(request: Request, target: str = ""):
-    status = get_awg_status()
-    awg_show = get_awg_show()
-    lists = {name: read_awg_list(name) for name in LIST_META}
-    lan_devices = get_lan_devices()
-    diagnostics = get_diagnostics()
-
+def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "") -> dict:
+    list_meta = get_list_meta()
     check_result = None
     if target:
         check_result = check_route(target)
+    return {
+        "title": "AmneziaWG",
+        "status": get_awg_status(),
+        "awg_show": get_awg_show(),
+        "lists": {name: read_awg_list(name) for name in list_meta},
+        "list_meta": list_meta,
+        "lan_devices": get_lan_devices(),
+        "diagnostics": get_diagnostics(),
+        "check_target": target,
+        "check_result": check_result,
+        "active_tab": "amnezia",
+        "msg": msg,
+        "error": error,
+    }
 
+
+@app.get("/amnezia")
+def amnezia_view(request: Request, target: str = "", msg: str = "", error: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="amnezia.html",
-        context={
-            "title": "AmneziaWG",
-            "status": status,
-            "awg_show": awg_show,
-            "lists": lists,
-            "list_meta": LIST_META,
-            "lan_devices": lan_devices,
-            "diagnostics": diagnostics,
-            "check_target": target,
-            "check_result": check_result,
-            "active_tab": "amnezia",
-        },
+        context=_amnezia_context(request, target=target, msg=msg, error=error),
     )
 
 
@@ -181,6 +183,35 @@ def amnezia_list_save(name: str, content: str = Form(default="")):
     except ValueError:
         raise HTTPException(status_code=404, detail="Unknown list")
     return RedirectResponse(url="/amnezia", status_code=303)
+
+
+@app.post("/amnezia/lists-create")
+def amnezia_list_create(
+    request: Request,
+    key: str = Form(default=""),
+    title: str = Form(default=""),
+    hint: str = Form(default=""),
+):
+    ok, err = create_list(key, title, hint)
+    if not ok:
+        return templates.TemplateResponse(
+            request=request,
+            name="amnezia.html",
+            context=_amnezia_context(request, error=err),
+        )
+    return RedirectResponse(url="/amnezia?msg=list_created", status_code=303)
+
+
+@app.post("/amnezia/lists-delete/{key}")
+def amnezia_list_delete(request: Request, key: str):
+    ok, err = delete_list(key)
+    if not ok:
+        return templates.TemplateResponse(
+            request=request,
+            name="amnezia.html",
+            context=_amnezia_context(request, error=err),
+        )
+    return RedirectResponse(url="/amnezia?msg=list_deleted", status_code=303)
 
 
 @app.post("/amnezia/devices/add-mac")

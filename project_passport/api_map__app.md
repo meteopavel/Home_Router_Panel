@@ -8,9 +8,9 @@
 - модулей: 6
 - классов: 0
 - dataclass: 4
-- функций: 54
+- функций: 63
 - методов: 0
-- констант: 18
+- констант: 19
 
 ---
 
@@ -20,11 +20,27 @@
 - `SUDO = '/usr/bin/sudo'`
 - `HELPER = '/usr/local/sbin/home-router-awg-config'`
 - `AWG_CONFIG_DIR = Path('/etc/home-router-panel/awg')`
-- `LIST_FILES = {'tg_nets': AWG_CONFIG_DIR / 'tg_nets.txt', 'figma_domains': AWG_CONFIG_DIR / 'figma_domains.txt', …`
-- `LIST_META = {'tg_nets': {'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, 'f…`
+- `LISTS_CONFIG_FILE = AWG_CONFIG_DIR / 'lists_config.json'`
+- `_DEFAULT_LISTS = [{'key': 'tg_nets', 'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строк…`
+- `_KEY_RE = re.compile('^[a-z][a-z0-9_]{0,31}$')`
 - `DNSMASQ_LEASES = Path('/var/lib/misc/dnsmasq.leases')`
 
 Функции:
+
+- `load_lists_config() -> list[dict]`
+  Return list of {key, title, hint} dicts. Falls back to defaults if file absent.
+
+- `save_lists_config(lists: list[dict]) -> None`
+  Нет докстринга.
+
+- `get_list_meta() -> dict`
+  Return {key: {title, hint}} dict for template use.
+
+- `create_list(key: str, title: str, hint: str) -> tuple[bool, str]`
+  Нет докстринга.
+
+- `delete_list(key: str) -> tuple[bool, str]`
+  Нет докстринга.
 
 - `_run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess`
   Нет докстринга.
@@ -48,6 +64,9 @@
   Нет докстринга.
 
 - `check_route(target: str) -> str`
+  Нет докстринга.
+
+- `_list_path(name: str) -> Path`
   Нет докстринга.
 
 - `read_awg_list(name: str) -> str`
@@ -195,13 +214,22 @@
 - `hotlist_edit_save(request: Request, name: str, content: str = Form(default=''))`
   Нет докстринга.
 
-- `amnezia_view(request: Request, target: str = '')`
+- `_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict`
+  Нет докстринга.
+
+- `amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '')`
   Нет докстринга.
 
 - `amnezia_service_action(action: str)`
   Нет докстринга.
 
 - `amnezia_list_save(name: str, content: str = Form(default=''))`
+  Нет докстринга.
+
+- `amnezia_list_create(request: Request, key: str = Form(default=''), title: str = Form(default=''), hint: str = Form(default=''))`
+  Нет докстринга.
+
+- `amnezia_list_delete(request: Request, key: str)`
   Нет докстринга.
 
 - `amnezia_add_mac(mac: str = Form(default=''))`

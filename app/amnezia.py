@@ -1,3 +1,4 @@
+import json
 import re
 import subprocess
 from pathlib import Path
@@ -6,42 +7,76 @@ from typing import Optional
 SUDO = "/usr/bin/sudo"
 HELPER = "/usr/local/sbin/home-router-awg-config"
 AWG_CONFIG_DIR = Path("/etc/home-router-panel/awg")
+LISTS_CONFIG_FILE = AWG_CONFIG_DIR / "lists_config.json"
 
-LIST_FILES = {
-    "tg_nets": AWG_CONFIG_DIR / "tg_nets.txt",
-    "figma_domains": AWG_CONFIG_DIR / "figma_domains.txt",
-    "claude_domains": AWG_CONFIG_DIR / "claude_domains.txt",
-    "bebra_domains": AWG_CONFIG_DIR / "bebra_domains.txt",
-    "ss_server_ips": AWG_CONFIG_DIR / "ss_server_ips.txt",
-    "vpn_device_macs": AWG_CONFIG_DIR / "vpn_device_macs.txt",
-}
+_DEFAULT_LISTS = [
+    {"key": "tg_nets",        "title": "Telegram сети",              "hint": "IPv4 адреса и CIDR-блоки, по одному на строку"},
+    {"key": "figma_domains",  "title": "Figma домены",               "hint": "Домены, чьи IP резолвятся и идут через VPN"},
+    {"key": "claude_domains", "title": "Claude / Anthropic домены",  "hint": "Домены, чьи IP резолвятся и идут через VPN"},
+    {"key": "bebra_domains",  "title": "Bebra домены",               "hint": "Домены, чьи IP резолвятся и идут через VPN"},
+    {"key": "ss_server_ips",  "title": "SS-серверы (прямой маршрут)", "hint": "IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)"},
+    {"key": "vpn_device_macs","title": "Устройства по MAC",          "hint": "xx:xx:xx:xx:xx:xx — можно добавить # комментарий"},
+]
 
-LIST_META = {
-    "tg_nets": {
-        "title": "Telegram сети",
-        "hint": "IPv4 адреса и CIDR-блоки, по одному на строку",
-    },
-    "figma_domains": {
-        "title": "Figma домены",
-        "hint": "Домены, чьи IP резолвятся и идут через VPN",
-    },
-    "claude_domains": {
-        "title": "Claude / Anthropic домены",
-        "hint": "Домены, чьи IP резолвятся и идут через VPN",
-    },
-    "bebra_domains": {
-        "title": "Bebra домены",
-        "hint": "Домены, чьи IP резолвятся и идут через VPN",
-    },
-    "ss_server_ips": {
-        "title": "SS-серверы (прямой маршрут)",
-        "hint": "IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)",
-    },
-    "vpn_device_macs": {
-        "title": "Устройства по MAC",
-        "hint": "xx:xx:xx:xx:xx:xx — можно добавить # комментарий",
-    },
-}
+_KEY_RE = re.compile(r'^[a-z][a-z0-9_]{0,31}$')
+
+
+def load_lists_config() -> list[dict]:
+    """Return list of {key, title, hint} dicts. Falls back to defaults if file absent."""
+    if not LISTS_CONFIG_FILE.exists():
+        return list(_DEFAULT_LISTS)
+    try:
+        data = json.loads(LISTS_CONFIG_FILE.read_text(encoding="utf-8"))
+        if isinstance(data, list):
+            return data
+    except Exception:
+        pass
+    return list(_DEFAULT_LISTS)
+
+
+def save_lists_config(lists: list[dict]) -> None:
+    LISTS_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    LISTS_CONFIG_FILE.write_text(
+        json.dumps(lists, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+def get_list_meta() -> dict:
+    """Return {key: {title, hint}} dict for template use."""
+    return {item["key"]: {"title": item["title"], "hint": item["hint"]}
+            for item in load_lists_config()}
+
+
+def create_list(key: str, title: str, hint: str) -> tuple[bool, str]:
+    key = key.strip().lower()
+    if not _KEY_RE.match(key):
+        return False, "Ключ: только строчные буквы, цифры и _, начинается с буквы, до 32 символов"
+    title = title.strip()
+    if not title:
+        return False, "Название обязательно"
+    lists = load_lists_config()
+    if any(item["key"] == key for item in lists):
+        return False, f"Список '{key}' уже существует"
+    lists.append({"key": key, "title": title, "hint": hint.strip()})
+    save_lists_config(lists)
+    path = AWG_CONFIG_DIR / f"{key}.txt"
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("", encoding="utf-8")
+    return True, ""
+
+
+def delete_list(key: str) -> tuple[bool, str]:
+    lists = load_lists_config()
+    new_lists = [item for item in lists if item["key"] != key]
+    if len(new_lists) == len(lists):
+        return False, f"Список '{key}' не найден"
+    save_lists_config(new_lists)
+    path = AWG_CONFIG_DIR / f"{key}.txt"
+    if path.exists():
+        bak = path.with_suffix(".txt.deleted")
+        path.rename(bak)
+    return True, ""
 
 
 def _run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess:
@@ -152,10 +187,15 @@ def check_route(target: str) -> str:
     return result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or "Ошибка")
 
 
-def read_awg_list(name: str) -> str:
-    path = LIST_FILES.get(name)
-    if path is None:
+def _list_path(name: str) -> Path:
+    lists = load_lists_config()
+    if not any(item["key"] == name for item in lists):
         raise ValueError(f"Unknown list: {name}")
+    return AWG_CONFIG_DIR / f"{name}.txt"
+
+
+def read_awg_list(name: str) -> str:
+    path = _list_path(name)
     if not path.exists():
         return ""
     try:
@@ -165,9 +205,7 @@ def read_awg_list(name: str) -> str:
 
 
 def write_awg_list(name: str, content: str) -> None:
-    path = LIST_FILES.get(name)
-    if path is None:
-        raise ValueError(f"Unknown list: {name}")
+    path = _list_path(name)
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
         path.with_suffix(".bak").write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
@@ -178,7 +216,7 @@ def add_mac_to_vpn(mac: str) -> bool:
     mac = mac.strip().lower()
     if not re.match(r'^([0-9a-f]{2}:){5}[0-9a-f]{2}$', mac):
         return False
-    path = LIST_FILES["vpn_device_macs"]
+    path = AWG_CONFIG_DIR / "vpn_device_macs.txt"
     current = path.read_text(encoding="utf-8") if path.exists() else ""
     for line in current.splitlines():
         if line.split("#")[0].strip().lower() == mac:
