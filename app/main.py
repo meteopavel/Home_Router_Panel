@@ -16,6 +16,7 @@ from app.dnsmasq import (
     reload_dnsmasq,
     remove_static,
     restart_dnsmasq,
+    STATIC_FILE,
 )
 from app.amnezia import (
     create_list,
@@ -140,16 +141,28 @@ def hotlist_edit_save(request: Request, name: str, content: str = Form(default="
     return RedirectResponse(url=f"/hotlists/{name}/edit?saved=1", status_code=303)
 
 
+def _parse_vpn_macs(content: str) -> set[str]:
+    result = set()
+    for line in content.splitlines():
+        mac = line.split("#")[0].strip().lower()
+        if mac:
+            result.add(mac)
+    return result
+
+
 def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "") -> dict:
     list_meta = get_list_meta()
     check_result = None
     if target:
         check_result = check_route(target)
+    vpn_macs_content = read_awg_list("vpn_device_macs") if "vpn_device_macs" in list_meta else ""
+    vpn_macs_selected = _parse_vpn_macs(vpn_macs_content)
+    dhcp_static = [e for e in read_static() if e.mac]
     return {
         "title": "AmneziaWG",
         "status": get_awg_status(),
         "awg_show": get_awg_show(),
-        "lists": {name: read_awg_list(name) for name in list_meta},
+        "lists": {name: read_awg_list(name) for name in list_meta if name != "vpn_device_macs"},
         "list_meta": list_meta,
         "lan_devices": get_lan_devices(),
         "diagnostics": get_diagnostics(),
@@ -158,6 +171,8 @@ def _amnezia_context(request: Request, target: str = "", msg: str = "", error: s
         "active_tab": "amnezia",
         "msg": msg,
         "error": error,
+        "vpn_macs_selected": vpn_macs_selected,
+        "dhcp_static": dhcp_static,
     }
 
 
@@ -212,6 +227,16 @@ def amnezia_list_delete(request: Request, key: str):
             context=_amnezia_context(request, error=err),
         )
     return RedirectResponse(url="/amnezia?msg=list_deleted", status_code=303)
+
+
+@app.post("/amnezia/vpn-macs/save")
+def amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[])):
+    content = "\n".join(sorted(macs)) + "\n" if macs else ""
+    try:
+        write_awg_list("vpn_device_macs", content)
+    except ValueError:
+        pass
+    return RedirectResponse(url="/amnezia?msg=vpn_macs_saved", status_code=303)
 
 
 @app.post("/amnezia/devices/add-mac")
