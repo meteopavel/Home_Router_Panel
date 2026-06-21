@@ -194,7 +194,8 @@
     {% if leases %}
         <div class="service-list">
             {% for lease in leases %}
-                {% set is_managed = static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
+                {% set is_managed = (static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0)
+                                    or (lease.hostname and (static_entries | selectattr('hostname', 'equalto', lease.hostname) | list | length > 0)) %}
                 {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
                 {% set is_static = is_managed or is_system %}
                 <div class="service-row">
