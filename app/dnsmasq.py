@@ -132,11 +132,17 @@ def read_static() -> list[StaticEntry]:
                 continue
             value = line[len("dhcp-host="):]
             parts = value.split(",")
-            mac = parts[0].strip().lower() if len(parts) > 0 else ""
-            ip = parts[1].strip() if len(parts) > 1 else ""
-            hostname = parts[2].strip() if len(parts) > 2 else ""
-            if re.match(r"^([0-9a-f]{2}:){5}[0-9a-f]{2}$", mac):
-                entries.append(StaticEntry(mac=mac, ip=ip, hostname=hostname))
+            first = parts[0].strip()
+            if re.match(r"^([0-9a-f]{2}:){5}[0-9a-f]{2}$", first.lower()):
+                mac = first.lower()
+                ip = parts[1].strip() if len(parts) > 1 else ""
+                hostname = parts[2].strip() if len(parts) > 2 else ""
+            else:
+                # hostname-only entry: dhcp-host=Hostname,IP
+                mac = ""
+                hostname = first
+                ip = parts[1].strip() if len(parts) > 1 else ""
+            entries.append(StaticEntry(mac=mac, ip=ip, hostname=hostname))
         entries.sort(key=lambda e: tuple(int(x) for x in e.ip.split(".")) if e.ip.count(".") == 3 else (0,))
         return entries
     except Exception:
