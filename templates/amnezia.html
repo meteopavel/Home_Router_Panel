@@ -163,12 +163,40 @@
                 <span class="details-hint">{{ meta.hint }}</span>
             </summary>
             <div style="padding: 16px 0 4px;">
-                <form method="post" action="/amnezia/lists/{{ name }}">
-                    <textarea name="content" class="editor" style="min-height: 200px;">{{ lists[name] }}</textarea>
-                    <div class="editor-actions">
-                        <button type="submit" class="button">Сохранить</button>
-                    </div>
-                </form>
+                {% if name == 'vpn_device_macs' %}
+                    <form method="post" action="/amnezia/vpn-macs/save">
+                        {% if dhcp_static %}
+                            <div class="service-list" style="margin-bottom: 12px;">
+                                {% for entry in dhcp_static %}
+                                    <label class="service-row" style="cursor:pointer;">
+                                        <div class="service-main">
+                                            <div class="service-name">
+                                                {% if entry.hostname %}<strong>{{ entry.hostname }}</strong> · {% endif %}{{ entry.ip }}
+                                            </div>
+                                            <div class="service-unit">{{ entry.mac }}</div>
+                                        </div>
+                                        <div class="actions">
+                                            <input type="checkbox" name="macs" value="{{ entry.mac }}"
+                                                   {% if entry.mac in vpn_macs_selected %}checked{% endif %}>
+                                        </div>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state" style="margin-bottom: 12px;">Нет статических резерваций с MAC</div>
+                        {% endif %}
+                        <div class="editor-actions">
+                            <button type="submit" class="button">Сохранить</button>
+                        </div>
+                    </form>
+                {% else %}
+                    <form method="post" action="/amnezia/lists/{{ name }}">
+                        <textarea name="content" class="editor" style="min-height: 200px;">{{ lists[name] }}</textarea>
+                        <div class="editor-actions">
+                            <button type="submit" class="button">Сохранить</button>
+                        </div>
+                    </form>
+                {% endif %}
                 <form method="post" action="/amnezia/lists-delete/{{ name }}" style="margin-top: 8px;"
                       onsubmit="return confirm('Удалить список «{{ meta.title }}»?\nФайл будет переименован в .txt.deleted');">
                     <button type="submit" class="button button-secondary">Удалить список</button>

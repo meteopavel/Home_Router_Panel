@@ -8,7 +8,7 @@
 - модулей: 6
 - классов: 0
 - dataclass: 4
-- функций: 63
+- функций: 65
 - методов: 0
 - констант: 19
 
@@ -214,6 +214,9 @@
 - `hotlist_edit_save(request: Request, name: str, content: str = Form(default=''))`
   Нет докстринга.
 
+- `_parse_vpn_macs(content: str) -> set[str]`
+  Нет докстринга.
+
 - `_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict`
   Нет докстринга.
 
@@ -230,6 +233,9 @@
   Нет докстринга.
 
 - `amnezia_list_delete(request: Request, key: str)`
+  Нет докстринга.
+
+- `amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[]))`
   Нет докстринга.
 
 - `amnezia_add_mac(mac: str = Form(default=''))`
