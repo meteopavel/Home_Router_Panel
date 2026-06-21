@@ -15,8 +15,12 @@ _IP_RE = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
 def validate_entry(mac: str, ip: str, hostname: str) -> str | None:
     """Return error string if invalid, None if ok."""
     mac = mac.strip().lower()
-    if not re.match(r'^([0-9a-f]{2}:){5}[0-9a-f]{2}$', mac):
-        return f"Некорректный MAC-адрес: {mac!r}"
+    if mac:
+        if not re.match(r'^([0-9a-f]{2}:){5}[0-9a-f]{2}$', mac):
+            return f"Некорректный MAC-адрес: {mac!r}"
+    else:
+        if not hostname or not hostname.strip():
+            return "Укажите MAC-адрес или имя устройства"
     if ip:
         if not _IP_RE.match(ip.strip()):
             return f"Некорректный IP-адрес: {ip!r}"
@@ -174,27 +178,39 @@ def write_static(entries: list[StaticEntry]) -> tuple[bool, str]:
 def add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]:
     """Add or update entry. Returns (ok, error_or_empty)."""
     mac = mac.strip().lower()
+    hostname = hostname.strip()
     err = validate_entry(mac, ip, hostname)
     if err:
         return False, err
     entries = read_static()
-    for e in entries:
-        if e.mac == mac:
-            e.ip = ip.strip()
-            e.hostname = hostname.strip()
-            return write_static(entries)
-    entries.append(StaticEntry(mac=mac, ip=ip.strip(), hostname=hostname.strip()))
+    if mac:
+        for e in entries:
+            if e.mac == mac:
+                e.ip = ip.strip()
+                e.hostname = hostname
+                return write_static(entries)
+    else:
+        for e in entries:
+            if not e.mac and e.hostname == hostname:
+                e.ip = ip.strip()
+                return write_static(entries)
+    entries.append(StaticEntry(mac=mac, ip=ip.strip(), hostname=hostname))
     return write_static(entries)
 
 
-def remove_static(mac: str) -> tuple[bool, str]:
+def remove_static(mac: str, hostname: str = "") -> tuple[bool, str]:
     mac = mac.strip().lower()
+    hostname = hostname.strip()
     entries = read_static()
-    new = [e for e in entries if e.mac != mac]
+    if mac:
+        new = [e for e in entries if e.mac != mac]
+    elif hostname:
+        new = [e for e in entries if not (not e.mac and e.hostname == hostname)]
+    else:
+        return False, "Не указан MAC или имя"
     if len(new) == len(entries):
         return False, "Запись не найдена"
     return write_static(new)
-    return True
 
 
 def reload_dnsmasq() -> tuple[bool, str]:

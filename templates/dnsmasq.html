@@ -151,6 +151,15 @@
                                         Удалить
                                     </button>
                                 </form>
+                            {% else %}
+                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                                    <input type="hidden" name="hostname" value="{{ e.hostname }}">
+                                    <button type="submit" class="button button-secondary button-danger"
+                                            style="padding: 6px 12px; font-size: 12px;"
+                                            data-tooltip="Удалить резервацию по имени устройства">
+                                        Удалить
+                                    </button>
+                                </form>
                             {% endif %}
                         </div>
                     {% endif %}
@@ -165,27 +174,83 @@
     <details>
         <summary class="details-summary"><strong>Добавить резервацию</strong></summary>
         <div style="padding: 16px 0 4px;">
-            <form method="post" action="/dnsmasq/static/add"
+            <form method="post" action="/dnsmasq/static/add" id="add-reservation-form"
                   style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
-                <div>
+
+                {# Device picker #}
+                <div style="flex-basis: 100%; margin-bottom: 4px;">
+                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">Устройство из активных аренд</label>
+                    <select id="device-picker" class="text-input" style="width: 100%; max-width: 500px;"
+                            onchange="dnsmasqFillDevice(this)">
+                        <option value="">— выбрать устройство —</option>
+                        {% for lease in leases %}
+                            {% set already = (static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0)
+                                             or (lease.hostname and (static_entries | selectattr('hostname', 'equalto', lease.hostname) | list | length > 0)) %}
+                            {% if not already %}
+                                <option value="{{ lease.mac }}|{{ lease.hostname }}|{{ lease.ip }}">
+                                    {{ lease.hostname or '(неизвестно)' }} · {{ lease.ip }} · {{ lease.mac }}
+                                </option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# Match type #}
+                <div style="flex-basis: 100%; display: flex; gap: 16px; margin-bottom: 4px;">
+                    <label style="font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="radio" name="_match_type" value="mac" checked
+                               onchange="dnsmasqSwitchType('mac')"> По MAC
+                    </label>
+                    <label style="font-size: 13px; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                        <input type="radio" name="_match_type" value="hostname"
+                               onchange="dnsmasqSwitchType('hostname')"> По имени устройства
+                    </label>
+                </div>
+
+                {# Fields #}
+                <div id="field-mac-wrap">
                     <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">MAC-адрес</label>
-                    <input type="text" name="mac" placeholder="aa:bb:cc:dd:ee:ff" class="text-input"
+                    <input type="text" name="mac" id="field-mac" placeholder="aa:bb:cc:dd:ee:ff" class="text-input"
                            style="width: 180px; font-family: var(--font-mono);">
                 </div>
                 <div>
                     <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">IP-адрес</label>
-                    <input type="text" name="ip" placeholder="192.168.100.10" class="text-input"
+                    <input type="text" name="ip" id="field-ip" placeholder="192.168.100.10" class="text-input"
                            style="width: 160px; font-family: var(--font-mono);">
                 </div>
-                <div>
-                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">Имя (опционально)</label>
-                    <input type="text" name="hostname" placeholder="my-device" class="text-input"
+                <div id="field-hostname-wrap">
+                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;" id="hostname-label">Имя (опционально)</label>
+                    <input type="text" name="hostname" id="field-hostname" placeholder="my-device" class="text-input"
                            style="width: 160px;">
                 </div>
                 <button type="submit" class="button">Добавить</button>
             </form>
         </div>
     </details>
+
+    <script>
+    function dnsmasqFillDevice(sel) {
+        if (!sel.value) return;
+        var parts = sel.value.split('|');
+        var mac = parts[0] || '', hostname = parts[1] || '', ip = parts[2] || '';
+        document.getElementById('field-mac').value = mac;
+        document.getElementById('field-hostname').value = hostname;
+        document.getElementById('field-ip').value = ip;
+    }
+    function dnsmasqSwitchType(type) {
+        var macWrap = document.getElementById('field-mac-wrap');
+        var macInput = document.getElementById('field-mac');
+        var hostnameLabel = document.getElementById('hostname-label');
+        if (type === 'hostname') {
+            macWrap.style.display = 'none';
+            macInput.value = '';
+            hostnameLabel.textContent = 'Имя устройства';
+        } else {
+            macWrap.style.display = '';
+            hostnameLabel.textContent = 'Имя (опционально)';
+        }
+    }
+    </script>
 </section>
 
 {# ── Active Leases ─────────────────────────────────────────── #}
