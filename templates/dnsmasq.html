@@ -281,7 +281,7 @@
                             <input type="hidden" name="ip" value="{{ lease.ip }}">
                             <label style="font-size: 13px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
                                 <input type="radio" name="_match_type" value="mac" checked
-                                       onchange="this.form.querySelector('[name=mac]').value='{{ lease.mac }}'; this.form.querySelector('[name=hostname]').value='';">
+                                       onchange="this.form.querySelector('[name=mac]').value='{{ lease.mac }}'; this.form.querySelector('[name=hostname]').value='{{ lease.hostname }}';">
                                 По MAC
                             </label>
                             <label style="font-size: 13px; display: flex; align-items: center; gap: 5px;
@@ -296,7 +296,7 @@
                                 {% endif %}
                             </label>
                             <input type="hidden" name="mac" value="{{ lease.mac }}">
-                            <input type="hidden" name="hostname" value="">
+                            <input type="hidden" name="hostname" value="{{ lease.hostname }}">
                             <div class="actions" style="margin-left: auto;">
                                 <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Закрепить</button>
                                 <a href="/dnsmasq" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
