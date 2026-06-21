@@ -243,6 +243,53 @@ def restart_dnsmasq() -> tuple[bool, str]:
         return False, str(e)
 
 
+_IP_GROUPS: list[tuple[int, int, str]] = [
+    (1,   9,   "Сетевое оборудование"),
+    (10,  19,  "Компьютеры"),
+    (20,  39,  "IoT"),
+    (40,  49,  "Медиа"),
+    (50,  59,  "Телефоны"),
+    (60,  79,  "Динамический пул"),
+    (110, 119, "Камеры"),
+    (200, 209, "Майнеры"),
+]
+IP_GROUP_NAMES: list[str] = list(dict.fromkeys(n for _, _, n in _IP_GROUPS))
+
+
+def get_ip_group(ip: str) -> str:
+    try:
+        last = int(ip.rsplit(".", 1)[-1])
+    except (ValueError, IndexError):
+        return ""
+    for lo, hi, name in _IP_GROUPS:
+        if lo <= last <= hi:
+            return name
+    return ""
+
+
+def group_static_entries(entries: list[StaticEntry]) -> list[dict]:
+    buckets: dict[str, list[StaticEntry]] = {n: [] for n in IP_GROUP_NAMES}
+    ungrouped: list[StaticEntry] = []
+    for e in entries:
+        g = get_ip_group(e.ip)
+        if g and g != "Динамический пул":
+            buckets[g].append(e)
+        elif g == "Динамический пул":
+            ungrouped.append(e)
+        else:
+            ungrouped.append(e)
+    result = []
+    for name in IP_GROUP_NAMES:
+        if name == "Динамический пул":
+            continue
+        lo = min(lo for lo, hi, n in _IP_GROUPS if n == name)
+        hi = max(hi for lo, hi, n in _IP_GROUPS if n == name)
+        result.append({"name": name, "lo": lo, "hi": hi, "entries": buckets[name]})
+    if ungrouped:
+        result.append({"name": "Прочие", "lo": None, "hi": None, "entries": ungrouped})
+    return result
+
+
 def get_dnsmasq_state() -> str:
     try:
         result = subprocess.run(

@@ -9,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 from app.dnsmasq import (
     add_static,
     get_dnsmasq_state,
+    group_static_entries,
     read_leases,
     read_static,
     read_system_static,
@@ -292,6 +293,7 @@ def dnsmasq_view(request: Request, msg: str = "", edit: str = "", edit_host: str
             "edit_mac": edit.strip().lower(),
             "edit_host": edit_host.strip(),
             "pin_mac": pin.strip().lower(),
+            "grouped_entries": group_static_entries(read_static()),
         },
     )
 
@@ -313,6 +315,7 @@ def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac
             "edit_mac": edit_mac,
             "edit_host": edit_host,
             "pin_mac": pin_mac,
+            "grouped_entries": group_static_entries(read_static()),
         },
     )
 
