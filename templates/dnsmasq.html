@@ -188,12 +188,12 @@
                                    data-tooltip="Изменить IP или имя устройства">
                                     Изменить
                                 </a>
-                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;"
+                                      onsubmit="return confirm('Удалить резервацию?')">
                                     <input type="hidden" name="mac" value="{{ e.mac }}">
                                     <button type="submit" class="button button-secondary button-danger"
                                             style="padding: 6px 12px; font-size: 12px;"
-                                            data-tooltip="Удалить резервацию для этого MAC"
-                                            onclick="return confirm('Удалить резервацию?')">
+                                            data-tooltip="Удалить резервацию для этого MAC">
                                         Удалить
                                     </button>
                                 </form>
@@ -203,7 +203,8 @@
                                    data-tooltip="Изменить IP для этого устройства">
                                     Изменить
                                 </a>
-                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;"
+                                      onsubmit="return confirm('Удалить резервацию?')">
                                     <input type="hidden" name="hostname" value="{{ e.hostname }}">
                                     <button type="submit" class="button button-secondary button-danger"
                                             style="padding: 6px 12px; font-size: 12px;"
