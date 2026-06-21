@@ -8,6 +8,9 @@ set -euo pipefail
 DEFAULT_COMMIT_MSG="Update project"
 PROJECT_ROOT="$(git rev-parse --show-toplevel)"
 ENV_FILE="$PROJECT_ROOT/.env"
+ARCHIVE_DIR="$PROJECT_ROOT/secure"
+ARCHIVE_NAME="sensitive_bundle.7z"
+ARCHIVE_PATH="${ARCHIVE_DIR}/${ARCHIVE_NAME}"
 
 cd "$PROJECT_ROOT"
 
@@ -59,6 +62,12 @@ if [[ ! -f "$ENV_FILE" ]]; then
     exit 1
 fi
 
+ARCHIVE_PASSWORD=$(get_env "ARCHIVE_PASSWORD" "$ENV_FILE")
+SECURE_RSYNC_USER=$(get_env "SECURE_RSYNC_USER" "$ENV_FILE")
+SECURE_RSYNC_HOST=$(get_env "SECURE_RSYNC_HOST" "$ENV_FILE")
+SECURE_RSYNC_PATH=$(get_env "SECURE_RSYNC_PATH" "$ENV_FILE")
+SECURE_RSYNC_PASSWORD=$(get_env "SECURE_RSYNC_PASSWORD" "$ENV_FILE")
+
 DEPLOY_USER=$(get_env "DEPLOY_USER" "$ENV_FILE")
 DEPLOY_HOST=$(get_env "DEPLOY_HOST" "$ENV_FILE")
 DEPLOY_PORT=$(get_env "DEPLOY_PORT" "$ENV_FILE")
@@ -90,7 +99,46 @@ ssh -p "$DEPLOY_PORT" \
 log "✅ SSH-доступ к серверу есть"
 log "----------------------------------------"
 
-log "📦 Этап 1/2: commit & push"
+log "----------------------------------------"
+log "🔐 Этап 1/3: backup sensitive files"
+
+BACKUP_OK=1
+if [[ -z "$ARCHIVE_PASSWORD" || -z "$SECURE_RSYNC_USER" || -z "$SECURE_RSYNC_HOST" || -z "$SECURE_RSYNC_PATH" || -z "$SECURE_RSYNC_PASSWORD" ]]; then
+    echo "⚠️  Backup: переменные ARCHIVE_PASSWORD / SECURE_RSYNC_* не заданы в .env — пропускаем резервное копирование"
+    BACKUP_OK=0
+fi
+
+if [[ "$BACKUP_OK" -eq 1 ]]; then
+    if ! command -v 7z &> /dev/null; then
+        echo "⚠️  Backup: команда 7z не найдена — пропускаем резервное копирование"
+        BACKUP_OK=0
+    fi
+fi
+
+if [[ "$BACKUP_OK" -eq 1 ]]; then
+    mkdir -p "${ARCHIVE_DIR}"
+    if [[ -f "${ARCHIVE_PATH}" ]]; then
+        rm -f "${ARCHIVE_PATH}"
+    fi
+    log "🔒 Создаём зашифрованный архив (.env)..."
+    (
+        cd "${PROJECT_ROOT}"
+        7z a -p"${ARCHIVE_PASSWORD}" -mhe=on "${ARCHIVE_PATH}" ".env" > /dev/null
+    )
+    log "📤 Отправляем архив на backup-сервер..."
+    export SSHPASS="${SECURE_RSYNC_PASSWORD}"
+    if [[ "$QUIET" -eq 1 ]]; then
+        rsync -az --rsh="sshpass -e ssh" \
+            "${ARCHIVE_PATH}" "${SECURE_RSYNC_USER}@${SECURE_RSYNC_HOST}:${SECURE_RSYNC_PATH}" > /dev/null
+    else
+        rsync -avz --progress --rsh="sshpass -e ssh" \
+            "${ARCHIVE_PATH}" "${SECURE_RSYNC_USER}@${SECURE_RSYNC_HOST}:${SECURE_RSYNC_PATH}"
+    fi
+    echo "✅ Backup завершён: .env → ${SECURE_RSYNC_HOST}:${SECURE_RSYNC_PATH}"
+fi
+
+log "----------------------------------------"
+log "📦 Этап 2/3: commit & push"
 git add .
 if ! git diff --staged --quiet; then
     GIT_Q=""
@@ -106,7 +154,7 @@ else
 fi
 
 log "----------------------------------------"
-log "🖥️ Этап 2/2: server deploy"
+log "🖥️ Этап 3/3: server deploy"
 
 run_remote() {
     ssh -p "$DEPLOY_PORT" "${DEPLOY_USER}@${DEPLOY_HOST}" bash -s <<EOF

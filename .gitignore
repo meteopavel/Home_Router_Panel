@@ -104,3 +104,10 @@ temp/
 *.jpeg
 *.webp
 .playwright-mcp/
+
+# Backup archive (local encrypted copy)
+secure/
+
+# Local project files (not for git)
+CLAUDE.md
+config.yaml
