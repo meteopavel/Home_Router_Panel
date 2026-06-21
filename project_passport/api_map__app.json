@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-21T11:02:34.934440+00:00",
+  "generated_at": "2026-06-21T11:09:55.085384+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -879,7 +879,7 @@
           "kind": "function",
           "decorators": [],
           "lineno": 367,
-          "end_lineno": 391
+          "end_lineno": 393
         },
         {
           "name": "dnsmasq_view",
@@ -890,8 +890,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 395,
-          "end_lineno": 405
+          "lineno": 397,
+          "end_lineno": 407
         },
         {
           "name": "_dnsmasq_response",
@@ -900,8 +900,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 408,
-          "end_lineno": 419
+          "lineno": 410,
+          "end_lineno": 421
         },
         {
           "name": "dnsmasq_static_add",
@@ -912,8 +912,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 423,
-          "end_lineno": 432
+          "lineno": 425,
+          "end_lineno": 434
         },
         {
           "name": "dnsmasq_static_update",
@@ -924,8 +924,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 436,
-          "end_lineno": 445
+          "lineno": 438,
+          "end_lineno": 447
         },
         {
           "name": "dnsmasq_static_remove",
@@ -936,8 +936,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 449,
-          "end_lineno": 453
+          "lineno": 451,
+          "end_lineno": 455
         },
         {
           "name": "dnsmasq_service_reload",
@@ -948,8 +948,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 457,
-          "end_lineno": 461
+          "lineno": 459,
+          "end_lineno": 463
         },
         {
           "name": "dnsmasq_service_restart",
@@ -960,8 +960,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 465,
-          "end_lineno": 469
+          "lineno": 467,
+          "end_lineno": 471
         },
         {
           "name": "health",
@@ -972,8 +972,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 473,
-          "end_lineno": 474
+          "lineno": 475,
+          "end_lineno": 476
         }
       ],
       "constants": [
