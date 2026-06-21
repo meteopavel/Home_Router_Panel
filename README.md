@@ -1,5 +1,9 @@
 # Home Router Panel
 
+[![Python](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/python.svg)](https://docs.python.org/3/)
+[![FastAPI](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/fastapi.svg)](https://fastapi.tiangolo.com/release-notes/)
+[![Nginx](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/nginx.svg)](https://nginx.org/en/docs/)
+
 Веб-панель на FastAPI для локального управления домашним роутером под Linux. Управление VPN, DHCP, системными сервисами и бэкапом — всё через браузер в локальной сети.
 
 Self-hosted, личный инструмент. Работает на реальном домашнем роутере (проверено на Debian/Ubuntu).
