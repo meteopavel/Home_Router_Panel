@@ -157,7 +157,7 @@ def _amnezia_context(request: Request, target: str = "", msg: str = "", error: s
         check_result = check_route(target)
     vpn_macs_content = read_awg_list("vpn_device_macs") if "vpn_device_macs" in list_meta else ""
     vpn_macs_selected = _parse_vpn_macs(vpn_macs_content)
-    dhcp_static = [e for e in read_static() if e.mac]
+    grouped_dhcp_static = group_static_entries(read_static())
     return {
         "title": "AmneziaWG",
         "status": get_awg_status(),
@@ -172,7 +172,7 @@ def _amnezia_context(request: Request, target: str = "", msg: str = "", error: s
         "msg": msg,
         "error": error,
         "vpn_macs_selected": vpn_macs_selected,
-        "dhcp_static": dhcp_static,
+        "grouped_dhcp_static": grouped_dhcp_static,
     }
 
 

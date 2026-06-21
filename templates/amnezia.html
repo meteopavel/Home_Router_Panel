@@ -165,25 +165,46 @@
             <div style="padding: 16px 0 4px;">
                 {% if name == 'vpn_device_macs' %}
                     <form method="post" action="/amnezia/vpn-macs/save">
-                        {% if dhcp_static %}
-                            <div class="service-list" style="margin-bottom: 12px;">
-                                {% for entry in dhcp_static %}
-                                    <label class="service-row" style="cursor:pointer;">
-                                        <div class="service-main">
-                                            <div class="service-name">
-                                                {% if entry.hostname %}<strong>{{ entry.hostname }}</strong> · {% endif %}{{ entry.ip }}
-                                            </div>
-                                            <div class="service-unit">{{ entry.mac }}</div>
+                        {% if grouped_dhcp_static %}
+                            {% for group in grouped_dhcp_static %}
+                                <div style="margin-bottom: 16px;">
+                                    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+                                                color: var(--muted); padding: 4px 0 6px; border-bottom: 1px solid var(--border);
+                                                margin-bottom: 6px; display: flex; align-items: baseline; gap: 8px;">
+                                        {{ group.name }}
+                                        {% if group.lo is not none %}
+                                            <span style="font-weight: 400; font-size: 10px;">.{{ group.lo }}–.{{ group.hi }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if group.entries %}
+                                        <div class="service-list">
+                                            {% for e in group.entries %}
+                                                <label class="service-row" style="height: 48px; padding-top: 0; padding-bottom: 0; gap: 12px; cursor: {% if e.mac %}pointer{% else %}default{% endif %};">
+                                                    <div class="service-main" style="min-width: 0;">
+                                                        <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                                                            <span style="color: var(--muted); font-family: var(--font-mono);"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="actions">
+                                                        {% if e.mac %}
+                                                            <input type="checkbox" name="macs" value="{{ e.mac }}"
+                                                                   {% if e.mac in vpn_macs_selected %}checked{% endif %}>
+                                                        {% else %}
+                                                            <input type="checkbox" disabled
+                                                                   data-tooltip="Нет MAC-адреса — маршрутизация по MAC невозможна">
+                                                        {% endif %}
+                                                    </div>
+                                                </label>
+                                            {% endfor %}
                                         </div>
-                                        <div class="actions">
-                                            <input type="checkbox" name="macs" value="{{ entry.mac }}"
-                                                   {% if entry.mac in vpn_macs_selected %}checked{% endif %}>
-                                        </div>
-                                    </label>
-                                {% endfor %}
-                            </div>
+                                    {% else %}
+                                        <div style="color: var(--muted); font-size: 13px; padding: 4px 0;">пусто</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
                         {% else %}
-                            <div class="empty-state" style="margin-bottom: 12px;">Нет статических резерваций с MAC</div>
+                            <div class="empty-state" style="margin-bottom: 12px;">Нет статических резерваций</div>
                         {% endif %}
                         <div class="editor-actions">
                             <button type="submit" class="button">Сохранить</button>
