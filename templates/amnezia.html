@@ -230,10 +230,11 @@
                                                     <div class="actions">
                                                         {% if e.mac %}
                                                             <input type="checkbox" name="macs" value="{{ e.mac }}"
-                                                                   {% if e.mac in vpn_macs_selected %}checked{% endif %}>
+                                                                   {% if e.mac in vpn_macs_selected %}checked{% endif %}
+                                                                   {% if e.mac_from_lease %}data-tooltip="MAC из текущей аренды DHCP: {{ e.mac }}"{% endif %}>
                                                         {% else %}
                                                             <input type="checkbox" disabled
-                                                                   data-tooltip="Нет MAC-адреса — маршрутизация по MAC невозможна">
+                                                                   data-tooltip="Устройство офлайн — MAC неизвестен">
                                                         {% endif %}
                                                     </div>
                                                 </label>
