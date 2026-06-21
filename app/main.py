@@ -351,14 +351,18 @@ def dnsmasq_static_remove(request: Request, mac: str = Form(default=""), hostnam
 
 @app.post("/dnsmasq/service/reload")
 def dnsmasq_service_reload():
-    reload_dnsmasq()
-    return RedirectResponse(url="/dnsmasq?msg=reloaded", status_code=303)
+    ok, msg = reload_dnsmasq()
+    if ok:
+        return {"ok": True}
+    return {"ok": False, "error": msg or "Не удалось перезагрузить dnsmasq"}
 
 
 @app.post("/dnsmasq/service/restart")
 def dnsmasq_service_restart():
-    restart_dnsmasq()
-    return RedirectResponse(url="/dnsmasq?msg=restarted", status_code=303)
+    ok, msg = restart_dnsmasq()
+    if ok:
+        return {"ok": True}
+    return {"ok": False, "error": msg or "Не удалось перезапустить dnsmasq"}
 
 
 @app.get("/health")
