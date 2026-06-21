@@ -21,6 +21,7 @@ from app.dnsmasq import (
 from app.amnezia import (
     create_list,
     delete_list,
+    update_list_meta,
     add_mac_to_vpn,
     check_route,
     get_awg_show,
@@ -150,7 +151,7 @@ def _parse_vpn_macs(content: str) -> set[str]:
     return result
 
 
-def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "") -> dict:
+def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "", edit_list: str = "") -> dict:
     list_meta = get_list_meta()
     check_result = None
     if target:
@@ -171,17 +172,18 @@ def _amnezia_context(request: Request, target: str = "", msg: str = "", error: s
         "active_tab": "amnezia",
         "msg": msg,
         "error": error,
+        "edit_list": edit_list,
         "vpn_macs_selected": vpn_macs_selected,
         "grouped_dhcp_static": grouped_dhcp_static,
     }
 
 
 @app.get("/amnezia")
-def amnezia_view(request: Request, target: str = "", msg: str = "", error: str = ""):
+def amnezia_view(request: Request, target: str = "", msg: str = "", error: str = "", edit_list: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="amnezia.html",
-        context=_amnezia_context(request, target=target, msg=msg, error=error),
+        context=_amnezia_context(request, target=target, msg=msg, error=error, edit_list=edit_list),
     )
 
 
@@ -227,6 +229,23 @@ def amnezia_list_delete(request: Request, key: str):
             context=_amnezia_context(request, error=err),
         )
     return RedirectResponse(url="/amnezia?msg=list_deleted", status_code=303)
+
+
+@app.post("/amnezia/lists-meta/{key}")
+def amnezia_list_meta_save(
+    request: Request,
+    key: str,
+    title: str = Form(default=""),
+    hint: str = Form(default=""),
+):
+    ok, err = update_list_meta(key, title, hint)
+    if not ok:
+        return templates.TemplateResponse(
+            request=request,
+            name="amnezia.html",
+            context=_amnezia_context(request, error=err, edit_list=key),
+        )
+    return RedirectResponse(url="/amnezia?msg=meta_saved", status_code=303)
 
 
 @app.post("/amnezia/vpn-macs/save")

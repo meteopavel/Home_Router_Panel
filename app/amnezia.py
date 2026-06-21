@@ -66,6 +66,20 @@ def create_list(key: str, title: str, hint: str) -> tuple[bool, str]:
     return True, ""
 
 
+def update_list_meta(key: str, title: str, hint: str) -> tuple[bool, str]:
+    title = title.strip()
+    if not title:
+        return False, "Название обязательно"
+    lists = load_lists_config()
+    for item in lists:
+        if item["key"] == key:
+            item["title"] = title
+            item["hint"] = hint.strip()
+            save_lists_config(lists)
+            return True, ""
+    return False, f"Список '{key}' не найден"
+
+
 def delete_list(key: str) -> tuple[bool, str]:
     lists = load_lists_config()
     new_lists = [item for item in lists if item["key"] != key]

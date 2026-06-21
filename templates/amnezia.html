@@ -156,13 +156,40 @@
         <div style="color: var(--danger); margin-bottom: 16px;">{{ error }}</div>
     {% endif %}
 
+    {% if msg == 'meta_saved' %}
+        <div class="pill pill-green" style="margin-bottom: 16px; display: inline-block;">Название сохранено</div>
+    {% endif %}
+
     {% for name, meta in list_meta.items() %}
-        <details class="list-details">
+        <details class="list-details" {% if edit_list == name %}open{% endif %}>
             <summary class="details-summary">
                 <strong>{{ meta.title }}</strong>
                 <span class="details-hint">{{ meta.hint }}</span>
+                <a href="/amnezia?edit_list={{ name }}" class="button button-secondary"
+                   style="margin-left: auto; padding: 3px 10px; font-size: 11px; flex-shrink: 0;"
+                   onclick="event.stopPropagation();">Изменить</a>
             </summary>
             <div style="padding: 16px 0 4px;">
+            {% if edit_list == name %}
+                <form method="post" action="/amnezia/lists-meta/{{ name }}"
+                      style="display: flex; flex-direction: column; gap: 10px; max-width: 480px; margin-bottom: 20px;">
+                    <label style="font-size: 13px; color: var(--muted);">
+                        Название
+                        <input type="text" name="title" value="{{ meta.title }}" class="text-input" required
+                               style="display:block; margin-top: 4px; width: 100%;">
+                    </label>
+                    <label style="font-size: 13px; color: var(--muted);">
+                        Подсказка
+                        <input type="text" name="hint" value="{{ meta.hint }}" class="text-input"
+                               style="display:block; margin-top: 4px; width: 100%;">
+                    </label>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
+                        <a href="/amnezia" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                    </div>
+                </form>
+                <hr style="border: none; border-top: 1px solid var(--border); margin-bottom: 16px;">
+            {% endif %}
                 {% if name == 'vpn_device_macs' %}
                     <form method="post" action="/amnezia/vpn-macs/save">
                         {% if grouped_dhcp_static %}

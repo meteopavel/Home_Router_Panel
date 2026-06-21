@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-21T10:24:02.784959+00:00",
+  "generated_at": "2026-06-21T10:28:04.242788+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -44,7 +44,7 @@
     "scanned_python_files": 7,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 65,
+    "functions": 67,
     "methods": 0,
     "constants": 19,
     "has_cli": false,
@@ -70,9 +70,20 @@
         "stats": {
           "classes": 0,
           "dataclasses": 0,
-          "functions": 26,
+          "functions": 27,
           "methods": 0,
           "constants": 3
+        }
+      },
+      {
+        "path": "app/amnezia.py",
+        "summary": null,
+        "stats": {
+          "classes": 0,
+          "dataclasses": 0,
+          "functions": 18,
+          "methods": 0,
+          "constants": 7
         }
       },
       {
@@ -82,17 +93,6 @@
           "classes": 2,
           "dataclasses": 2,
           "functions": 13,
-          "methods": 0,
-          "constants": 7
-        }
-      },
-      {
-        "path": "app/amnezia.py",
-        "summary": null,
-        "stats": {
-          "classes": 0,
-          "dataclasses": 0,
-          "functions": 17,
           "methods": 0,
           "constants": 7
         }
@@ -140,7 +140,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-06-21T10:24:02.707351+00:00",
+    "api_map_generated_at": "2026-06-21T10:28:04.157315+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"
