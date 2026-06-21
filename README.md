@@ -2,6 +2,8 @@
 
 [![Python](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/python.svg)](https://docs.python.org/3/)
 [![FastAPI](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/fastapi.svg)](https://fastapi.tiangolo.com/release-notes/)
+[![Uvicorn](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/uvicorn.svg)](https://www.uvicorn.org/)
+[![Jinja](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/jinja.svg)](https://jinja.palletsprojects.com/)
 [![Nginx](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/nginx.svg)](https://nginx.org/en/docs/)
 
 Веб-панель на FastAPI для локального управления домашним роутером под Linux. Управление VPN, DHCP, системными сервисами и бэкапом — всё через браузер в локальной сети.
