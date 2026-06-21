@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-21T07:03:45.371934+00:00",
+  "generated_at": "2026-06-21T07:11:01.273002+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -478,7 +478,7 @@
         {
           "name": "IP_GROUP_NAMES",
           "annotation": "list[str]",
-          "value_repr": "list(dict.fromkeys((n for (_, _, n) in _IP_GROUPS)))",
+          "value_repr": "list(dict.fromkeys((n for _, _, n in _IP_GROUPS)))",
           "lineno": 256
         }
       ],

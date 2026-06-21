@@ -29,6 +29,20 @@ log() {
     if [[ "$QUIET" -eq 0 ]]; then echo "$@"; fi
 }
 
+update_project_passport() {
+    log "🪪 Обновляем паспорт проекта..."
+    local tools_dir
+    tools_dir="$(dirname "${PROJECT_ROOT}")/meteopavel/tools"
+    local python_bin="${PROJECT_ROOT}/.venv/bin/python"
+    (
+        cd "${PROJECT_ROOT}"
+        "${python_bin}" "${tools_dir}/extract_api_map.py" app \
+            --project-root . --exclude .venv __pycache__ node_modules
+        "${python_bin}" "${tools_dir}/build_project_passport.py" --project-root .
+    )
+    log "✅ Паспорт проекта обновлён."
+}
+
 get_env() {
     local var_name="$1"
     local env_file="$2"
@@ -136,6 +150,9 @@ if [[ "$BACKUP_OK" -eq 1 ]]; then
     fi
     echo "✅ Backup завершён: .env → ${SECURE_RSYNC_HOST}:${SECURE_RSYNC_PATH}"
 fi
+
+log "----------------------------------------"
+update_project_passport
 
 log "----------------------------------------"
 log "📦 Этап 2/3: commit & push"

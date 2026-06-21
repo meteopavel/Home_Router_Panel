@@ -83,7 +83,7 @@
 - `_IP_RE = re.compile('^(\\d{1,3}\\.){3}\\d{1,3}$')`
 - `DNSMASQ_D = Path('/etc/dnsmasq.d')`
 - `_IP_GROUPS: list[tuple[int, int, str]] = [(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 5…`
-- `IP_GROUP_NAMES: list[str] = list(dict.fromkeys((n for (_, _, n) in _IP_GROUPS)))`
+- `IP_GROUP_NAMES: list[str] = list(dict.fromkeys((n for _, _, n in _IP_GROUPS)))`
 
 Классы:
 
