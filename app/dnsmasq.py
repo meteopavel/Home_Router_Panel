@@ -158,9 +158,13 @@ def write_static(entries: list[StaticEntry]) -> tuple[bool, str]:
     STATIC_FILE.parent.mkdir(parents=True, exist_ok=True)
     lines = ["# Home Router Panel — DHCP static reservations", "# dhcp-host=MAC,IP,hostname", ""]
     for e in entries:
-        parts = [e.mac, e.ip]
-        if e.hostname:
-            parts.append(e.hostname)
+        if e.mac:
+            parts = [e.mac, e.ip]
+            if e.hostname:
+                parts.append(e.hostname)
+        else:
+            # hostname-only: dhcp-host=Hostname,IP
+            parts = [e.hostname, e.ip]
         lines.append("dhcp-host=" + ",".join(parts))
     lines.append("")
     backup = STATIC_FILE.read_text(encoding="utf-8") if STATIC_FILE.exists() else None
