@@ -111,8 +111,8 @@
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
                 <div class="service-row" style="flex-wrap: wrap; gap: 12px;">
-                    {% if edit_mac == e.mac %}
-                        {# Edit mode #}
+                    {% if e.mac and edit_mac == e.mac %}
+                        {# Edit mode (MAC-based entries only) #}
                         <form method="post" action="/dnsmasq/static/update"
                               style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1;">
                             <input type="hidden" name="mac" value="{{ e.mac }}">
@@ -132,22 +132,26 @@
                             <div class="service-name">
                                 {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
                             </div>
-                            <div class="service-unit">{{ e.mac }}</div>
+                            <div class="service-unit">
+                                {% if e.mac %}{{ e.mac }}{% else %}<em style="color: var(--muted);">по имени устройства</em>{% endif %}
+                            </div>
                         </div>
                         <div class="actions">
-                            <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary"
-                               style="padding: 6px 12px; font-size: 12px;"
-                               data-tooltip="Изменить IP или имя устройства">
-                                Изменить
-                            </a>
-                            <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
-                                <input type="hidden" name="mac" value="{{ e.mac }}">
-                                <button type="submit" class="button button-secondary button-danger"
-                                        style="padding: 6px 12px; font-size: 12px;"
-                                        data-tooltip="Удалить резервацию для этого MAC">
-                                    Удалить
-                                </button>
-                            </form>
+                            {% if e.mac %}
+                                <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary"
+                                   style="padding: 6px 12px; font-size: 12px;"
+                                   data-tooltip="Изменить IP или имя устройства">
+                                    Изменить
+                                </a>
+                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
+                                    <input type="hidden" name="mac" value="{{ e.mac }}">
+                                    <button type="submit" class="button button-secondary button-danger"
+                                            style="padding: 6px 12px; font-size: 12px;"
+                                            data-tooltip="Удалить резервацию для этого MAC">
+                                        Удалить
+                                    </button>
+                                </form>
+                            {% endif %}
                         </div>
                     {% endif %}
                 </div>
