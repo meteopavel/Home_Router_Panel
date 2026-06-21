@@ -220,10 +220,10 @@
 - `_parse_vpn_macs(content: str) -> set[str]`
   Нет докстринга.
 
-- `_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '', edit_list: str = '') -> dict`
+- `_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict`
   Нет докстринга.
 
-- `amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '', edit_list: str = '')`
+- `amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '')`
   Нет докстринга.
 
 - `amnezia_service_action(action: str)`
