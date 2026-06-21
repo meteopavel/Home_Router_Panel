@@ -1,9 +1,18 @@
 #!/bin/bash
 set -o pipefail
 
-MAC_USER="Work"
-MAC_HOST="mac.local"
-MAC_SSH_KEY="/home/meteopavel/.ssh/home_router_panel_deploy"
+# Читаем конфигурацию из файла (не хранится в git).
+# Скопируйте backup.conf.example → /etc/home-router-panel/backup.conf
+# и заполните своими значениями.
+CONF_FILE="/etc/home-router-panel/backup.conf"
+if [[ -f "$CONF_FILE" ]]; then
+  # shellcheck source=/dev/null
+  source "$CONF_FILE"
+fi
+
+MAC_USER="${BACKUP_MAC_USER:?BACKUP_MAC_USER not set in $CONF_FILE}"
+MAC_HOST="${BACKUP_MAC_HOST:?BACKUP_MAC_HOST not set in $CONF_FILE}"
+MAC_SSH_KEY="${BACKUP_MAC_SSH_KEY:?BACKUP_MAC_SSH_KEY not set in $CONF_FILE}"
 BACKUP_NAME="homerouter-$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
 
 exec /usr/bin/tar \

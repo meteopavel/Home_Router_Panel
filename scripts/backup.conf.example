@@ -1,0 +1,12 @@
+# Конфигурация скрипта home-router-backup.
+# Скопируйте этот файл в /etc/home-router-panel/backup.conf
+# и заполните значениями для вашего окружения.
+
+# Имя пользователя на машине, куда отправляется резервная копия
+BACKUP_MAC_USER=your_mac_username
+
+# Хостнейм или IP-адрес целевой машины
+BACKUP_MAC_HOST=your_mac_hostname_or_ip
+
+# Путь к приватному SSH-ключу на роутере
+BACKUP_MAC_SSH_KEY=/home/your_username/.ssh/home_router_panel_deploy
