@@ -8,7 +8,7 @@
 - модулей: 6
 - классов: 0
 - dataclass: 4
-- функций: 65
+- функций: 67
 - методов: 0
 - констант: 19
 
@@ -37,6 +37,9 @@
   Return {key: {title, hint}} dict for template use.
 
 - `create_list(key: str, title: str, hint: str) -> tuple[bool, str]`
+  Нет докстринга.
+
+- `update_list_meta(key: str, title: str, hint: str) -> tuple[bool, str]`
   Нет докстринга.
 
 - `delete_list(key: str) -> tuple[bool, str]`
@@ -217,10 +220,10 @@
 - `_parse_vpn_macs(content: str) -> set[str]`
   Нет докстринга.
 
-- `_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict`
+- `_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '', edit_list: str = '') -> dict`
   Нет докстринга.
 
-- `amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '')`
+- `amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '', edit_list: str = '')`
   Нет докстринга.
 
 - `amnezia_service_action(action: str)`
@@ -233,6 +236,9 @@
   Нет докстринга.
 
 - `amnezia_list_delete(request: Request, key: str)`
+  Нет докстринга.
+
+- `amnezia_list_meta_save(request: Request, key: str, title: str = Form(default=''), hint: str = Form(default=''))`
   Нет докстринга.
 
 - `amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[]))`
