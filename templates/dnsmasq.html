@@ -145,13 +145,18 @@
                     {% if e.mac and edit_mac == e.mac %}
                         {# Edit mode (MAC-based entries only) #}
                         <form method="post" action="/dnsmasq/static/update"
-                              style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
+                              style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0;">
                             <input type="hidden" name="mac" value="{{ e.mac }}">
-                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
-                                   style="width: 130px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px; flex-shrink: 0;">
-                            <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input"
-                                   style="width: 130px; padding: 6px 10px; font-size: 13px; flex-shrink: 0;" placeholder="имя (опционально)">
-                            <div class="actions" style="margin-left: auto;">
+                            <div style="display: flex; flex-direction: column; gap: 0; flex: 1; min-width: 0;">
+                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
+                                    <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
+                                           style="width: 130px; font-family: var(--font-mono); padding: 3px 8px; font-size: 13px; flex-shrink: 0;">
+                                    <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input"
+                                           style="width: 130px; padding: 3px 8px; font-size: 13px; flex-shrink: 0;" placeholder="имя (опционально)">
+                                </div>
+                                <div style="color: var(--muted); font-size: 13px; font-family: var(--font-mono); margin-top: 2px;">{{ e.mac }}</div>
+                            </div>
+                            <div class="actions">
                                 <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
                                 <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
                             </div>
