@@ -340,8 +340,8 @@ def dnsmasq_static_update(
 
 
 @app.post("/dnsmasq/static/remove")
-def dnsmasq_static_remove(request: Request, mac: str = Form(default="")):
-    ok, err = remove_static(mac)
+def dnsmasq_static_remove(request: Request, mac: str = Form(default=""), hostname: str = Form(default="")):
+    ok, err = remove_static(mac, hostname)
     if not ok:
         return _dnsmasq_response(request, error=err)
     return RedirectResponse(url="/dnsmasq?msg=removed", status_code=303)
