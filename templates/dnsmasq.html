@@ -142,7 +142,21 @@
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
                 <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; min-height: 72px;">
-                    {% if e.mac and edit_mac == e.mac %}
+                    {% if not e.mac and edit_host == e.hostname %}
+                        {# Edit mode — hostname-only entry (only IP is editable) #}
+                        <form method="post" action="/dnsmasq/static/update"
+                              style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
+                            <input type="hidden" name="mac" value="">
+                            <input type="hidden" name="hostname" value="{{ e.hostname }}">
+                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
+                                   style="width: 130px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px; flex-shrink: 0;">
+                            <div style="color: var(--muted); font-size: 13px; flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">по имени: {{ e.hostname }}</div>
+                            <div class="actions" style="margin-left: auto; flex-shrink: 0;">
+                                <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
+                                <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                            </div>
+                        </form>
+                    {% elif e.mac and edit_mac == e.mac %}
                         {# Edit mode (MAC-based entries only) #}
                         <form method="post" action="/dnsmasq/static/update"
                               style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
@@ -183,6 +197,11 @@
                                     </button>
                                 </form>
                             {% else %}
+                                <a href="/dnsmasq?edit_host={{ e.hostname }}" class="button button-secondary js-keep-scroll"
+                                   style="padding: 6px 12px; font-size: 12px;"
+                                   data-tooltip="Изменить IP для этого устройства">
+                                    Изменить
+                                </a>
                                 <form method="post" action="/dnsmasq/static/remove" style="display:inline;">
                                     <input type="hidden" name="hostname" value="{{ e.hostname }}">
                                     <button type="submit" class="button button-secondary button-danger"

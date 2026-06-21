@@ -276,7 +276,7 @@ def capture_traffic(request: Request, mac: str = "", seconds: int = 15, count: i
 
 
 @app.get("/dnsmasq")
-def dnsmasq_view(request: Request, msg: str = "", edit: str = "", pin: str = ""):
+def dnsmasq_view(request: Request, msg: str = "", edit: str = "", edit_host: str = "", pin: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="dnsmasq.html",
@@ -290,12 +290,13 @@ def dnsmasq_view(request: Request, msg: str = "", edit: str = "", pin: str = "")
             "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
             "msg": msg,
             "edit_mac": edit.strip().lower(),
+            "edit_host": edit_host.strip(),
             "pin_mac": pin.strip().lower(),
         },
     )
 
 
-def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac: str = "", pin_mac: str = ""):
+def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac: str = "", edit_host: str = "", pin_mac: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="dnsmasq.html",
@@ -310,6 +311,7 @@ def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac
             "msg": msg,
             "error": error,
             "edit_mac": edit_mac,
+            "edit_host": edit_host,
             "pin_mac": pin_mac,
         },
     )
