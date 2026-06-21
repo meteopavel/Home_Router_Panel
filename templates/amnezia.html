@@ -137,11 +137,24 @@
 
 {# ── Lists ─────────────────────────────────────────────────────── #}
 <section class="section" style="margin-bottom: 20px;">
-    <h2 style="margin-bottom: 6px;">Что идёт через VPN</h2>
-    <p style="color: var(--muted); margin-bottom: 20px;">
-        Файлы читаются скриптом маршрутизации при применении.
-        После сохранения нажмите «Применить маршрутизацию».
-    </p>
+    <div class="section-header" style="margin-bottom: 6px;">
+        <div>
+            <h2>Что идёт через VPN</h2>
+            <p style="color: var(--muted);">
+                Файлы читаются скриптом маршрутизации при применении.
+                После сохранения нажмите «Применить маршрутизацию».
+            </p>
+        </div>
+    </div>
+
+    {% if msg == 'list_created' %}
+        <div class="pill pill-green" style="margin-bottom: 16px; display: inline-block;">Список создан</div>
+    {% elif msg == 'list_deleted' %}
+        <div class="pill pill-gray" style="margin-bottom: 16px; display: inline-block;">Список удалён</div>
+    {% endif %}
+    {% if error %}
+        <div style="color: var(--danger); margin-bottom: 16px;">{{ error }}</div>
+    {% endif %}
 
     {% for name, meta in list_meta.items() %}
         <details class="list-details">
@@ -156,10 +169,43 @@
                         <button type="submit" class="button">Сохранить</button>
                     </div>
                 </form>
+                <form method="post" action="/amnezia/lists-delete/{{ name }}" style="margin-top: 8px;"
+                      onsubmit="return confirm('Удалить список «{{ meta.title }}»?\nФайл будет переименован в .txt.deleted');">
+                    <button type="submit" class="button button-secondary">Удалить список</button>
+                </form>
             </div>
         </details>
         {% if not loop.last %}<div style="height: 12px;"></div>{% endif %}
     {% endfor %}
+
+    <div style="height: 20px;"></div>
+    <details class="list-details">
+        <summary class="details-summary"><strong>+ Добавить список</strong></summary>
+        <div style="padding: 16px 0 4px;">
+            <form method="post" action="/amnezia/lists-create">
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 480px;">
+                    <label style="font-size: 13px; color: var(--muted);">
+                        Ключ (латиница, цифры, _)
+                        <input type="text" name="key" class="text-input" placeholder="my_list" required
+                               pattern="[a-z][a-z0-9_]{0,31}" style="display:block; margin-top: 4px; width: 100%;">
+                    </label>
+                    <label style="font-size: 13px; color: var(--muted);">
+                        Название
+                        <input type="text" name="title" class="text-input" placeholder="Мой список" required
+                               style="display:block; margin-top: 4px; width: 100%;">
+                    </label>
+                    <label style="font-size: 13px; color: var(--muted);">
+                        Подсказка (необязательно)
+                        <input type="text" name="hint" class="text-input" placeholder="Один адрес на строку"
+                               style="display:block; margin-top: 4px; width: 100%;">
+                    </label>
+                    <div>
+                        <button type="submit" class="button">Создать</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </details>
 </section>
 
 {# ── LAN devices ───────────────────────────────────────────────── #}

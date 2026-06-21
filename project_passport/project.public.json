@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-21T09:59:53.993450+00:00",
+  "generated_at": "2026-06-21T10:15:21.610684+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -36,15 +36,17 @@
     "Захват трафика по MAC-адресу и запуск резервного копирования системы.",
     "Развёртывание как systemd-сервис на роутере с Linux (проверено на Debian/Ubuntu)."
   ],
-  "signals": [],
+  "signals": [
+    "json_artifacts"
+  ],
   "tech_profile": {
     "python_files": 6,
     "scanned_python_files": 7,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 54,
+    "functions": 63,
     "methods": 0,
-    "constants": 18,
+    "constants": 19,
     "has_cli": false,
     "has_redmine_integration": false,
     "has_document_generation": false,
@@ -68,7 +70,7 @@
         "stats": {
           "classes": 0,
           "dataclasses": 0,
-          "functions": 21,
+          "functions": 24,
           "methods": 0,
           "constants": 3
         }
@@ -90,9 +92,9 @@
         "stats": {
           "classes": 0,
           "dataclasses": 0,
-          "functions": 11,
+          "functions": 17,
           "methods": 0,
-          "constants": 6
+          "constants": 7
         }
       },
       {
@@ -138,7 +140,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-06-21T09:59:53.905704+00:00",
+    "api_map_generated_at": "2026-06-21T10:15:21.514702+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"
