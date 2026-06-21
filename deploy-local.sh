@@ -153,10 +153,10 @@ if [[ "$BACKUP_OK" -eq 1 ]]; then
         cd "${PROJECT_ROOT}"
         7z a -p"${ARCHIVE_PASSWORD}" -mhe=on "${ARCHIVE_PATH}" ".env" > /dev/null
     )
-    log "📤 Отправляем архив на backup-сервер..."
-    rsync_via_tunnel "${SECURE_RSYNC_USER}" "${SECURE_RSYNC_HOST}" "${SECURE_RSYNC_PASSWORD}" \
-        "${ARCHIVE_PATH}" "${SECURE_RSYNC_PATH}"
-    echo "✅ Backup завершён: .env → ${SECURE_RSYNC_HOST}:${SECURE_RSYNC_PATH}"
+    # log "📤 Отправляем архив на backup-сервер..."
+    # rsync_via_tunnel "${SECURE_RSYNC_USER}" "${SECURE_RSYNC_HOST}" "${SECURE_RSYNC_PASSWORD}" \
+    #     "${ARCHIVE_PATH}" "${SECURE_RSYNC_PATH}"
+    echo "⚠️  rsync временно отключён — backup-сервер недоступен"
 fi
 
 log "----------------------------------------"
