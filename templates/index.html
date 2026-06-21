@@ -64,7 +64,7 @@
 
                     {% if service.state not in ["not_configured", "systemctl_not_found"] %}
                         <form method="post" action="/services/{{ service.key }}/restart" class="inline-form">
-                            <button class="button button-small" type="submit">Перезапустить</button>
+                            <button class="button button-sm" type="submit">Перезапустить</button>
                         </form>
                     {% endif %}
                 </div>
