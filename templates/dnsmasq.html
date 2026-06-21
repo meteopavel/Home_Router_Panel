@@ -141,7 +141,7 @@
         </p>
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
-                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; min-height: 72px;">
+                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; min-height: 48px;">
                     {% if not e.mac and edit_host == e.hostname %}
                         {# Edit mode — hostname-only entry (only IP is editable) #}
                         <form method="post" action="/dnsmasq/static/update"
@@ -174,11 +174,9 @@
                     {% else %}
                         {# View mode #}
                         <div class="service-main">
-                            <div class="service-name">
+                            <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
-                            </div>
-                            <div class="service-unit">
-                                {% if e.mac %}{{ e.mac }}{% else %}<em style="color: var(--muted);">по имени устройства</em>{% endif %}
+                                <span style="color: var(--muted); font-family: var(--font-mono);"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
                             </div>
                         </div>
                         <div class="actions">
@@ -319,14 +317,14 @@
                                     or (lease.hostname and (static_entries | selectattr('hostname', 'equalto', lease.hostname) | list | length > 0)) %}
                 {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
                 {% set is_static = is_managed or is_system %}
-                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px; min-height: 72px;">
+                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px; min-height: 48px;">
                     {% if not is_static and pin_mac == lease.mac %}
                         {# Pin mode — inline form with MAC/hostname choice #}
                         <div class="service-main">
-                            <div class="service-name">
+                            <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
+                                <span style="color: var(--muted); font-family: var(--font-mono);"> · {{ lease.mac }} · до {{ lease.expiry }}</span>
                             </div>
-                            <div class="service-unit">{{ lease.mac }} · до {{ lease.expiry }}</div>
                         </div>
                         <form method="post" action="/dnsmasq/static/add"
                               style="display: flex; gap: 8px; align-items: center; flex: 1; justify-content: flex-end;">
@@ -356,10 +354,10 @@
                         </form>
                     {% else %}
                         <div class="service-main">
-                            <div class="service-name">
+                            <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                                 {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
+                                <span style="color: var(--muted); font-family: var(--font-mono);"> · {{ lease.mac }} · до {{ lease.expiry }}</span>
                             </div>
-                            <div class="service-unit">{{ lease.mac }} · до {{ lease.expiry }}</div>
                         </div>
                         <div class="actions">
                             {% if is_static %}
