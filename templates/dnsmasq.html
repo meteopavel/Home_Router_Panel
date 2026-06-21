@@ -141,22 +141,17 @@
         </p>
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
-                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px;">
+                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; min-height: 72px;">
                     {% if e.mac and edit_mac == e.mac %}
                         {# Edit mode (MAC-based entries only) #}
                         <form method="post" action="/dnsmasq/static/update"
-                              style="display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0;">
+                              style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
                             <input type="hidden" name="mac" value="{{ e.mac }}">
-                            <div style="display: flex; flex-direction: column; gap: 0; flex: 1; min-width: 0;">
-                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
-                                    <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
-                                           style="width: 130px; font-family: var(--font-mono); padding: 3px 8px; font-size: 13px; flex-shrink: 0;">
-                                    <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input"
-                                           style="width: 130px; padding: 3px 8px; font-size: 13px; flex-shrink: 0;" placeholder="имя (опционально)">
-                                </div>
-                                <div style="color: var(--muted); font-size: 13px; font-family: var(--font-mono); margin-top: 2px;">{{ e.mac }}</div>
-                            </div>
-                            <div class="actions">
+                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
+                                   style="width: 130px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px; flex-shrink: 0;">
+                            <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input"
+                                   style="width: 130px; padding: 6px 10px; font-size: 13px; flex-shrink: 0;" placeholder="имя (опционально)">
+                            <div class="actions" style="margin-left: auto;">
                                 <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
                                 <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
                             </div>
@@ -302,7 +297,7 @@
                                     or (lease.hostname and (static_entries | selectattr('hostname', 'equalto', lease.hostname) | list | length > 0)) %}
                 {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
                 {% set is_static = is_managed or is_system %}
-                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px;">
+                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px; min-height: 72px;">
                     {% if not is_static and pin_mac == lease.mac %}
                         {# Pin mode — inline form with MAC/hostname choice #}
                         <div class="service-main">
