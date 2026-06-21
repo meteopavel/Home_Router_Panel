@@ -97,3 +97,10 @@ logs/
 tmp/
 temp/
 .deploy/
+
+# Screenshots and Playwright artifacts
+*.png
+*.jpg
+*.jpeg
+*.webp
+.playwright-mcp/
