@@ -69,6 +69,11 @@ a.button:active {
     margin: 0;
 }
 
+.button-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
 .button-danger {
     color: var(--red);
     border-color: rgba(248, 113, 113, 0.3);

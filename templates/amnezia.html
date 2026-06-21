@@ -169,8 +169,8 @@
             </summary>
             <div style="padding: 16px 0 4px;">
                 <details style="margin-bottom: 16px;">
-                    <summary class="button button-secondary"
-                             style="padding: 6px 12px; font-size: 12px; display: inline-flex; align-items: center; cursor: pointer; list-style: none;">
+                    <summary class="button button-secondary button-sm"
+                             style="display: inline-flex; align-items: center; cursor: pointer; list-style: none;">
                         Изменить название
                     </summary>
                     <div style="padding: 12px 0 0;">
@@ -187,7 +187,7 @@
                                        style="display:block; margin-top: 4px; width: 100%;">
                             </label>
                             <div>
-                                <button type="submit" class="button" style="padding: 6px 12px; font-size: 12px;">Сохранить</button>
+                                <button type="submit" class="button button-sm">Сохранить</button>
                             </div>
                         </form>
                     </div>
@@ -249,7 +249,7 @@
                 {% endif %}
                 <form method="post" action="/amnezia/lists-delete/{{ name }}" style="margin-top: 8px;"
                       onsubmit="return confirm('Удалить список «{{ meta.title }}»?\nФайл будет переименован в .txt.deleted');">
-                    <button type="submit" class="button button-secondary">Удалить список</button>
+                    <button type="submit" class="button button-secondary button-sm">Удалить список</button>
                 </form>
             </div>
         </details>
@@ -321,13 +321,13 @@
                         {% endif %}
                         <form method="post" action="/amnezia/devices/add-mac" style="display:inline;">
                             <input type="hidden" name="mac" value="{{ dev.mac }}">
-                            <button type="submit" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                            <button type="submit" class="button button-secondary button-sm"
                                     data-tooltip="Добавить MAC в список — весь трафик этого устройства пойдёт через AWG VPN">
                                 + VPN
                             </button>
                         </form>
                         <a href="/capture?mac={{ dev.mac }}&seconds=15&count=200"
-                           class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                           class="button button-secondary button-sm"
                            data-tooltip="Перехватить трафик этого устройства через tcpdump для анализа">
                             Захватить
                         </a>
