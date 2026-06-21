@@ -154,7 +154,7 @@
                             <div style="color: var(--muted); font-size: 12px; font-family: var(--font-mono);">{{ e.mac }}</div>
                             <div class="actions">
                                 <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
-                                <a href="/dnsmasq#entry-{{ e.mac | replace(':', '') }}" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                                <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
                             </div>
                         </form>
                     {% else %}
@@ -169,7 +169,7 @@
                         </div>
                         <div class="actions">
                             {% if e.mac %}
-                                <a href="/dnsmasq?edit={{ e.mac }}#entry-{{ e.mac | replace(':', '') }}" class="button button-secondary"
+                                <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary js-keep-scroll"
                                    style="padding: 6px 12px; font-size: 12px;"
                                    data-tooltip="Изменить IP или имя устройства">
                                     Изменить
@@ -330,7 +330,7 @@
                             <input type="hidden" name="hostname" value="{{ lease.hostname }}">
                             <div class="actions" style="margin-left: auto;">
                                 <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Закрепить</button>
-                                <a href="/dnsmasq#lease-{{ lease.mac | replace(':', '') }}" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                                <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
                             </div>
                         </form>
                     {% else %}
@@ -344,8 +344,8 @@
                             {% if is_static %}
                                 <span class="pill pill-green" data-tooltip="Для этого устройства задан статический IP">статич.</span>
                             {% else %}
-                                <a href="/dnsmasq?pin={{ lease.mac }}#lease-{{ lease.mac | replace(':', '') }}"
-                                   class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                                <a href="/dnsmasq?pin={{ lease.mac }}"
+                                   class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;"
                                    data-tooltip="Выбрать способ закрепления IP для этого устройства">
                                     Закрепить IP
                                 </a>
@@ -367,4 +367,18 @@
     {% endif %}
 </section>
 
+<script>
+(function () {
+    var key = 'dnsmasq_scroll';
+    var saved = sessionStorage.getItem(key);
+    if (saved !== null) {
+        sessionStorage.removeItem(key);
+        window.scrollTo(0, parseInt(saved, 10));
+    }
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest('a.js-keep-scroll');
+        if (a) sessionStorage.setItem(key, window.scrollY);
+    });
+})();
+</script>
 {% endblock %}
