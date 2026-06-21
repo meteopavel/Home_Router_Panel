@@ -162,9 +162,12 @@
     {% endif %}
 
     {% for name, meta in list_meta.items() %}
-        <details class="list-details">
+        <details class="list-details" {% if name == 'vpn_device_macs' %}style="border-color: rgba(96, 165, 250, 0.22);"{% endif %}>
             <summary class="details-summary">
                 <strong>{{ meta.title }}</strong>
+                {% if name == 'vpn_device_macs' %}
+                    <span class="pill" style="font-size: 11px; padding: 3px 8px;">DHCP</span>
+                {% endif %}
                 <span class="details-hint">{{ meta.hint }}</span>
             </summary>
             <div style="padding: 16px 0 4px;">
@@ -247,10 +250,12 @@
                         </div>
                     </form>
                 {% endif %}
+                {% if name != 'vpn_device_macs' %}
                 <form method="post" action="/amnezia/lists-delete/{{ name }}" style="margin-top: 8px;"
                       onsubmit="return confirm('Удалить список «{{ meta.title }}»?\nФайл будет переименован в .txt.deleted');">
                     <button type="submit" class="button button-secondary button-sm">Удалить список</button>
                 </form>
+                {% endif %}
             </div>
         </details>
         {% if not loop.last %}<div style="height: 12px;"></div>{% endif %}
