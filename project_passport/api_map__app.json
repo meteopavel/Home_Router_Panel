@@ -1,0 +1,983 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-21T07:00:02.762264+00:00",
+  "generator": "tools/extract_api_map.py",
+  "target": "app",
+  "scanned_python_files": 7,
+  "files_count": 6,
+  "skipped_files_count": 1,
+  "skipped_files": [
+    "app/__init__.py"
+  ],
+  "stats": {
+    "modules": 6,
+    "classes": 4,
+    "dataclasses": 4,
+    "functions": 54,
+    "methods": 0,
+    "constants": 18
+  },
+  "modules": [
+    {
+      "path": "app/amnezia.py",
+      "module_docstring": null,
+      "module_summary": null,
+      "classes": [],
+      "functions": [
+        {
+          "name": "_run_helper",
+          "signature": "_run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 47,
+          "end_lineno": 66
+        },
+        {
+          "name": "get_awg_status",
+          "signature": "get_awg_status() -> dict",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 69,
+          "end_lineno": 80
+        },
+        {
+          "name": "get_awg_show",
+          "signature": "get_awg_show() -> Optional[str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 83,
+          "end_lineno": 85
+        },
+        {
+          "name": "run_awg_action",
+          "signature": "run_awg_action(action: str) -> tuple[bool, str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 88,
+          "end_lineno": 95
+        },
+        {
+          "name": "get_diagnostics",
+          "signature": "get_diagnostics() -> Optional[str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 98,
+          "end_lineno": 100
+        },
+        {
+          "name": "_read_dnsmasq_leases",
+          "signature": "_read_dnsmasq_leases() -> dict[str, str]",
+          "docstring": "Return MAC→hostname map from dnsmasq leases file.",
+          "summary": "Return MAC→hostname map from dnsmasq leases file.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 106,
+          "end_lineno": 121
+        },
+        {
+          "name": "get_lan_devices",
+          "signature": "get_lan_devices() -> list[dict]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 124,
+          "end_lineno": 145
+        },
+        {
+          "name": "check_route",
+          "signature": "check_route(target: str) -> str",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 148,
+          "end_lineno": 152
+        },
+        {
+          "name": "read_awg_list",
+          "signature": "read_awg_list(name: str) -> str",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 155,
+          "end_lineno": 164
+        },
+        {
+          "name": "write_awg_list",
+          "signature": "write_awg_list(name: str, content: str) -> None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 167,
+          "end_lineno": 174
+        },
+        {
+          "name": "add_mac_to_vpn",
+          "signature": "add_mac_to_vpn(mac: str) -> bool",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 177,
+          "end_lineno": 188
+        }
+      ],
+      "constants": [
+        {
+          "name": "SUDO",
+          "annotation": null,
+          "value_repr": "'/usr/bin/sudo'",
+          "lineno": 6
+        },
+        {
+          "name": "HELPER",
+          "annotation": null,
+          "value_repr": "'/usr/local/sbin/home-router-awg-config'",
+          "lineno": 7
+        },
+        {
+          "name": "AWG_CONFIG_DIR",
+          "annotation": null,
+          "value_repr": "Path('/etc/home-router-panel/awg')",
+          "lineno": 8
+        },
+        {
+          "name": "LIST_FILES",
+          "annotation": null,
+          "value_repr": "{'tg_nets': AWG_CONFIG_DIR / 'tg_nets.txt', 'figma_domains': AWG_CONFIG_DIR / 'figma_domains.txt', 'claude_domains': AWG_CONFIG_DIR / 'claude_domains.txt', 'bebra_domains': AWG_CONFIG_DIR / 'bebra_domains.txt', 'ss_server_ips': AWG_CONFIG_DIR / 'ss_server_ips.txt', 'vpn_device_macs': AWG_CONFIG_DIR / 'vpn_device_macs.txt'}",
+          "lineno": 10
+        },
+        {
+          "name": "LIST_META",
+          "annotation": null,
+          "value_repr": "{'tg_nets': {'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, 'figma_domains': {'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, 'claude_domains': {'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, 'bebra_domains': {'title': 'Bebra домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, 'ss_server_ips': {'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, 'vpn_device_macs': {'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}}",
+          "lineno": 19
+        },
+        {
+          "name": "DNSMASQ_LEASES",
+          "annotation": null,
+          "value_repr": "Path('/var/lib/misc/dnsmasq.leases')",
+          "lineno": 103
+        }
+      ],
+      "stats": {
+        "classes": 0,
+        "dataclasses": 0,
+        "functions": 11,
+        "methods": 0,
+        "constants": 6
+      }
+    },
+    {
+      "path": "app/config.py",
+      "module_docstring": null,
+      "module_summary": null,
+      "classes": [],
+      "functions": [
+        {
+          "name": "load_config",
+          "signature": "load_config() -> dict[str, Any]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 11,
+          "end_lineno": 23
+        }
+      ],
+      "constants": [
+        {
+          "name": "PROJECT_ROOT",
+          "annotation": null,
+          "value_repr": "Path(__file__).resolve().parent.parent",
+          "lineno": 7
+        },
+        {
+          "name": "CONFIG_PATH",
+          "annotation": null,
+          "value_repr": "PROJECT_ROOT / 'config.yaml'",
+          "lineno": 8
+        }
+      ],
+      "stats": {
+        "classes": 0,
+        "dataclasses": 0,
+        "functions": 1,
+        "methods": 0,
+        "constants": 2
+      }
+    },
+    {
+      "path": "app/dnsmasq.py",
+      "module_docstring": null,
+      "module_summary": null,
+      "classes": [
+        {
+          "name": "Lease",
+          "signature": "Lease [dataclass]",
+          "docstring": null,
+          "summary": null,
+          "kind": "dataclass",
+          "bases": [],
+          "decorators": [
+            "dataclass"
+          ],
+          "fields": [
+            {
+              "name": "expiry",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 58
+            },
+            {
+              "name": "mac",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 59
+            },
+            {
+              "name": "ip",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 60
+            },
+            {
+              "name": "hostname",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 61
+            },
+            {
+              "name": "client_id",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 62
+            }
+          ],
+          "methods": [],
+          "lineno": 57,
+          "end_lineno": 62
+        },
+        {
+          "name": "StaticEntry",
+          "signature": "StaticEntry [dataclass]",
+          "docstring": null,
+          "summary": null,
+          "kind": "dataclass",
+          "bases": [],
+          "decorators": [
+            "dataclass"
+          ],
+          "fields": [
+            {
+              "name": "mac",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 67
+            },
+            {
+              "name": "ip",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 68
+            },
+            {
+              "name": "hostname",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 69
+            }
+          ],
+          "methods": [],
+          "lineno": 66,
+          "end_lineno": 69
+        }
+      ],
+      "functions": [
+        {
+          "name": "validate_entry",
+          "signature": "validate_entry(mac: str, ip: str, hostname: str) -> str | None",
+          "docstring": "Return error string if invalid, None if ok.",
+          "summary": "Return error string if invalid, None if ok.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 15,
+          "end_lineno": 38
+        },
+        {
+          "name": "_test_config",
+          "signature": "_test_config() -> tuple[bool, str]",
+          "docstring": "Run dnsmasq --test to validate current config. Returns (ok, output).",
+          "summary": "Run dnsmasq --test to validate current config. Returns (ok, output).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 41,
+          "end_lineno": 53
+        },
+        {
+          "name": "read_leases",
+          "signature": "read_leases() -> list[Lease]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 72,
+          "end_lineno": 97
+        },
+        {
+          "name": "read_system_static",
+          "signature": "read_system_static() -> list[dict]",
+          "docstring": "Read dhcp-host entries from /etc/dnsmasq.d/*.conf (read-only, for display).",
+          "summary": "Read dhcp-host entries from /etc/dnsmasq.d/*.conf (read-only, for display).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 103,
+          "end_lineno": 123
+        },
+        {
+          "name": "read_static",
+          "signature": "read_static() -> list[StaticEntry]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 126,
+          "end_lineno": 153
+        },
+        {
+          "name": "write_static",
+          "signature": "write_static(entries: list[StaticEntry]) -> tuple[bool, str]",
+          "docstring": "Write static entries. Returns (ok, error_or_empty).",
+          "summary": "Write static entries. Returns (ok, error_or_empty).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 156,
+          "end_lineno": 179
+        },
+        {
+          "name": "add_static",
+          "signature": "add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]",
+          "docstring": "Add or update entry. Returns (ok, error_or_empty).",
+          "summary": "Add or update entry. Returns (ok, error_or_empty).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 182,
+          "end_lineno": 202
+        },
+        {
+          "name": "remove_static",
+          "signature": "remove_static(mac: str, hostname: str = '') -> tuple[bool, str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 205,
+          "end_lineno": 217
+        },
+        {
+          "name": "reload_dnsmasq",
+          "signature": "reload_dnsmasq() -> tuple[bool, str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 220,
+          "end_lineno": 230
+        },
+        {
+          "name": "restart_dnsmasq",
+          "signature": "restart_dnsmasq() -> tuple[bool, str]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 233,
+          "end_lineno": 243
+        },
+        {
+          "name": "get_ip_group",
+          "signature": "get_ip_group(ip: str) -> str",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 259,
+          "end_lineno": 267
+        },
+        {
+          "name": "group_static_entries",
+          "signature": "group_static_entries(entries: list[StaticEntry]) -> list[dict]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 270,
+          "end_lineno": 290
+        },
+        {
+          "name": "get_dnsmasq_state",
+          "signature": "get_dnsmasq_state() -> str",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 293,
+          "end_lineno": 301
+        }
+      ],
+      "constants": [
+        {
+          "name": "LEASES_FILE",
+          "annotation": null,
+          "value_repr": "Path('/var/lib/misc/dnsmasq.leases')",
+          "lineno": 7
+        },
+        {
+          "name": "STATIC_FILE",
+          "annotation": null,
+          "value_repr": "Path('/etc/home-router-panel/awg/dnsmasq-static.conf')",
+          "lineno": 8
+        },
+        {
+          "name": "_HOSTNAME_RE",
+          "annotation": null,
+          "value_repr": "re.compile('^[a-zA-Z0-9\\\\-]{1,63}$')",
+          "lineno": 11
+        },
+        {
+          "name": "_IP_RE",
+          "annotation": null,
+          "value_repr": "re.compile('^(\\\\d{1,3}\\\\.){3}\\\\d{1,3}$')",
+          "lineno": 12
+        },
+        {
+          "name": "DNSMASQ_D",
+          "annotation": null,
+          "value_repr": "Path('/etc/dnsmasq.d')",
+          "lineno": 100
+        },
+        {
+          "name": "_IP_GROUPS",
+          "annotation": "list[tuple[int, int, str]]",
+          "value_repr": "[(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 59, 'Телефоны'), (60, 79, 'Динамический пул'), (110, 119, 'Камеры'), (200, 209, 'Майнеры')]",
+          "lineno": 246
+        },
+        {
+          "name": "IP_GROUP_NAMES",
+          "annotation": "list[str]",
+          "value_repr": "list(dict.fromkeys((n for (_, _, n) in _IP_GROUPS)))",
+          "lineno": 256
+        }
+      ],
+      "stats": {
+        "classes": 2,
+        "dataclasses": 2,
+        "functions": 13,
+        "methods": 0,
+        "constants": 7
+      }
+    },
+    {
+      "path": "app/hotlists.py",
+      "module_docstring": null,
+      "module_summary": null,
+      "classes": [
+        {
+          "name": "HotlistContent",
+          "signature": "HotlistContent [dataclass]",
+          "docstring": null,
+          "summary": null,
+          "kind": "dataclass",
+          "bases": [],
+          "decorators": [
+            "dataclass"
+          ],
+          "fields": [
+            {
+              "name": "name",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 7
+            },
+            {
+              "name": "path",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 8
+            },
+            {
+              "name": "lines",
+              "annotation": "list[str]",
+              "value_repr": null,
+              "lineno": 9
+            },
+            {
+              "name": "text",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 10
+            }
+          ],
+          "methods": [],
+          "lineno": 6,
+          "end_lineno": 10
+        }
+      ],
+      "functions": [
+        {
+          "name": "get_hotlists_config",
+          "signature": "get_hotlists_config(config: dict) -> list[dict]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 13,
+          "end_lineno": 22
+        },
+        {
+          "name": "read_hotlist",
+          "signature": "read_hotlist(config: dict, name: str) -> HotlistContent | None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 25,
+          "end_lineno": 44
+        },
+        {
+          "name": "write_hotlist",
+          "signature": "write_hotlist(config: dict, name: str, content: str) -> None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 47,
+          "end_lineno": 55
+        }
+      ],
+      "constants": [],
+      "stats": {
+        "classes": 1,
+        "dataclasses": 1,
+        "functions": 3,
+        "methods": 0,
+        "constants": 0
+      }
+    },
+    {
+      "path": "app/main.py",
+      "module_docstring": null,
+      "module_summary": null,
+      "classes": [],
+      "functions": [
+        {
+          "name": "index",
+          "signature": "index(request: Request)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/')"
+          ],
+          "lineno": 49,
+          "end_lineno": 62
+        },
+        {
+          "name": "zapret_view",
+          "signature": "zapret_view(request: Request)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/zapret')"
+          ],
+          "lineno": 66,
+          "end_lineno": 81
+        },
+        {
+          "name": "hotlist_view",
+          "signature": "hotlist_view(name: str)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/hotlists/{name}')"
+          ],
+          "lineno": 85,
+          "end_lineno": 86
+        },
+        {
+          "name": "hotlist_edit_view",
+          "signature": "hotlist_edit_view(request: Request, name: str)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/hotlists/{name}/edit')"
+          ],
+          "lineno": 90,
+          "end_lineno": 105
+        },
+        {
+          "name": "hotlist_edit_save",
+          "signature": "hotlist_edit_save(request: Request, name: str, content: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/hotlists/{name}/edit')"
+          ],
+          "lineno": 109,
+          "end_lineno": 138
+        },
+        {
+          "name": "amnezia_view",
+          "signature": "amnezia_view(request: Request, target: str = '')",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/amnezia')"
+          ],
+          "lineno": 142,
+          "end_lineno": 168
+        },
+        {
+          "name": "amnezia_service_action",
+          "signature": "amnezia_service_action(action: str)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/amnezia/service/{action}')"
+          ],
+          "lineno": 172,
+          "end_lineno": 174
+        },
+        {
+          "name": "amnezia_list_save",
+          "signature": "amnezia_list_save(name: str, content: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/amnezia/lists/{name}')"
+          ],
+          "lineno": 178,
+          "end_lineno": 183
+        },
+        {
+          "name": "amnezia_add_mac",
+          "signature": "amnezia_add_mac(mac: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/amnezia/devices/add-mac')"
+          ],
+          "lineno": 187,
+          "end_lineno": 189
+        },
+        {
+          "name": "service_restart",
+          "signature": "service_restart(name: str)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/services/{name}/restart')"
+          ],
+          "lineno": 193,
+          "end_lineno": 207
+        },
+        {
+          "name": "backup_run",
+          "signature": "backup_run()",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/backup/run')"
+          ],
+          "lineno": 211,
+          "end_lineno": 226
+        },
+        {
+          "name": "capture_traffic",
+          "signature": "capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: int = 200)",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/capture')"
+          ],
+          "lineno": 230,
+          "end_lineno": 276
+        },
+        {
+          "name": "_build_dnsmasq_context",
+          "signature": "_build_dnsmasq_context(**extra) -> dict",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 279,
+          "end_lineno": 303
+        },
+        {
+          "name": "dnsmasq_view",
+          "signature": "dnsmasq_view(request: Request, msg: str = '', edit: str = '', edit_host: str = '', pin: str = '')",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/dnsmasq')"
+          ],
+          "lineno": 307,
+          "end_lineno": 317
+        },
+        {
+          "name": "_dnsmasq_response",
+          "signature": "_dnsmasq_response(request: Request, error: str = '', msg: str = '', edit_mac: str = '', edit_host: str = '', pin_mac: str = '')",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 320,
+          "end_lineno": 331
+        },
+        {
+          "name": "dnsmasq_static_add",
+          "signature": "dnsmasq_static_add(request: Request, mac: str = Form(default=''), ip: str = Form(default=''), hostname: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/dnsmasq/static/add')"
+          ],
+          "lineno": 335,
+          "end_lineno": 344
+        },
+        {
+          "name": "dnsmasq_static_update",
+          "signature": "dnsmasq_static_update(request: Request, mac: str = Form(default=''), ip: str = Form(default=''), hostname: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/dnsmasq/static/update')"
+          ],
+          "lineno": 348,
+          "end_lineno": 357
+        },
+        {
+          "name": "dnsmasq_static_remove",
+          "signature": "dnsmasq_static_remove(request: Request, mac: str = Form(default=''), hostname: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/dnsmasq/static/remove')"
+          ],
+          "lineno": 361,
+          "end_lineno": 365
+        },
+        {
+          "name": "dnsmasq_service_reload",
+          "signature": "dnsmasq_service_reload()",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/dnsmasq/service/reload')"
+          ],
+          "lineno": 369,
+          "end_lineno": 373
+        },
+        {
+          "name": "dnsmasq_service_restart",
+          "signature": "dnsmasq_service_restart()",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/dnsmasq/service/restart')"
+          ],
+          "lineno": 377,
+          "end_lineno": 381
+        },
+        {
+          "name": "health",
+          "signature": "health()",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/health')"
+          ],
+          "lineno": 385,
+          "end_lineno": 386
+        }
+      ],
+      "constants": [
+        {
+          "name": "PROJECT_ROOT",
+          "annotation": null,
+          "value_repr": "Path(__file__).resolve().parent.parent",
+          "lineno": 36
+        },
+        {
+          "name": "STATIC_DIR",
+          "annotation": null,
+          "value_repr": "PROJECT_ROOT / 'static'",
+          "lineno": 37
+        },
+        {
+          "name": "TEMPLATES_DIR",
+          "annotation": null,
+          "value_repr": "PROJECT_ROOT / 'templates'",
+          "lineno": 38
+        }
+      ],
+      "stats": {
+        "classes": 0,
+        "dataclasses": 0,
+        "functions": 21,
+        "methods": 0,
+        "constants": 3
+      }
+    },
+    {
+      "path": "app/services.py",
+      "module_docstring": null,
+      "module_summary": null,
+      "classes": [
+        {
+          "name": "ServiceStatus",
+          "signature": "ServiceStatus [dataclass]",
+          "docstring": null,
+          "summary": null,
+          "kind": "dataclass",
+          "bases": [],
+          "decorators": [
+            "dataclass"
+          ],
+          "fields": [
+            {
+              "name": "key",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 9
+            },
+            {
+              "name": "name",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 10
+            },
+            {
+              "name": "unit",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 11
+            },
+            {
+              "name": "state",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 12
+            },
+            {
+              "name": "description",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 13
+            },
+            {
+              "name": "is_active",
+              "annotation": "bool",
+              "value_repr": null,
+              "lineno": 14
+            }
+          ],
+          "methods": [],
+          "lineno": 8,
+          "end_lineno": 14
+        }
+      ],
+      "functions": [
+        {
+          "name": "find_systemctl",
+          "signature": "find_systemctl() -> str | None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 17,
+          "end_lineno": 24
+        },
+        {
+          "name": "get_systemd_service_state",
+          "signature": "get_systemd_service_state(unit: str) -> str",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 27,
+          "end_lineno": 44
+        },
+        {
+          "name": "get_services_status",
+          "signature": "get_services_status(config: dict) -> list[ServiceStatus]",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 47,
+          "end_lineno": 68
+        },
+        {
+          "name": "get_service_unit",
+          "signature": "get_service_unit(config: dict, service_name: str) -> str | None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 71,
+          "end_lineno": 80
+        },
+        {
+          "name": "restart_service",
+          "signature": "restart_service(config: dict, service_name: str) -> subprocess.CompletedProcess",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 83,
+          "end_lineno": 92
+        }
+      ],
+      "constants": [],
+      "stats": {
+        "classes": 1,
+        "dataclasses": 1,
+        "functions": 5,
+        "methods": 0,
+        "constants": 0
+      }
+    }
+  ]
+}

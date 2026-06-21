@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-21T07:00:24.231415+00:00",
+  "generated_by": "tools/build_project_passport.py",
+  "auto_generated": true,
+  "review_status": "draft",
+  "id": "home-router-panel",
+  "title": "Home Router Panel",
+  "tagline": "FastAPI-панель для управления домашним роутером: VPN, DHCP, сервисы и бэкап через браузер.",
+  "summary": "Веб-приложение на FastAPI для локального управления домашним роутером на Linux. Панель объединяет управление AmneziaWG VPN (запуск/стоп, списки маршрутизации по MAC), статическими DHCP-записями dnsmasq с группировкой по сегментам сети, кастомными hotlist-файлами, статусом системных сервисов через systemd и запуском резервного копирования. Всё доступно через браузер в локальной сети.",
+  "status": "active",
+  "visibility": "public",
+  "role": "solo_developer",
+  "domain": [
+    "networking",
+    "sysadmin",
+    "automation",
+    "self-hosted"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "Jinja2",
+    "systemd",
+    "AmneziaWG",
+    "dnsmasq"
+  ],
+  "links": {
+    "repo": "https://github.com/meteopavel/Home_Router_Panel",
+    "demo": null,
+    "details": "/projects/home-router-panel"
+  },
+  "highlights": [
+    "Управление AmneziaWG VPN: запуск/стоп службы, просмотр активных пиров, маршрутизация по MAC.",
+    "Редактирование статических DHCP-записей dnsmasq с автоматической группировкой по сегментам сети.",
+    "Управление hotlist-файлами маршрутизации (Telegram-сети, домены Figma и др.) через веб-интерфейс.",
+    "Мониторинг состояния системных сервисов через systemd и ручной перезапуск из браузера.",
+    "Захват трафика по MAC-адресу и запуск резервного копирования системы.",
+    "Развёртывание как systemd-сервис на роутере с Linux (проверено на Debian/Ubuntu)."
+  ],
+  "public_artifacts": [
+    "api_map_json",
+    "api_map_markdown",
+    "project_meta_json",
+    "project_public_json"
+  ],
+  "notes": {
+    "project_root": ".",
+    "source_target": "app",
+    "scanned_python_files": 7
+  }
+}
