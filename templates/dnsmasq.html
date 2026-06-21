@@ -325,10 +325,10 @@
 <section class="section">
     <h2 style="margin-bottom: 6px;">Активные динамические аренды</h2>
     <p style="color: var(--muted); margin-bottom: 20px; font-size: 13px;">
-        {{ leases|length }} аренд · <code>/var/lib/misc/dnsmasq.leases</code>
+        {{ dynamic_lease_count }} аренд · <code>/var/lib/misc/dnsmasq.leases</code>
     </p>
 
-    {% if leases %}
+    {% if dynamic_lease_count > 0 %}
         <div class="service-list">
             {% for lease in leases %}
                 {% set is_managed = (static_entries | selectattr('mac', 'equalto', lease.mac) | list | length > 0)

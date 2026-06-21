@@ -276,25 +276,44 @@ def capture_traffic(request: Request, mac: str = "", seconds: int = 15, count: i
     )
 
 
+def _build_dnsmasq_context(**extra) -> dict:
+    static = read_static()
+    system = read_system_static()
+    leases = read_leases()
+    static_macs = {e.mac for e in static if e.mac}
+    static_hosts = {e.hostname for e in static if not e.mac and e.hostname}
+    system_macs = {e["mac"] for e in system}
+    dynamic_lease_count = sum(
+        1 for l in leases
+        if l.mac not in static_macs
+        and l.mac not in system_macs
+        and not (l.hostname and l.hostname in static_hosts)
+    )
+    return {
+        "title": "dnsmasq",
+        "active_tab": "dnsmasq",
+        "state": get_dnsmasq_state(),
+        "leases": leases,
+        "static_entries": static,
+        "system_static": system,
+        "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
+        "grouped_entries": group_static_entries(static),
+        "dynamic_lease_count": dynamic_lease_count,
+        **extra,
+    }
+
+
 @app.get("/dnsmasq")
 def dnsmasq_view(request: Request, msg: str = "", edit: str = "", edit_host: str = "", pin: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="dnsmasq.html",
-        context={
-            "title": "dnsmasq",
-            "active_tab": "dnsmasq",
-            "state": get_dnsmasq_state(),
-            "leases": read_leases(),
-            "static_entries": read_static(),
-            "system_static": read_system_static(),
-            "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
-            "msg": msg,
-            "edit_mac": edit.strip().lower(),
-            "edit_host": edit_host.strip(),
-            "pin_mac": pin.strip().lower(),
-            "grouped_entries": group_static_entries(read_static()),
-        },
+        context=_build_dnsmasq_context(
+            msg=msg,
+            edit_mac=edit.strip().lower(),
+            edit_host=edit_host.strip(),
+            pin_mac=pin.strip().lower(),
+        ),
     )
 
 
@@ -302,21 +321,13 @@ def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac
     return templates.TemplateResponse(
         request=request,
         name="dnsmasq.html",
-        context={
-            "title": "dnsmasq",
-            "active_tab": "dnsmasq",
-            "state": get_dnsmasq_state(),
-            "leases": read_leases(),
-            "static_entries": read_static(),
-            "system_static": read_system_static(),
-            "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
-            "msg": msg,
-            "error": error,
-            "edit_mac": edit_mac,
-            "edit_host": edit_host,
-            "pin_mac": pin_mac,
-            "grouped_entries": group_static_entries(read_static()),
-        },
+        context=_build_dnsmasq_context(
+            msg=msg,
+            error=error,
+            edit_mac=edit_mac,
+            edit_host=edit_host,
+            pin_mac=pin_mac,
+        ),
     )
 
 
