@@ -377,6 +377,7 @@ def _build_dnsmasq_context(**extra) -> dict:
         and l.mac not in system_macs
         and not (l.hostname and l.hostname in static_hosts)
     )
+    online_macs = {l.mac for l in leases if l.mac}
     return {
         "title": "dnsmasq",
         "active_tab": "dnsmasq",
@@ -387,6 +388,7 @@ def _build_dnsmasq_context(**extra) -> dict:
         "static_file": str(__import__("app.dnsmasq", fromlist=["STATIC_FILE"]).STATIC_FILE),
         "grouped_entries": group_static_entries(static),
         "dynamic_lease_count": dynamic_lease_count,
+        "online_macs": online_macs,
         **extra,
     }
 

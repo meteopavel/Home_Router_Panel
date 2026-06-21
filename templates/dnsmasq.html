@@ -118,8 +118,7 @@
                                 <input type="hidden" name="mac" value="{{ e.mac }}">
                                 <input type="hidden" name="ip" value="{{ e.ip }}">
                                 <input type="hidden" name="hostname" value="{{ e.hostname }}">
-                                <button type="submit" class="button button-secondary"
-                                        style="padding: 6px 12px; font-size: 12px;"
+                                <button type="submit" class="button button-secondary button-sm"
                                         data-tooltip="Скопировать в dnsmasq-static.conf — после этого можно удалить {{ e.source }}">
                                     Импортировать
                                 </button>
@@ -192,32 +191,33 @@
                                             </div>
                                         </div>
                                         <div class="actions">
+                                            {% if e.mac and e.mac in online_macs %}
+                                                <span class="pill pill-green" data-tooltip="Активная аренда DHCP">онлайн</span>
+                                            {% elif e.mac %}
+                                                <span class="pill pill-gray" data-tooltip="Нет активной аренды DHCP">офлайн</span>
+                                            {% endif %}
                                             {% if e.mac %}
-                                                <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary js-keep-scroll"
-                                                   style="padding: 6px 12px; font-size: 12px;"
+                                                <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary button-sm js-keep-scroll"
                                                    data-tooltip="Изменить IP или имя устройства">
                                                     Изменить
                                                 </a>
                                                 <form method="post" action="/dnsmasq/static/remove" style="display:inline;"
                                                       onsubmit="return confirm('Удалить резервацию?')">
                                                     <input type="hidden" name="mac" value="{{ e.mac }}">
-                                                    <button type="submit" class="button button-secondary button-danger"
-                                                            style="padding: 6px 12px; font-size: 12px;"
+                                                    <button type="submit" class="button button-secondary button-danger button-sm"
                                                             data-tooltip="Удалить резервацию для этого MAC">
                                                         Удалить
                                                     </button>
                                                 </form>
                                             {% else %}
-                                                <a href="/dnsmasq?edit_host={{ e.hostname }}" class="button button-secondary js-keep-scroll"
-                                                   style="padding: 6px 12px; font-size: 12px;"
+                                                <a href="/dnsmasq?edit_host={{ e.hostname }}" class="button button-secondary button-sm js-keep-scroll"
                                                    data-tooltip="Изменить IP для этого устройства">
                                                     Изменить
                                                 </a>
                                                 <form method="post" action="/dnsmasq/static/remove" style="display:inline;"
                                                       onsubmit="return confirm('Удалить резервацию?')">
                                                     <input type="hidden" name="hostname" value="{{ e.hostname }}">
-                                                    <button type="submit" class="button button-secondary button-danger"
-                                                            style="padding: 6px 12px; font-size: 12px;"
+                                                    <button type="submit" class="button button-secondary button-danger button-sm"
                                                             data-tooltip="Удалить резервацию по имени устройства">
                                                         Удалить
                                                     </button>
