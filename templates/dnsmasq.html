@@ -28,31 +28,63 @@
     {% endif %}
 
     {% if msg %}
-        <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(74,222,128,0.1);
+        <div id="dnsmasq-msg" style="margin-bottom: 16px; padding: 10px 14px; background: rgba(74,222,128,0.1);
                     border: 1px solid rgba(74,222,128,0.25); border-radius: var(--radius-btn);
                     font-size: 13px; color: var(--green);">
-            {% if msg == 'saved' %}Резервация сохранена. Нажмите «Применить» для вступления в силу.
-            {% elif msg == 'removed' %}Резервация удалена. Нажмите «Применить» для вступления в силу.
-            {% elif msg == 'reloaded' %}dnsmasq перезагружен.
-            {% elif msg == 'restarted' %}dnsmasq перезапущен.
+            {% if msg == 'saved' %}Резервация сохранена — нажмите «Применить».
+            {% elif msg == 'removed' %}Резервация удалена — нажмите «Применить».
             {% else %}{{ msg }}{% endif %}
         </div>
+    {% else %}
+        <div id="dnsmasq-msg" style="display:none; margin-bottom: 16px; padding: 10px 14px;
+                    border-radius: var(--radius-btn); font-size: 13px;"></div>
     {% endif %}
 
     <div class="actions">
-        <form method="post" action="/dnsmasq/service/reload">
-            <button type="submit" class="button"
-                    data-tooltip="Применить изменения конфига без обрыва текущих аренд (SIGHUP)">
-                Применить
-            </button>
-        </form>
-        <form method="post" action="/dnsmasq/service/restart">
-            <button type="submit" class="button button-secondary"
-                    data-tooltip="Полный перезапуск — все аренды обнуляются. Нужен редко.">
-                Перезапустить
-            </button>
-        </form>
+        <button class="button" onclick="dnsmasqAction('/dnsmasq/service/reload', this)"
+                data-tooltip="Применить изменения конфига без обрыва текущих аренд (SIGHUP)">
+            Применить
+        </button>
+        <button class="button button-secondary" onclick="dnsmasqAction('/dnsmasq/service/restart', this)"
+                data-tooltip="Полный перезапуск — все аренды обнуляются. Нужен редко.">
+            Перезапустить
+        </button>
     </div>
+    <script>
+    function dnsmasqAction(url, btn) {
+        var orig = btn.textContent.trim();
+        btn.disabled = true;
+        btn.textContent = '...';
+        fetch(url, {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                var el = document.getElementById('dnsmasq-msg');
+                if (data.ok) {
+                    el.style.display = '';
+                    el.style.background = 'rgba(74,222,128,0.1)';
+                    el.style.border = '1px solid rgba(74,222,128,0.25)';
+                    el.style.color = 'var(--green)';
+                    el.textContent = orig === 'Применить' ? 'dnsmasq перезагружен.' : 'dnsmasq перезапущен.';
+                } else {
+                    el.style.display = '';
+                    el.style.background = 'rgba(239,68,68,0.1)';
+                    el.style.border = '1px solid rgba(239,68,68,0.25)';
+                    el.style.color = 'var(--red)';
+                    el.textContent = data.error || 'Ошибка';
+                }
+            })
+            .catch(function() {
+                var el = document.getElementById('dnsmasq-msg');
+                el.style.display = '';
+                el.style.color = 'var(--red)';
+                el.textContent = 'Ошибка сети';
+            })
+            .finally(function() {
+                btn.disabled = false;
+                btn.textContent = orig;
+            });
+    }
+    </script>
 </section>
 
 {# ── Static Reservations ───────────────────────────────────── #}
