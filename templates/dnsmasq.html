@@ -164,8 +164,8 @@
                                                    style="width: 130px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px; flex-shrink: 0;">
                                             <div style="color: var(--muted); font-size: 13px; flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">по имени: {{ e.hostname }}</div>
                                             <div class="actions" style="margin-left: auto; flex-shrink: 0;">
-                                                <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
-                                                <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                                                <button type="submit" class="button button-sm">Сохранить</button>
+                                                <a href="/dnsmasq" class="button button-secondary button-sm js-keep-scroll">Отмена</a>
                                             </div>
                                         </form>
                                     {% elif e.mac and edit_mac == e.mac %}
@@ -179,8 +179,8 @@
                                                    style="width: 130px; padding: 6px 10px; font-size: 13px; flex-shrink: 0;" placeholder="имя (опционально)">
                                             <div style="color: var(--muted); font-size: 13px; font-family: var(--font-mono); flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ e.mac }}</div>
                                             <div class="actions" style="margin-left: auto; flex-shrink: 0;">
-                                                <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
-                                                <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                                                <button type="submit" class="button button-sm">Сохранить</button>
+                                                <a href="/dnsmasq" class="button button-secondary button-sm js-keep-scroll">Отмена</a>
                                             </div>
                                         </form>
                                     {% else %}
@@ -367,8 +367,8 @@
                             <input type="hidden" name="mac" value="{{ lease.mac }}">
                             <input type="hidden" name="hostname" value="{{ lease.hostname }}">
                             <div class="actions" style="margin-left: auto;">
-                                <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Закрепить</button>
-                                <a href="/dnsmasq" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                                <button type="submit" class="button button-sm">Закрепить</button>
+                                <a href="/dnsmasq" class="button button-secondary button-sm js-keep-scroll">Отмена</a>
                             </div>
                         </form>
                     {% else %}
@@ -383,13 +383,13 @@
                                 <span class="pill pill-green" data-tooltip="Для этого устройства задан статический IP">статич.</span>
                             {% else %}
                                 <a href="/dnsmasq?pin={{ lease.mac }}"
-                                   class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;"
+                                   class="button button-secondary button-sm js-keep-scroll"
                                    data-tooltip="Выбрать способ закрепления IP для этого устройства">
                                     Закрепить IP
                                 </a>
                             {% endif %}
                             <a href="/capture?mac={{ lease.mac }}&seconds=15&count=200"
-                               class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                               class="button button-secondary button-sm"
                                data-tooltip="Перехватить трафик этого устройства через tcpdump">
                                 Захватить
                             </a>
