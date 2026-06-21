@@ -378,6 +378,7 @@ def _build_dnsmasq_context(**extra) -> dict:
         and not (l.hostname and l.hostname in static_hosts)
     )
     online_macs = {l.mac for l in leases if l.mac}
+    online_hostnames = {l.hostname.lower() for l in leases if l.hostname and l.hostname != "*"}
     return {
         "title": "dnsmasq",
         "active_tab": "dnsmasq",
@@ -389,6 +390,7 @@ def _build_dnsmasq_context(**extra) -> dict:
         "grouped_entries": group_static_entries(static),
         "dynamic_lease_count": dynamic_lease_count,
         "online_macs": online_macs,
+        "online_hostnames": online_hostnames,
         **extra,
     }
 

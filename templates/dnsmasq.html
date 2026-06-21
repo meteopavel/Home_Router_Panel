@@ -193,7 +193,11 @@
                                         <div class="actions">
                                             {% if e.mac and e.mac in online_macs %}
                                                 <span class="pill pill-green" data-tooltip="Активная аренда DHCP">онлайн</span>
+                                            {% elif not e.mac and e.hostname and e.hostname.lower() in online_hostnames %}
+                                                <span class="pill pill-green" data-tooltip="Активная аренда DHCP">онлайн</span>
                                             {% elif e.mac %}
+                                                <span class="pill pill-gray" data-tooltip="Нет активной аренды DHCP">офлайн</span>
+                                            {% elif e.hostname %}
                                                 <span class="pill pill-gray" data-tooltip="Нет активной аренды DHCP">офлайн</span>
                                             {% endif %}
                                             {% if e.mac %}
