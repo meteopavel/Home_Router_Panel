@@ -151,7 +151,7 @@ def _parse_vpn_macs(content: str) -> set[str]:
     return result
 
 
-def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "", edit_list: str = "") -> dict:
+def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "") -> dict:
     list_meta = get_list_meta()
     check_result = None
     if target:
@@ -172,18 +172,17 @@ def _amnezia_context(request: Request, target: str = "", msg: str = "", error: s
         "active_tab": "amnezia",
         "msg": msg,
         "error": error,
-        "edit_list": edit_list,
         "vpn_macs_selected": vpn_macs_selected,
         "grouped_dhcp_static": grouped_dhcp_static,
     }
 
 
 @app.get("/amnezia")
-def amnezia_view(request: Request, target: str = "", msg: str = "", error: str = "", edit_list: str = ""):
+def amnezia_view(request: Request, target: str = "", msg: str = "", error: str = ""):
     return templates.TemplateResponse(
         request=request,
         name="amnezia.html",
-        context=_amnezia_context(request, target=target, msg=msg, error=error, edit_list=edit_list),
+        context=_amnezia_context(request, target=target, msg=msg, error=error),
     )
 
 
@@ -243,7 +242,7 @@ def amnezia_list_meta_save(
         return templates.TemplateResponse(
             request=request,
             name="amnezia.html",
-            context=_amnezia_context(request, error=err, edit_list=key),
+            context=_amnezia_context(request, error=err),
         )
     return RedirectResponse(url="/amnezia?msg=meta_saved", status_code=303)
 
