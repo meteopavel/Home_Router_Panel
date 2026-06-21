@@ -165,7 +165,7 @@
             <summary class="details-summary">
                 <strong>{{ meta.title }}</strong>
                 <span class="details-hint">{{ meta.hint }}</span>
-                <a href="/amnezia?edit_list={{ name }}" class="button button-secondary"
+                <a href="/amnezia?edit_list={{ name }}" class="button button-secondary js-keep-scroll"
                    style="margin-left: auto; padding: 3px 10px; font-size: 11px; flex-shrink: 0;"
                    onclick="event.stopPropagation();">Изменить</a>
             </summary>
@@ -185,7 +185,7 @@
                     </label>
                     <div style="display: flex; gap: 8px;">
                         <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Сохранить</button>
-                        <a href="/amnezia" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                        <a href="/amnezia" class="button button-secondary js-keep-scroll" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
                     </div>
                 </form>
                 <hr style="border: none; border-top: 1px solid var(--border); margin-bottom: 16px;">
@@ -374,4 +374,22 @@
     </details>
 </section>
 
+<script>
+(function () {
+    var key = 'amnezia_scroll';
+    var saved = sessionStorage.getItem(key);
+    if (saved !== null) {
+        sessionStorage.removeItem(key);
+        document.documentElement.style.scrollBehavior = 'auto';
+        window.scrollTo(0, parseInt(saved, 10));
+        requestAnimationFrame(function () {
+            document.documentElement.style.scrollBehavior = '';
+        });
+    }
+    document.addEventListener('click', function (e) {
+        var a = e.target.closest('a.js-keep-scroll');
+        if (a) sessionStorage.setItem(key, window.scrollY);
+    });
+})();
+</script>
 {% endblock %}
