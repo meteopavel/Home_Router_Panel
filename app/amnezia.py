@@ -66,16 +66,28 @@ def create_list(key: str, title: str, hint: str) -> tuple[bool, str]:
     return True, ""
 
 
-def update_list_meta(key: str, title: str, hint: str) -> tuple[bool, str]:
+def update_list_meta(key: str, title: str, hint: str, new_key: str = "") -> tuple[bool, str]:
     title = title.strip()
     if not title:
         return False, "Название обязательно"
+    new_key = new_key.strip() or key
+    if new_key != key:
+        if not _KEY_RE.match(new_key):
+            return False, "Ключ: только строчные буквы, цифры и _, начинается с буквы, до 32 символов"
     lists = load_lists_config()
+    if new_key != key and any(item["key"] == new_key for item in lists):
+        return False, f"Ключ '{new_key}' уже занят"
     for item in lists:
         if item["key"] == key:
+            item["key"] = new_key
             item["title"] = title
             item["hint"] = hint.strip()
             save_lists_config(lists)
+            if new_key != key:
+                old_path = AWG_CONFIG_DIR / f"{key}.txt"
+                new_path = AWG_CONFIG_DIR / f"{new_key}.txt"
+                if old_path.exists():
+                    old_path.rename(new_path)
             return True, ""
     return False, f"Список '{key}' не найден"
 

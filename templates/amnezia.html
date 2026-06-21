@@ -185,6 +185,15 @@
                                        style="display:block; margin-top: 4px; width: 100%;">
                             </label>
                             <label style="font-size: 13px; color: var(--muted);">
+                                Ключ — имя файла <code style="font-size: 11px; color: var(--muted);">key.txt</code>
+                                <input type="text" name="new_key" value="{{ name }}" class="text-input" required
+                                       pattern="[a-z][a-z0-9_]{0,31}"
+                                       title="Строчные латинские буквы, цифры и _, начинается с буквы, до 32 символов"
+                                       oninvalid="this.setCustomValidity('Строчные латинские буквы, цифры и _, начинается с буквы')"
+                                       oninput="this.setCustomValidity('')"
+                                       style="display:block; margin-top: 4px; width: 100%; font-family: var(--font-mono);">
+                            </label>
+                            <label style="font-size: 13px; color: var(--muted);">
                                 Подсказка
                                 <input type="text" name="hint" value="{{ meta.hint }}" class="text-input"
                                        style="display:block; margin-top: 4px; width: 100%;">
@@ -253,7 +262,7 @@
                 {% if name != 'vpn_device_macs' %}
                 <form method="post" action="/amnezia/lists-delete/{{ name }}" style="margin-top: 8px;"
                       onsubmit="return confirm('Удалить список «{{ meta.title }}»?\nФайл будет переименован в .txt.deleted');">
-                    <button type="submit" class="button button-secondary button-sm">Удалить список</button>
+                    <button type="submit" class="button button-danger button-sm">Удалить список</button>
                 </form>
                 {% endif %}
             </div>
@@ -267,14 +276,18 @@
             <form method="post" action="/amnezia/lists-create">
                 <div style="display: flex; flex-direction: column; gap: 10px; max-width: 480px;">
                     <label style="font-size: 13px; color: var(--muted);">
-                        Ключ (латиница, цифры, _)
-                        <input type="text" name="key" class="text-input" placeholder="my_list" required
-                               pattern="[a-z][a-z0-9_]{0,31}" style="display:block; margin-top: 4px; width: 100%;">
-                    </label>
-                    <label style="font-size: 13px; color: var(--muted);">
                         Название
                         <input type="text" name="title" class="text-input" placeholder="Мой список" required
                                style="display:block; margin-top: 4px; width: 100%;">
+                    </label>
+                    <label style="font-size: 13px; color: var(--muted);">
+                        Ключ — имя файла <code style="font-size: 11px; color: var(--muted);">key.txt</code>
+                        <input type="text" name="key" class="text-input" placeholder="my_list" required
+                               pattern="[a-z][a-z0-9_]{0,31}"
+                               title="Строчные латинские буквы, цифры и _, начинается с буквы, до 32 символов"
+                               oninvalid="this.setCustomValidity('Строчные латинские буквы, цифры и _, начинается с буквы')"
+                               oninput="this.setCustomValidity('')"
+                               style="display:block; margin-top: 4px; width: 100%; font-family: var(--font-mono);">
                     </label>
                     <label style="font-size: 13px; color: var(--muted);">
                         Подсказка (необязательно)

@@ -236,8 +236,9 @@ def amnezia_list_meta_save(
     key: str,
     title: str = Form(default=""),
     hint: str = Form(default=""),
+    new_key: str = Form(default=""),
 ):
-    ok, err = update_list_meta(key, title, hint)
+    ok, err = update_list_meta(key, title, hint, new_key)
     if not ok:
         return templates.TemplateResponse(
             request=request,
