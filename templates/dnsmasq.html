@@ -141,7 +141,7 @@
         </p>
         <div class="service-list" style="margin-bottom: 20px;">
             {% for e in static_entries %}
-                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; min-height: 48px;">
+                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; height: 48px; padding-top: 0; padding-bottom: 0;">
                     {% if not e.mac and edit_host == e.hostname %}
                         {# Edit mode — hostname-only entry (only IP is editable) #}
                         <form method="post" action="/dnsmasq/static/update"
@@ -317,7 +317,7 @@
                                     or (lease.hostname and (static_entries | selectattr('hostname', 'equalto', lease.hostname) | list | length > 0)) %}
                 {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
                 {% set is_static = is_managed or is_system %}
-                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px; min-height: 48px;">
+                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px; height: 48px; padding-top: 0; padding-bottom: 0;">
                     {% if not is_static and pin_mac == lease.mac %}
                         {# Pin mode — inline form with MAC/hostname choice #}
                         <div class="service-main">
