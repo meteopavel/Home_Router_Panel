@@ -192,7 +192,8 @@
                                     <input type="hidden" name="mac" value="{{ e.mac }}">
                                     <button type="submit" class="button button-secondary button-danger"
                                             style="padding: 6px 12px; font-size: 12px;"
-                                            data-tooltip="Удалить резервацию для этого MAC">
+                                            data-tooltip="Удалить резервацию для этого MAC"
+                                            onclick="return confirm('Удалить резервацию?')">
                                         Удалить
                                     </button>
                                 </form>
