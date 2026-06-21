@@ -267,34 +267,65 @@
                                     or (lease.hostname and (static_entries | selectattr('hostname', 'equalto', lease.hostname) | list | length > 0)) %}
                 {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
                 {% set is_static = is_managed or is_system %}
-                <div class="service-row">
-                    <div class="service-main">
-                        <div class="service-name">
-                            {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
+                <div class="service-row" style="flex-wrap: wrap; gap: 10px;">
+                    {% if not is_static and pin_mac == lease.mac %}
+                        {# Pin mode — inline form with MAC/hostname choice #}
+                        <div class="service-main">
+                            <div class="service-name">
+                                {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
+                            </div>
+                            <div class="service-unit">{{ lease.mac }} · до {{ lease.expiry }}</div>
                         </div>
-                        <div class="service-unit">{{ lease.mac }} · до {{ lease.expiry }}</div>
-                    </div>
-                    <div class="actions">
-                        {% if is_static %}
-                            <span class="pill pill-green" data-tooltip="Для этого устройства задан статический IP">статич.</span>
-                        {% else %}
-                            <form method="post" action="/dnsmasq/static/add" style="display:inline;">
-                                <input type="hidden" name="mac" value="{{ lease.mac }}">
-                                <input type="hidden" name="ip" value="{{ lease.ip }}">
-                                <input type="hidden" name="hostname" value="{{ lease.hostname }}">
-                                <button type="submit" class="button button-secondary"
-                                        style="padding: 6px 12px; font-size: 12px;"
-                                        data-tooltip="Закрепить текущий IP {{ lease.ip }} за этим MAC навсегда">
+                        <form method="post" action="/dnsmasq/static/add"
+                              style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; flex: 1; padding: 8px 0;">
+                            <input type="hidden" name="ip" value="{{ lease.ip }}">
+                            <label style="font-size: 13px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                                <input type="radio" name="_match_type" value="mac" checked
+                                       onchange="this.form.querySelector('[name=mac]').value='{{ lease.mac }}'; this.form.querySelector('[name=hostname]').value='';">
+                                По MAC
+                            </label>
+                            <label style="font-size: 13px; display: flex; align-items: center; gap: 5px;
+                                          {% if not lease.hostname %}opacity: 0.45; cursor: not-allowed;{% else %}cursor: pointer;{% endif %}"
+                                   {% if not lease.hostname %}title="Устройство не передаёт имя в DHCP-запросе"{% endif %}>
+                                <input type="radio" name="_match_type" value="hostname"
+                                       {% if not lease.hostname %}disabled{% endif %}
+                                       onchange="this.form.querySelector('[name=mac]').value=''; this.form.querySelector('[name=hostname]').value='{{ lease.hostname }}';">
+                                По имени
+                                {% if not lease.hostname %}
+                                    <span style="font-size: 11px; color: var(--muted);">(нет имени)</span>
+                                {% endif %}
+                            </label>
+                            <input type="hidden" name="mac" value="{{ lease.mac }}">
+                            <input type="hidden" name="hostname" value="">
+                            <div class="actions" style="margin-left: auto;">
+                                <button type="submit" class="button" style="padding: 6px 14px; font-size: 12px;">Закрепить</button>
+                                <a href="/dnsmasq" class="button button-secondary" style="padding: 6px 12px; font-size: 12px;">Отмена</a>
+                            </div>
+                        </form>
+                    {% else %}
+                        <div class="service-main">
+                            <div class="service-name">
+                                {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
+                            </div>
+                            <div class="service-unit">{{ lease.mac }} · до {{ lease.expiry }}</div>
+                        </div>
+                        <div class="actions">
+                            {% if is_static %}
+                                <span class="pill pill-green" data-tooltip="Для этого устройства задан статический IP">статич.</span>
+                            {% else %}
+                                <a href="/dnsmasq?pin={{ lease.mac }}"
+                                   class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                                   data-tooltip="Выбрать способ закрепления IP для этого устройства">
                                     Закрепить IP
-                                </button>
-                            </form>
-                        {% endif %}
-                        <a href="/capture?mac={{ lease.mac }}&seconds=15&count=200"
-                           class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
-                           data-tooltip="Перехватить трафик этого устройства через tcpdump">
-                            Захватить
-                        </a>
-                    </div>
+                                </a>
+                            {% endif %}
+                            <a href="/capture?mac={{ lease.mac }}&seconds=15&count=200"
+                               class="button button-secondary" style="padding: 6px 12px; font-size: 12px;"
+                               data-tooltip="Перехватить трафик этого устройства через tcpdump">
+                                Захватить
+                            </a>
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
