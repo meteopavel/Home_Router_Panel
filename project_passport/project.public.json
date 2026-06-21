@@ -1,0 +1,146 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-21T07:00:54.681889+00:00",
+  "generated_by": "tools/build_project_passport.py",
+  "id": "home-router-panel",
+  "title": "Home Router Panel",
+  "tagline": "FastAPI-панель для управления домашним роутером: VPN, DHCP, сервисы и бэкап через браузер.",
+  "summary": "Веб-приложение на FastAPI для локального управления домашним роутером на Linux. Панель объединяет управление AmneziaWG VPN (запуск/стоп, списки маршрутизации по MAC), статическими DHCP-записями dnsmasq с группировкой по сегментам сети, кастомными hotlist-файлами, статусом системных сервисов через systemd и запуском резервного копирования. Всё доступно через браузер в локальной сети.",
+  "status": "active",
+  "visibility": "public",
+  "role": "solo_developer",
+  "domain": [
+    "networking",
+    "sysadmin",
+    "automation",
+    "self-hosted"
+  ],
+  "stack": [
+    "Python",
+    "FastAPI",
+    "Jinja2",
+    "systemd",
+    "AmneziaWG",
+    "dnsmasq"
+  ],
+  "links": {
+    "repo": "https://github.com/meteopavel/Home_Router_Panel",
+    "demo": null,
+    "details": "/projects/home-router-panel"
+  },
+  "highlights": [
+    "Управление AmneziaWG VPN: запуск/стоп службы, просмотр активных пиров, маршрутизация по MAC.",
+    "Редактирование статических DHCP-записей dnsmasq с автоматической группировкой по сегментам сети.",
+    "Управление hotlist-файлами маршрутизации (Telegram-сети, домены Figma и др.) через веб-интерфейс.",
+    "Мониторинг состояния системных сервисов через systemd и ручной перезапуск из браузера.",
+    "Захват трафика по MAC-адресу и запуск резервного копирования системы.",
+    "Развёртывание как systemd-сервис на роутере с Linux (проверено на Debian/Ubuntu)."
+  ],
+  "signals": [],
+  "tech_profile": {
+    "python_files": 6,
+    "scanned_python_files": 7,
+    "classes": 4,
+    "dataclasses": 4,
+    "functions": 54,
+    "methods": 0,
+    "constants": 18,
+    "has_cli": false,
+    "has_redmine_integration": false,
+    "has_document_generation": false,
+    "has_llm_workflow": false,
+    "has_api_map": true
+  },
+  "architecture": {
+    "target": "app",
+    "layers": [
+      "app/amnezia",
+      "config",
+      "app/dnsmasq",
+      "app/hotlists",
+      "app/main",
+      "app/services"
+    ],
+    "key_modules": [
+      {
+        "path": "app/main.py",
+        "summary": null,
+        "stats": {
+          "classes": 0,
+          "dataclasses": 0,
+          "functions": 21,
+          "methods": 0,
+          "constants": 3
+        }
+      },
+      {
+        "path": "app/dnsmasq.py",
+        "summary": null,
+        "stats": {
+          "classes": 2,
+          "dataclasses": 2,
+          "functions": 13,
+          "methods": 0,
+          "constants": 7
+        }
+      },
+      {
+        "path": "app/amnezia.py",
+        "summary": null,
+        "stats": {
+          "classes": 0,
+          "dataclasses": 0,
+          "functions": 11,
+          "methods": 0,
+          "constants": 6
+        }
+      },
+      {
+        "path": "app/services.py",
+        "summary": null,
+        "stats": {
+          "classes": 1,
+          "dataclasses": 1,
+          "functions": 5,
+          "methods": 0,
+          "constants": 0
+        }
+      },
+      {
+        "path": "app/hotlists.py",
+        "summary": null,
+        "stats": {
+          "classes": 1,
+          "dataclasses": 1,
+          "functions": 3,
+          "methods": 0,
+          "constants": 0
+        }
+      },
+      {
+        "path": "app/config.py",
+        "summary": null,
+        "stats": {
+          "classes": 0,
+          "dataclasses": 0,
+          "functions": 1,
+          "methods": 0,
+          "constants": 2
+        }
+      }
+    ]
+  },
+  "artifacts": {
+    "api_map_json": "project_passport/api_map__app.json",
+    "api_map_markdown": "project_passport/api_map__app.md",
+    "project_meta_json": "project_passport/project.meta.json",
+    "project_public_json": "project_passport/project.public.json"
+  },
+  "source": {
+    "api_map_schema_version": "1.0",
+    "api_map_generated_at": "2026-06-21T07:00:02.762264+00:00",
+    "api_map_generator": "tools/extract_api_map.py",
+    "meta_auto_generated": true,
+    "meta_review_status": "draft"
+  }
+}
