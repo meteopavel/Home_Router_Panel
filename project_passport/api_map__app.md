@@ -39,7 +39,7 @@
 - `create_list(key: str, title: str, hint: str) -> tuple[bool, str]`
   Нет докстринга.
 
-- `update_list_meta(key: str, title: str, hint: str) -> tuple[bool, str]`
+- `update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tuple[bool, str]`
   Нет докстринга.
 
 - `delete_list(key: str) -> tuple[bool, str]`
@@ -238,7 +238,7 @@
 - `amnezia_list_delete(request: Request, key: str)`
   Нет докстринга.
 
-- `amnezia_list_meta_save(request: Request, key: str, title: str = Form(default=''), hint: str = Form(default=''))`
+- `amnezia_list_meta_save(request: Request, key: str, title: str = Form(default=''), hint: str = Form(default=''), new_key: str = Form(default=''))`
   Нет докстринга.
 
 - `amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[]))`
