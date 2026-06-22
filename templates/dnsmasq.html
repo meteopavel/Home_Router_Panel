@@ -2,7 +2,7 @@
 {% block content %}
 
 {# ── Status & Controls ─────────────────────────────────────── #}
-<section class="section" style="margin-bottom: 20px;">
+<section class="section">
     <div class="section-header">
         <div>
             <h2>dnsmasq</h2>
@@ -20,24 +20,17 @@
     </div>
 
     {% if error %}
-        <div style="margin-bottom: 16px; padding: 10px 14px; background: rgba(248,113,113,0.1);
-                    border: 1px solid rgba(248,113,113,0.35); border-radius: var(--radius-btn);
-                    font-size: 13px; color: var(--red);">
-            {{ error }}
-        </div>
+        <div class="alert alert-error">{{ error }}</div>
     {% endif %}
 
     {% if msg %}
-        <div id="dnsmasq-msg" style="margin-bottom: 16px; padding: 10px 14px; background: rgba(74,222,128,0.1);
-                    border: 1px solid rgba(74,222,128,0.25); border-radius: var(--radius-btn);
-                    font-size: 13px; color: var(--green);">
+        <div id="dnsmasq-msg" class="alert alert-ok">
             {% if msg == 'saved' %}Резервация сохранена — нажмите «Применить».
             {% elif msg == 'removed' %}Резервация удалена — нажмите «Применить».
             {% else %}{{ msg }}{% endif %}
         </div>
     {% else %}
-        <div id="dnsmasq-msg" style="display:none; margin-bottom: 16px; padding: 10px 14px;
-                    border-radius: var(--radius-btn); font-size: 13px;"></div>
+        <div id="dnsmasq-msg" style="display:none;"></div>
     {% endif %}
 
     <div class="actions">
@@ -59,24 +52,19 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 var el = document.getElementById('dnsmasq-msg');
+                el.style.display = '';
                 if (data.ok) {
-                    el.style.display = '';
-                    el.style.background = 'rgba(74,222,128,0.1)';
-                    el.style.border = '1px solid rgba(74,222,128,0.25)';
-                    el.style.color = 'var(--green)';
+                    el.className = 'alert alert-ok';
                     el.textContent = orig === 'Применить' ? 'dnsmasq перезагружен.' : 'dnsmasq перезапущен.';
                 } else {
-                    el.style.display = '';
-                    el.style.background = 'rgba(239,68,68,0.1)';
-                    el.style.border = '1px solid rgba(239,68,68,0.25)';
-                    el.style.color = 'var(--red)';
+                    el.className = 'alert alert-error';
                     el.textContent = data.error || 'Ошибка';
                 }
             })
             .catch(function() {
                 var el = document.getElementById('dnsmasq-msg');
                 el.style.display = '';
-                el.style.color = 'var(--red)';
+                el.className = 'alert alert-error';
                 el.textContent = 'Ошибка сети';
             })
             .finally(function() {
@@ -88,18 +76,18 @@
 </section>
 
 {# ── Static Reservations ───────────────────────────────────── #}
-<section class="section" style="margin-bottom: 20px;">
-    <h2 style="margin-bottom: 6px;">Статические резервации</h2>
-    <p style="color: var(--muted); margin-bottom: 20px; font-size: 13px;">
-        Файл: <code>{{ static_file }}</code> — подключите через
-        <code>conf-file={{ static_file }}</code> в dnsmasq.conf
-    </p>
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Статические резервации</h2>
+            <p>Файл: <code>{{ static_file }}</code> — подключите через
+            <code>conf-file={{ static_file }}</code> в dnsmasq.conf</p>
+        </div>
+    </div>
 
     {# System reservations from /etc/dnsmasq.d/ #}
     {% if system_static %}
-        <p style="color: var(--muted); font-size: 12px; margin-bottom: 8px;">
-            Системные (из <code>/etc/dnsmasq.d/</code>):
-        </p>
+        <p class="section-hint" style="margin-bottom: 8px;">Системные (из <code>/etc/dnsmasq.d/</code>):</p>
         <div class="service-list" style="margin-bottom: 8px;">
             {% for e in system_static %}
                 {% set already_managed = static_entries | selectattr('mac', 'equalto', e.mac) | list | length > 0 %}
@@ -114,7 +102,7 @@
                         {% if already_managed %}
                             <span class="pill pill-green" data-tooltip="Уже перенесена в управляемый файл">импортирована</span>
                         {% else %}
-                            <form method="post" action="/dnsmasq/static/add" style="display:inline;">
+                            <form method="post" action="/dnsmasq/static/add" class="inline-form">
                                 <input type="hidden" name="mac" value="{{ e.mac }}">
                                 <input type="hidden" name="ip" value="{{ e.ip }}">
                                 <input type="hidden" name="hostname" value="{{ e.hostname }}">
@@ -128,40 +116,34 @@
                 </div>
             {% endfor %}
         </div>
-        <p style="color: var(--muted); font-size: 12px; margin-bottom: 20px;">
-            После импорта всех записей удалите исходный файл из <code>/etc/dnsmasq.d/</code> и нажмите «Перезагрузить».
-        </p>
+        <p class="section-hint">После импорта всех записей удалите исходный файл из <code>/etc/dnsmasq.d/</code> и нажмите «Перезагрузить».</p>
     {% endif %}
 
     {# Panel-managed reservations — grouped by IP range #}
     {% if grouped_entries or not system_static %}
-        <p style="color: var(--muted); font-size: 12px; margin-bottom: 12px;">
-            Управляемые панелью (<code>dnsmasq-static.conf</code>):
-        </p>
+        <p class="section-hint">Управляемые панелью (<code>dnsmasq-static.conf</code>):</p>
         {% if grouped_entries %}
             {% for group in grouped_entries %}
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
-                                color: var(--muted); padding: 4px 0 6px; border-bottom: 1px solid var(--border);
-                                margin-bottom: 6px; display: flex; align-items: baseline; gap: 8px;">
+                <div class="group-block">
+                    <div class="group-header">
                         {{ group.name }}
                         {% if group.lo is not none %}
-                            <span style="font-weight: 400; font-size: 10px;">.{{ group.lo }}–.{{ group.hi }}</span>
+                            <span class="group-range">.{{ group.lo }}–.{{ group.hi }}</span>
                         {% endif %}
                     </div>
                     {% if group.entries %}
                         <div class="service-list">
                             {% for e in group.entries %}
-                                <div class="service-row" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}" style="gap: 12px; height: 48px; padding-top: 0; padding-bottom: 0;">
+                                <div class="service-row service-row-compact" id="entry-{{ e.mac | replace(':', '') if e.mac else 'h-' + e.hostname }}">
                                     {% if not e.mac and edit_host == e.hostname %}
                                         {# Edit mode — hostname-only entry (only IP is editable) #}
                                         <form method="post" action="/dnsmasq/static/update"
                                               style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
                                             <input type="hidden" name="mac" value="">
                                             <input type="hidden" name="hostname" value="{{ e.hostname }}">
-                                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
-                                                   style="width: 130px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px; flex-shrink: 0;">
-                                            <div style="color: var(--muted); font-size: 13px; flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">по имени: {{ e.hostname }}</div>
+                                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input text-input-sm"
+                                                   style="width: 130px; font-family: var(--font-mono);">
+                                            <div class="device-meta" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">по имени: {{ e.hostname }}</div>
                                             <div class="actions" style="margin-left: auto; flex-shrink: 0;">
                                                 <button type="submit" class="button button-sm">Сохранить</button>
                                                 <a href="/dnsmasq" class="button button-secondary button-sm js-keep-scroll">Отмена</a>
@@ -172,11 +154,11 @@
                                         <form method="post" action="/dnsmasq/static/update"
                                               style="display: flex; gap: 8px; align-items: center; flex: 1; min-width: 0;">
                                             <input type="hidden" name="mac" value="{{ e.mac }}">
-                                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input"
-                                                   style="width: 130px; font-family: var(--font-mono); padding: 6px 10px; font-size: 13px; flex-shrink: 0;">
-                                            <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input"
-                                                   style="width: 130px; padding: 6px 10px; font-size: 13px; flex-shrink: 0;" placeholder="имя (опционально)">
-                                            <div style="color: var(--muted); font-size: 13px; font-family: var(--font-mono); flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ e.mac }}</div>
+                                            <input type="text" name="ip" value="{{ e.ip }}" class="text-input text-input-sm"
+                                                   style="width: 130px; font-family: var(--font-mono);">
+                                            <input type="text" name="hostname" value="{{ e.hostname }}" class="text-input text-input-sm"
+                                                   style="width: 130px;" placeholder="имя (опционально)">
+                                            <div class="device-meta" style="flex-shrink: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ e.mac }}</div>
                                             <div class="actions" style="margin-left: auto; flex-shrink: 0;">
                                                 <button type="submit" class="button button-sm">Сохранить</button>
                                                 <a href="/dnsmasq" class="button button-secondary button-sm js-keep-scroll">Отмена</a>
@@ -185,9 +167,9 @@
                                     {% else %}
                                         {# View mode #}
                                         <div class="service-main">
-                                            <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <div class="device-line">
                                                 {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
-                                                <span style="color: var(--muted); font-family: var(--font-mono);"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
+                                                <span class="device-meta"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
                                             </div>
                                         </div>
                                         <div class="actions">
@@ -205,7 +187,7 @@
                                                    data-tooltip="Изменить IP или имя устройства">
                                                     Изменить
                                                 </a>
-                                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;"
+                                                <form method="post" action="/dnsmasq/static/remove" class="inline-form"
                                                       onsubmit="return confirm('Удалить резервацию?')">
                                                     <input type="hidden" name="mac" value="{{ e.mac }}">
                                                     <button type="submit" class="button button-secondary button-danger button-sm"
@@ -218,7 +200,7 @@
                                                    data-tooltip="Изменить IP для этого устройства">
                                                     Изменить
                                                 </a>
-                                                <form method="post" action="/dnsmasq/static/remove" style="display:inline;"
+                                                <form method="post" action="/dnsmasq/static/remove" class="inline-form"
                                                       onsubmit="return confirm('Удалить резервацию?')">
                                                     <input type="hidden" name="hostname" value="{{ e.hostname }}">
                                                     <button type="submit" class="button button-secondary button-danger button-sm"
@@ -233,12 +215,12 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div style="color: var(--muted); font-size: 12px; padding: 6px 4px; font-style: italic;">пусто</div>
+                        <p class="section-hint" style="padding: 6px 4px; margin-bottom: 0; font-style: italic;">пусто</p>
                     {% endif %}
                 </div>
             {% endfor %}
         {% elif not system_static %}
-            <div class="empty-state" style="margin-bottom: 20px;">Нет статических резерваций</div>
+            <div class="empty-state">Нет статических резерваций</div>
         {% endif %}
     {% endif %}
 
@@ -251,7 +233,7 @@
 
                 {# Device picker #}
                 <div style="flex-basis: 100%; margin-bottom: 4px;">
-                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">Устройство из активных аренд</label>
+                    <label class="form-label">Устройство из активных аренд</label>
                     <select id="device-picker" class="text-input" style="width: 100%; max-width: 500px;"
                             onchange="dnsmasqFillDevice(this)">
                         <option value="">— выбрать устройство —</option>
@@ -281,17 +263,17 @@
 
                 {# Fields #}
                 <div id="field-mac-wrap">
-                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">MAC-адрес</label>
+                    <label class="form-label">MAC-адрес</label>
                     <input type="text" name="mac" id="field-mac" placeholder="aa:bb:cc:dd:ee:ff" class="text-input"
                            style="width: 180px; font-family: var(--font-mono);">
                 </div>
                 <div>
-                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">IP-адрес</label>
+                    <label class="form-label">IP-адрес</label>
                     <input type="text" name="ip" id="field-ip" placeholder="192.168.100.10" class="text-input"
                            style="width: 160px; font-family: var(--font-mono);">
                 </div>
                 <div id="field-hostname-wrap">
-                    <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;" id="hostname-label">Имя (опционально)</label>
+                    <label class="form-label" id="hostname-label">Имя (опционально)</label>
                     <input type="text" name="hostname" id="field-hostname" placeholder="my-device" class="text-input"
                            style="width: 160px;">
                 </div>
@@ -327,10 +309,12 @@
 
 {# ── Active Leases ─────────────────────────────────────────── #}
 <section class="section">
-    <h2 style="margin-bottom: 6px;">Активные динамические аренды</h2>
-    <p style="color: var(--muted); margin-bottom: 20px; font-size: 13px;">
-        {{ dynamic_lease_count }} аренд · <code>/var/lib/misc/dnsmasq.leases</code>
-    </p>
+    <div class="section-header">
+        <div>
+            <h2>Активные динамические аренды</h2>
+            <p>{{ dynamic_lease_count }} аренд · <code>/var/lib/misc/dnsmasq.leases</code></p>
+        </div>
+    </div>
 
     {% if dynamic_lease_count > 0 %}
         <div class="service-list">
@@ -340,13 +324,13 @@
                 {% set is_system = system_static | selectattr('mac', 'equalto', lease.mac) | list | length > 0 %}
                 {% set is_static = is_managed or is_system %}
                 {% if not is_static %}
-                <div class="service-row" id="lease-{{ lease.mac | replace(':', '') }}" style="gap: 10px; height: 48px; padding-top: 0; padding-bottom: 0;">
+                <div class="service-row service-row-compact" id="lease-{{ lease.mac | replace(':', '') }}">
                     {% if pin_mac == lease.mac %}
                         {# Pin mode — inline form with MAC/hostname choice #}
                         <div class="service-main">
-                            <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <div class="device-line">
                                 {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
-                                <span style="color: var(--muted); font-family: var(--font-mono);"> · {{ lease.mac }} · до {{ lease.expiry }}</span>
+                                <span class="device-meta"> · {{ lease.mac }} · до {{ lease.expiry }}</span>
                             </div>
                         </div>
                         <form method="post" action="/dnsmasq/static/add"
@@ -377,9 +361,9 @@
                         </form>
                     {% else %}
                         <div class="service-main">
-                            <div style="font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            <div class="device-line">
                                 {% if lease.hostname %}<strong>{{ lease.hostname }}</strong> · {% endif %}{{ lease.ip }}
-                                <span style="color: var(--muted); font-family: var(--font-mono);"> · {{ lease.mac }} · до {{ lease.expiry }}</span>
+                                <span class="device-meta"> · {{ lease.mac }} · до {{ lease.expiry }}</span>
                             </div>
                         </div>
                         <div class="actions">

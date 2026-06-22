@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<section class="section" style="margin-bottom: 20px;">
+<section class="section">
     <div class="section-header">
         <div>
             <h2>Перехват трафика</h2>
@@ -14,21 +14,21 @@
 
     <form method="get" action="/capture" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
         <div>
-            <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">MAC-адрес</label>
+            <label class="form-label">MAC-адрес</label>
             <input type="text" name="mac" value="{{ mac }}" placeholder="aa:bb:cc:dd:ee:ff"
-                   style="font-family: var(--font-mono); padding: 8px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); width: 200px;">
+                   class="text-input" style="width: 200px; padding: 8px 12px;">
         </div>
         <div>
-            <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">Секунды</label>
-            <select name="seconds" style="padding: 8px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text);">
+            <label class="form-label">Секунды</label>
+            <select name="seconds" class="text-input" style="width: auto; padding: 8px 12px; min-width: unset;">
                 {% for s in [10, 15, 30, 60] %}
                     <option value="{{ s }}" {% if s == seconds %}selected{% endif %}>{{ s }}с</option>
                 {% endfor %}
             </select>
         </div>
         <div>
-            <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px;">Пакетов макс.</label>
-            <select name="count" style="padding: 8px 12px; background: var(--bg-input); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text);">
+            <label class="form-label">Пакетов макс.</label>
+            <select name="count" class="text-input" style="width: auto; padding: 8px 12px; min-width: unset;">
                 {% for c in [100, 200, 500] %}
                     <option value="{{ c }}" {% if c == count %}selected{% endif %}>{{ c }}</option>
                 {% endfor %}
@@ -38,14 +38,14 @@
     </form>
 
     {% if error %}
-        <div class="code-block" style="border-left: 3px solid var(--danger); padding: 12px 16px; color: var(--danger);">{{ error }}</div>
+        <div class="alert alert-error">{{ error }}</div>
     {% endif %}
 
     {% if output %}
-        <div style="margin-bottom: 8px; font-size: 12px; color: var(--muted);">
+        <div class="section-hint" style="margin-bottom: 8px;">
             MAC: <code>{{ mac }}</code> — {{ output.splitlines()|length }} строк
         </div>
-        <div class="code-block" style="max-height: 600px; overflow-y: auto; white-space: pre; font-size: 12px;">{{ output }}</div>
+        <div class="code-block" style="max-height: 600px; overflow-y: auto; white-space: pre;">{{ output }}</div>
     {% elif mac and not error %}
         <div class="empty-state">Нет пакетов за указанное время</div>
     {% endif %}

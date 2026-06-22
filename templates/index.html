@@ -73,20 +73,26 @@
     </div>
 </section>
 
-<section class="card">
-    <h2 class="section-title">Резервная копия</h2>
-    <p class="section-hint">Создаёт архив /etc, /opt, /home и др. — стримит напрямую на Mac без сохранения на сервере. Занимает несколько минут.</p>
-    <div class="row">
-        <div class="row-info">
-            <span class="row-name">Бэкап → Mac (~/router-backups/)</span>
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Резервная копия</h2>
+            <p>Создаёт архив /etc, /opt, /home и др. — стримит напрямую на Mac без сохранения на сервере. Занимает несколько минут.</p>
         </div>
-        <div class="row-actions">
-            {% if request.query_params.get('backup') == 'ok' %}
-                <span class="pill pill-green">Готово</span>
-            {% endif %}
-            <form method="post" action="/backup/run" class="inline-form">
-                <button class="button" type="submit">Создать бэкап</button>
-            </form>
+    </div>
+    <div class="service-list">
+        <div class="service-row">
+            <div class="service-main">
+                <div class="service-name">Бэкап → Mac (~/router-backups/)</div>
+            </div>
+            <div class="actions">
+                {% if request.query_params.get('backup') == 'ok' %}
+                    <span class="pill pill-green">Готово</span>
+                {% endif %}
+                <form method="post" action="/backup/run" class="inline-form">
+                    <button class="button" type="submit">Создать бэкап</button>
+                </form>
+            </div>
         </div>
     </div>
 </section>
