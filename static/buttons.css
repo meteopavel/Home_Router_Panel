@@ -60,6 +60,7 @@ a.button,
 a.button:hover,
 a.button:visited,
 a.button:active {
+    color: var(--text);
     text-decoration: none;
     cursor: pointer;
 }
@@ -74,7 +75,8 @@ a.button:active {
     font-size: 13px;
 }
 
-.button-danger {
+.button-danger,
+.button-danger:visited {
     color: var(--red);
     border-color: rgba(248, 113, 113, 0.3);
 }
@@ -85,7 +87,8 @@ a.button:active {
     color: var(--red);
 }
 
-.button-secondary {
+.button-secondary,
+.button-secondary:visited {
     color: var(--muted);
     background: transparent;
     border-color: rgba(255, 255, 255, 0.05);
