@@ -301,3 +301,31 @@ def get_dnsmasq_state() -> str:
         return result.stdout.strip() or "unknown"
     except Exception:
         return "unknown"
+
+
+def get_arp_online() -> tuple[set[str], set[str]]:
+    """Return (online_macs, online_ips) from ARP table on enp2s0.
+
+    A device is considered online if it has an lladdr and state is not FAILED.
+    REACHABLE/STALE/DELAY/PROBE all count as online.
+    After disconnect, entry transitions to FAILED within ~1-3 minutes.
+    """
+    try:
+        result = subprocess.run(
+            ["/usr/sbin/ip", "neigh", "show", "dev", "enp2s0"],
+            capture_output=True, text=True, timeout=5,
+        )
+        macs: set[str] = set()
+        ips: set[str] = set()
+        for line in result.stdout.splitlines():
+            parts = line.split()
+            if not parts or "lladdr" not in parts or "FAILED" in parts:
+                continue
+            ip = parts[0]
+            idx = parts.index("lladdr")
+            if idx + 1 < len(parts):
+                macs.add(parts[idx + 1].lower())
+                ips.add(ip)
+        return macs, ips
+    except Exception:
+        return set(), set()

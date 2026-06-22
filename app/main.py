@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.dnsmasq import (
     add_static,
+    get_arp_online,
     get_dnsmasq_state,
     group_static_entries,
     read_leases,
@@ -380,8 +381,14 @@ def _build_dnsmasq_context(**extra) -> dict:
         and l.mac not in system_macs
         and not (l.hostname and l.hostname in static_hosts)
     )
-    online_macs = {l.mac for l in leases if l.mac and l.ts > 0}
-    online_hostnames = {l.hostname.lower() for l in leases if l.hostname and l.hostname != "*" and l.ts > 0}
+    arp_macs, arp_ips = get_arp_online()
+    if arp_macs or arp_ips:
+        online_macs = arp_macs
+        hostname_ip = {e.hostname.lower(): e.ip for e in static if not e.mac and e.hostname}
+        online_hostnames = {hn for hn, ip in hostname_ip.items() if ip in arp_ips}
+    else:
+        online_macs = {l.mac for l in leases if l.mac and l.ts > 0}
+        online_hostnames = {l.hostname.lower() for l in leases if l.hostname and l.hostname != "*" and l.ts > 0}
     return {
         "title": "dnsmasq",
         "active_tab": "dnsmasq",
@@ -479,13 +486,21 @@ def dnsmasq_service_restart():
 @app.get("/dnsmasq/events")
 async def dnsmasq_events():
     async def _generate():
-        def _online_sets():
-            leases = read_leases()
-            macs = [l.mac for l in leases if l.mac and l.ts > 0]
-            hosts = [l.hostname.lower() for l in leases if l.hostname and l.hostname != "*" and l.ts > 0]
+        def _read_online():
+            static = read_static()
+            arp_macs, arp_ips = get_arp_online()
+            if arp_macs or arp_ips:
+                macs = sorted(arp_macs)
+                hostname_ip = {e.hostname.lower(): e.ip for e in static if not e.mac and e.hostname}
+                hosts = sorted(hn for hn, ip in hostname_ip.items() if ip in arp_ips)
+            else:
+                leases = read_leases()
+                macs = sorted(l.mac for l in leases if l.mac and l.ts > 0)
+                hosts = sorted(l.hostname.lower() for l in leases if l.hostname and l.hostname != "*" and l.ts > 0)
             return macs, hosts
 
-        macs, hosts = _online_sets()
+        macs, hosts = _read_online()
+        last_key = (macs, hosts)
         yield f"data: {_json.dumps({'macs': macs, 'hostnames': hosts})}\n\n"
 
         last_mtime: float = 0.0
@@ -498,15 +513,26 @@ async def dnsmasq_events():
         while True:
             await asyncio.sleep(2)
             ticks += 1
+
             try:
                 mtime = LEASES_FILE.stat().st_mtime
             except OSError:
                 mtime = 0.0
-            if mtime != last_mtime:
+            leases_changed = mtime != last_mtime
+            if leases_changed:
                 last_mtime = mtime
-                macs, hosts = _online_sets()
-                yield f"data: {_json.dumps({'macs': macs, 'hostnames': hosts})}\n\n"
-            elif ticks % 15 == 0:
+
+            # Check ARP every 5 ticks (10 seconds)
+            arp_tick = ticks % 5 == 0
+
+            if leases_changed or arp_tick:
+                macs, hosts = _read_online()
+                key = (macs, hosts)
+                if key != last_key:
+                    last_key = key
+                    yield f"data: {_json.dumps({'macs': macs, 'hostnames': hosts})}\n\n"
+
+            if ticks % 15 == 0:
                 yield ": heartbeat\n\n"
 
     return StreamingResponse(
