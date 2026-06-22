@@ -379,6 +379,10 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
     static = read_static()
     leases = read_leases()
     arp_macs, arp_ips = get_arp_online()
+    hostname_to_mac = {l.hostname.lower(): l.mac for l in leases if l.hostname and l.hostname != '*' and l.mac}
+    for e in static:
+        if not e.mac and e.hostname:
+            e.mac = hostname_to_mac.get(e.hostname.lower(), '')
     static_macs = {e.mac for e in static if e.mac}
     static_ips = {e.ip for e in static if e.ip}
     dynamic = [l for l in leases if l.mac and l.mac not in static_macs and l.ip not in static_ips]

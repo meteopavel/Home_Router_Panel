@@ -27,7 +27,7 @@
                             {% else %}
                                 {% set is_online = e.ip in online_ips %}
                             {% endif %}
-                            <div class="service-row service-row-compact {% if mac == e.mac %}service-row-highlight{% endif %}">
+                            <div class="service-row service-row-compact {% if mac and mac == e.mac %}service-row-highlight{% endif %}">
                                 <div class="service-main">
                                     <div class="device-line">
                                         {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
