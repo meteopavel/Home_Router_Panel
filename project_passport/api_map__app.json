@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T03:50:21.300544+00:00",
+  "generated_at": "2026-06-22T03:59:10.150245+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -13,7 +13,7 @@
     "modules": 6,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 67,
+    "functions": 68,
     "methods": 0,
     "constants": 19
   },
@@ -674,8 +674,8 @@
           "decorators": [
             "app.get('/')"
           ],
-          "lineno": 53,
-          "end_lineno": 66
+          "lineno": 56,
+          "end_lineno": 69
         },
         {
           "name": "zapret_view",
@@ -686,8 +686,8 @@
           "decorators": [
             "app.get('/zapret')"
           ],
-          "lineno": 70,
-          "end_lineno": 85
+          "lineno": 73,
+          "end_lineno": 88
         },
         {
           "name": "hotlist_view",
@@ -698,8 +698,8 @@
           "decorators": [
             "app.get('/hotlists/{name}')"
           ],
-          "lineno": 89,
-          "end_lineno": 90
+          "lineno": 92,
+          "end_lineno": 93
         },
         {
           "name": "hotlist_edit_view",
@@ -710,8 +710,8 @@
           "decorators": [
             "app.get('/hotlists/{name}/edit')"
           ],
-          "lineno": 94,
-          "end_lineno": 109
+          "lineno": 97,
+          "end_lineno": 112
         },
         {
           "name": "hotlist_edit_save",
@@ -722,8 +722,8 @@
           "decorators": [
             "app.post('/hotlists/{name}/edit')"
           ],
-          "lineno": 113,
-          "end_lineno": 142
+          "lineno": 116,
+          "end_lineno": 145
         },
         {
           "name": "_parse_vpn_macs",
@@ -732,8 +732,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 145,
-          "end_lineno": 151
+          "lineno": 148,
+          "end_lineno": 154
         },
         {
           "name": "_amnezia_context",
@@ -742,8 +742,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 154,
-          "end_lineno": 190
+          "lineno": 157,
+          "end_lineno": 193
         },
         {
           "name": "amnezia_view",
@@ -754,8 +754,8 @@
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 194,
-          "end_lineno": 199
+          "lineno": 197,
+          "end_lineno": 202
         },
         {
           "name": "amnezia_service_action",
@@ -766,8 +766,8 @@
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 203,
-          "end_lineno": 205
+          "lineno": 206,
+          "end_lineno": 208
         },
         {
           "name": "amnezia_list_save",
@@ -778,8 +778,8 @@
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 209,
-          "end_lineno": 214
+          "lineno": 212,
+          "end_lineno": 217
         },
         {
           "name": "amnezia_list_create",
@@ -790,8 +790,8 @@
           "decorators": [
             "app.post('/amnezia/lists-create')"
           ],
-          "lineno": 218,
-          "end_lineno": 231
+          "lineno": 221,
+          "end_lineno": 234
         },
         {
           "name": "amnezia_list_delete",
@@ -802,8 +802,8 @@
           "decorators": [
             "app.post('/amnezia/lists-delete/{key}')"
           ],
-          "lineno": 235,
-          "end_lineno": 243
+          "lineno": 238,
+          "end_lineno": 246
         },
         {
           "name": "amnezia_list_meta_save",
@@ -814,8 +814,8 @@
           "decorators": [
             "app.post('/amnezia/lists-meta/{key}')"
           ],
-          "lineno": 247,
-          "end_lineno": 261
+          "lineno": 250,
+          "end_lineno": 264
         },
         {
           "name": "amnezia_vpn_macs_save",
@@ -826,8 +826,8 @@
           "decorators": [
             "app.post('/amnezia/vpn-macs/save')"
           ],
-          "lineno": 265,
-          "end_lineno": 271
+          "lineno": 268,
+          "end_lineno": 274
         },
         {
           "name": "amnezia_add_mac",
@@ -838,8 +838,8 @@
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 275,
-          "end_lineno": 277
+          "lineno": 278,
+          "end_lineno": 280
         },
         {
           "name": "service_restart",
@@ -850,8 +850,8 @@
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 281,
-          "end_lineno": 295
+          "lineno": 284,
+          "end_lineno": 298
         },
         {
           "name": "backup_run",
@@ -862,8 +862,8 @@
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 299,
-          "end_lineno": 314
+          "lineno": 302,
+          "end_lineno": 317
         },
         {
           "name": "capture_traffic",
@@ -874,8 +874,8 @@
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 318,
-          "end_lineno": 364
+          "lineno": 321,
+          "end_lineno": 367
         },
         {
           "name": "_build_dnsmasq_context",
@@ -884,8 +884,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 367,
-          "end_lineno": 395
+          "lineno": 370,
+          "end_lineno": 398
         },
         {
           "name": "dnsmasq_view",
@@ -896,8 +896,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 399,
-          "end_lineno": 409
+          "lineno": 402,
+          "end_lineno": 412
         },
         {
           "name": "_dnsmasq_response",
@@ -906,8 +906,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 412,
-          "end_lineno": 423
+          "lineno": 415,
+          "end_lineno": 426
         },
         {
           "name": "dnsmasq_static_add",
@@ -918,8 +918,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 427,
-          "end_lineno": 436
+          "lineno": 430,
+          "end_lineno": 439
         },
         {
           "name": "dnsmasq_static_update",
@@ -930,8 +930,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 440,
-          "end_lineno": 449
+          "lineno": 443,
+          "end_lineno": 452
         },
         {
           "name": "dnsmasq_static_remove",
@@ -942,8 +942,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 453,
-          "end_lineno": 457
+          "lineno": 456,
+          "end_lineno": 460
         },
         {
           "name": "dnsmasq_service_reload",
@@ -954,8 +954,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 461,
-          "end_lineno": 465
+          "lineno": 464,
+          "end_lineno": 468
         },
         {
           "name": "dnsmasq_service_restart",
@@ -966,8 +966,20 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 469,
-          "end_lineno": 473
+          "lineno": 472,
+          "end_lineno": 476
+        },
+        {
+          "name": "dnsmasq_events",
+          "signature": "dnsmasq_events()",
+          "docstring": null,
+          "summary": null,
+          "kind": "async_function",
+          "decorators": [
+            "app.get('/dnsmasq/events')"
+          ],
+          "lineno": 480,
+          "end_lineno": 516
         },
         {
           "name": "health",
@@ -978,8 +990,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 477,
-          "end_lineno": 478
+          "lineno": 520,
+          "end_lineno": 521
         }
       ],
       "constants": [
@@ -987,25 +999,25 @@
           "name": "PROJECT_ROOT",
           "annotation": null,
           "value_repr": "Path(__file__).resolve().parent.parent",
-          "lineno": 40
+          "lineno": 43
         },
         {
           "name": "STATIC_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'static'",
-          "lineno": 41
+          "lineno": 44
         },
         {
           "name": "TEMPLATES_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'templates'",
-          "lineno": 42
+          "lineno": 45
         }
       ],
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 27,
+        "functions": 28,
         "methods": 0,
         "constants": 3
       }
