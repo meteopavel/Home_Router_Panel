@@ -431,8 +431,7 @@
         var ip = pill.getAttribute('data-ping-ip');
         var origClass = pill.className;
         var origText = pill.textContent.trim();
-        pill.textContent = '…';
-        pill.style.opacity = '0.6';
+        pill.className = 'pill pill-pinging';
         fetch('/dnsmasq/ping?ip=' + encodeURIComponent(ip))
             .then(function (r) { return r.json(); })
             .then(function (data) {
@@ -443,8 +442,7 @@
             .catch(function () {
                 pill.className = origClass;
                 pill.textContent = origText;
-            })
-            .finally(function () { pill.style.opacity = ''; });
+            });
     });
 })();
 </script>

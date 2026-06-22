@@ -227,6 +227,30 @@
     border-color: var(--tint-gray-border);
 }
 
+.pill-pinging {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.pill-pinging::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 10px;
+    height: 10px;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    color: var(--tint-gray-text);
+    animation: pill-spin 0.7s linear infinite;
+}
+
+@keyframes pill-spin {
+    to { transform: rotate(360deg); }
+}
+
 /* ── Hotlist viewer ───────────────────────────────────────── */
 .hotlist-view {
     border: 1px solid var(--border);
