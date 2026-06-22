@@ -236,14 +236,14 @@
 .pill-pinging::after {
     content: '';
     position: absolute;
-    inset: 0;
-    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 10px;
     height: 10px;
-    border: 2px solid currentColor;
+    border: 2px solid var(--tint-gray-text);
     border-top-color: transparent;
     border-radius: 50%;
-    color: var(--tint-gray-text);
     animation: pill-spin 0.7s linear infinite;
 }
 
