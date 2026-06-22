@@ -42,6 +42,4 @@ Python · FastAPI · Jinja2 · systemd · AmneziaWG · dnsmasq
 
 ## Автор
 
-Павел Найдёнов — разработчик из Иркутска, пришедший в IT из метеорологии и преподавания.
-
-[meteopavel.space](https://meteopavel.space)
+Павел Найдёнов — [meteopavel.space](https://meteopavel.space)
