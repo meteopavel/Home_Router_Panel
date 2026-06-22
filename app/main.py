@@ -377,8 +377,8 @@ def _build_dnsmasq_context(**extra) -> dict:
         and l.mac not in system_macs
         and not (l.hostname and l.hostname in static_hosts)
     )
-    online_macs = {l.mac for l in leases if l.mac}
-    online_hostnames = {l.hostname.lower() for l in leases if l.hostname and l.hostname != "*"}
+    online_macs = {l.mac for l in leases if l.mac and l.ts > 0}
+    online_hostnames = {l.hostname.lower() for l in leases if l.hostname and l.hostname != "*" and l.ts > 0}
     return {
         "title": "dnsmasq",
         "active_tab": "dnsmasq",

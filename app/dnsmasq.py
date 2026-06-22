@@ -56,6 +56,7 @@ def _test_config() -> tuple[bool, str]:
 @dataclass
 class Lease:
     expiry: str
+    ts: int
     mac: str
     ip: str
     hostname: str
@@ -78,6 +79,7 @@ def read_leases() -> list[Lease]:
             parts = line.split()
             if len(parts) < 4:
                 continue
+            ts = 0
             try:
                 ts = int(parts[0])
                 if ts == 0:
@@ -90,7 +92,7 @@ def read_leases() -> list[Lease]:
             ip = parts[2]
             hostname = parts[3] if parts[3] != "*" else ""
             client_id = parts[4] if len(parts) > 4 else ""
-            leases.append(Lease(expiry=expiry, mac=mac, ip=ip, hostname=hostname, client_id=client_id))
+            leases.append(Lease(expiry=expiry, ts=ts, mac=mac, ip=ip, hostname=hostname, client_id=client_id))
         leases.sort(key=lambda l: tuple(int(x) for x in l.ip.split(".")) if l.ip.count(".") == 3 else (0,))
         return leases
     except Exception:
