@@ -8,7 +8,7 @@
 - модулей: 6
 - классов: 0
 - dataclass: 4
-- функций: 68
+- функций: 69
 - методов: 0
 - констант: 19
 
@@ -166,6 +166,13 @@
 
 - `get_dnsmasq_state() -> str`
   Нет докстринга.
+
+- `get_arp_online() -> tuple[set[str], set[str]]`
+  Return (online_macs, online_ips) from ARP table on enp2s0.
+  
+  A device is considered online if it has an lladdr and state is not FAILED.
+  REACHABLE/STALE/DELAY/PROBE all count as online.
+  After disconnect, entry transitions to FAILED within ~1-3 minutes.
 
 ---
 
