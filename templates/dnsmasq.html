@@ -173,14 +173,20 @@
                                             </div>
                                         </div>
                                         <div class="actions">
-                                            {% if e.mac and e.mac in online_macs %}
-                                                <span class="pill pill-green" data-tooltip="Активная аренда DHCP">онлайн</span>
-                                            {% elif not e.mac and e.hostname and e.hostname.lower() in online_hostnames %}
-                                                <span class="pill pill-green" data-tooltip="Активная аренда DHCP">онлайн</span>
-                                            {% elif e.mac %}
-                                                <span class="pill pill-gray" data-tooltip="Нет активной аренды DHCP">офлайн</span>
+                                            {% if e.mac %}
+                                                {% set is_online = e.mac in online_macs %}
+                                                <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                                      data-status-mac="{{ e.mac }}"
+                                                      data-tooltip="{% if is_online %}Активная аренда DHCP{% else %}Нет активной аренды DHCP{% endif %}">
+                                                    {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                                                </span>
                                             {% elif e.hostname %}
-                                                <span class="pill pill-gray" data-tooltip="Нет активной аренды DHCP">офлайн</span>
+                                                {% set is_online = e.hostname.lower() in online_hostnames %}
+                                                <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                                      data-status-host="{{ e.hostname.lower() }}"
+                                                      data-tooltip="{% if is_online %}Активная аренда DHCP{% else %}Нет активной аренды DHCP{% endif %}">
+                                                    {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                                                </span>
                                             {% endif %}
                                             {% if e.mac %}
                                                 <a href="/dnsmasq?edit={{ e.mac }}" class="button button-secondary button-sm js-keep-scroll"
@@ -393,6 +399,29 @@
         </div>
     {% endif %}
 </section>
+
+<script>
+(function () {
+    var es = new EventSource('/dnsmasq/events');
+    es.onmessage = function (e) {
+        var data = JSON.parse(e.data);
+        var macs = data.macs;
+        var hosts = data.hostnames;
+        document.querySelectorAll('[data-status-mac]').forEach(function (el) {
+            var online = macs.indexOf(el.getAttribute('data-status-mac')) !== -1;
+            el.className = 'pill ' + (online ? 'pill-green' : 'pill-gray');
+            el.textContent = online ? 'онлайн' : 'офлайн';
+            el.setAttribute('data-tooltip', online ? 'Активная аренда DHCP' : 'Нет активной аренды DHCP');
+        });
+        document.querySelectorAll('[data-status-host]').forEach(function (el) {
+            var online = hosts.indexOf(el.getAttribute('data-status-host')) !== -1;
+            el.className = 'pill ' + (online ? 'pill-green' : 'pill-gray');
+            el.textContent = online ? 'онлайн' : 'офлайн';
+            el.setAttribute('data-tooltip', online ? 'Активная аренда DHCP' : 'Нет активной аренды DHCP');
+        });
+    };
+})();
+</script>
 
 <script>
 (function () {

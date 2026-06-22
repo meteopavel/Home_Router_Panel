@@ -1,8 +1,10 @@
+import asyncio
+import json as _json
 from pathlib import Path
 import subprocess
 
 from fastapi import FastAPI, Form, HTTPException, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -16,6 +18,7 @@ from app.dnsmasq import (
     reload_dnsmasq,
     remove_static,
     restart_dnsmasq,
+    LEASES_FILE,
     STATIC_FILE,
 )
 from app.amnezia import (
@@ -471,6 +474,46 @@ def dnsmasq_service_restart():
     if ok:
         return {"ok": True}
     return {"ok": False, "error": msg or "Не удалось перезапустить dnsmasq"}
+
+
+@app.get("/dnsmasq/events")
+async def dnsmasq_events():
+    async def _generate():
+        def _online_sets():
+            leases = read_leases()
+            macs = [l.mac for l in leases if l.mac and l.ts > 0]
+            hosts = [l.hostname.lower() for l in leases if l.hostname and l.hostname != "*" and l.ts > 0]
+            return macs, hosts
+
+        macs, hosts = _online_sets()
+        yield f"data: {_json.dumps({'macs': macs, 'hostnames': hosts})}\n\n"
+
+        last_mtime: float = 0.0
+        try:
+            last_mtime = LEASES_FILE.stat().st_mtime
+        except OSError:
+            pass
+
+        ticks = 0
+        while True:
+            await asyncio.sleep(2)
+            ticks += 1
+            try:
+                mtime = LEASES_FILE.stat().st_mtime
+            except OSError:
+                mtime = 0.0
+            if mtime != last_mtime:
+                last_mtime = mtime
+                macs, hosts = _online_sets()
+                yield f"data: {_json.dumps({'macs': macs, 'hostnames': hosts})}\n\n"
+            elif ticks % 15 == 0:
+                yield ": heartbeat\n\n"
+
+    return StreamingResponse(
+        _generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.get("/health")
