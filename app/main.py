@@ -1,3 +1,5 @@
+"""Маршруты FastAPI: обзор, zapret, AmneziaWG, dnsmasq, бэкап, SSE."""
+
 import asyncio
 import json as _json
 from pathlib import Path
@@ -147,6 +149,7 @@ def hotlist_edit_save(request: Request, name: str, content: str = Form(default="
 
 
 def _parse_vpn_macs(content: str) -> set[str]:
+    """Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные)."""
     result = set()
     for line in content.splitlines():
         mac = line.split("#")[0].strip().lower()
@@ -156,6 +159,7 @@ def _parse_vpn_macs(content: str) -> set[str]:
 
 
 def _amnezia_context(request: Request, target: str = "", msg: str = "", error: str = "") -> dict:
+    """Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs."""
     list_meta = get_list_meta()
     check_result = None
     if target:
@@ -369,6 +373,7 @@ def capture_traffic(request: Request, mac: str = "", seconds: int = 15, count: i
 
 
 def _build_dnsmasq_context(**extra) -> dict:
+    """Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP."""
     static = read_static()
     system = read_system_static()
     leases = read_leases()
@@ -420,6 +425,7 @@ def dnsmasq_view(request: Request, msg: str = "", edit: str = "", edit_host: str
 
 
 def _dnsmasq_response(request: Request, error: str = "", msg: str = "", edit_mac: str = "", edit_host: str = "", pin_mac: str = ""):
+    """Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами."""
     return templates.TemplateResponse(
         request=request,
         name="dnsmasq.html",
