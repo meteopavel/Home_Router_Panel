@@ -9,67 +9,84 @@
         </div>
     </div>
 
-    {# ── Список устройств ──────────────────────────────────────────── #}
-    {% set all_static = static | selectattr('mac') | list %}
-    {% if all_static %}
-        <div class="section-label" style="margin-bottom: 8px;">Статические резервации</div>
-        <div class="service-list" style="margin-bottom: 20px;">
-            {% for e in all_static %}
-                {% set is_online = e.mac in online_macs %}
-                <div class="service-row {% if mac == e.mac %}service-row-highlight{% endif %}">
-                    <div class="service-main">
-                        <div class="device-line">
-                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}
-                            {{ e.ip }}
-                            <span class="device-meta"> · {{ e.mac }}</span>
-                        </div>
+    {# ── Статические резервации (сгруппированы по IP) ──────────────── #}
+    {% if grouped_static %}
+        {% for group in grouped_static %}
+            {% if group.entries %}
+                <div class="group-block">
+                    <div class="group-header">
+                        {{ group.name }}
+                        {% if group.lo is not none %}
+                            <span class="group-range">.{{ group.lo }}–.{{ group.hi }}</span>
+                        {% endif %}
                     </div>
-                    <div class="actions">
-                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
-                              style="font-size: 11px; padding: 3px 8px;">
-                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
-                        </span>
-                        <a href="/capture?mac={{ e.mac }}&seconds={{ seconds }}&count={{ count }}"
-                           class="button button-sm {% if mac == e.mac %}button-active{% endif %}">
-                            Захватить
-                        </a>
+                    <div class="service-list">
+                        {% for e in group.entries %}
+                            {% if e.mac %}
+                                {% set is_online = e.mac in online_macs %}
+                            {% else %}
+                                {% set is_online = e.ip in online_ips %}
+                            {% endif %}
+                            <div class="service-row service-row-compact {% if mac == e.mac %}service-row-highlight{% endif %}">
+                                <div class="service-main">
+                                    <div class="device-line">
+                                        {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                                        <span class="device-meta"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
+                                    </div>
+                                </div>
+                                <div class="actions">
+                                    <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                          data-ping-ip="{{ e.ip }}"
+                                          style="cursor:pointer;"
+                                          data-tooltip="Нажмите для проверки пингом">
+                                        {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                                    </span>
+                                    {% if e.mac %}
+                                        <a href="/capture?mac={{ e.mac }}&seconds={{ seconds }}&count={{ count }}"
+                                           class="button button-secondary button-sm">Захватить</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+            {% endif %}
+        {% endfor %}
     {% endif %}
 
+    {# ── Динамические аренды ───────────────────────────────────────── #}
     {% if dynamic %}
-        <div class="section-label" style="margin-bottom: 8px;">Динамические аренды</div>
-        <div class="service-list" style="margin-bottom: 20px;">
-            {% for l in dynamic %}
-                {% set is_online = l.mac in online_macs %}
-                <div class="service-row {% if mac == l.mac %}service-row-highlight{% endif %}">
-                    <div class="service-main">
-                        <div class="device-line">
-                            {% if l.hostname %}<strong>{{ l.hostname }}</strong> · {% endif %}
-                            {{ l.ip }}
-                            <span class="device-meta"> · {{ l.mac }}</span>
+        <div class="group-block">
+            <div class="group-header">Динамические аренды</div>
+            <div class="service-list">
+                {% for l in dynamic %}
+                    {% set is_online = l.mac in online_macs %}
+                    <div class="service-row service-row-compact {% if mac == l.mac %}service-row-highlight{% endif %}">
+                        <div class="service-main">
+                            <div class="device-line">
+                                {% if l.hostname %}<strong>{{ l.hostname }}</strong> · {% endif %}{{ l.ip }}
+                                <span class="device-meta"> · {{ l.mac }}</span>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                  data-ping-ip="{{ l.ip }}"
+                                  style="cursor:pointer;"
+                                  data-tooltip="Нажмите для проверки пингом">
+                                {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                            </span>
+                            <a href="/capture?mac={{ l.mac }}&seconds={{ seconds }}&count={{ count }}"
+                               class="button button-secondary button-sm">Захватить</a>
                         </div>
                     </div>
-                    <div class="actions">
-                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
-                              style="font-size: 11px; padding: 3px 8px;">
-                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
-                        </span>
-                        <a href="/capture?mac={{ l.mac }}&seconds={{ seconds }}&count={{ count }}"
-                           class="button button-sm {% if mac == l.mac %}button-active{% endif %}">
-                            Захватить
-                        </a>
-                    </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
 
     {# ── Параметры захвата ──────────────────────────────────────────── #}
     <form method="get" action="/capture"
-          style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
+          style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin: 24px 0;">
         <div>
             <label class="form-label">MAC-адрес</label>
             <input type="text" name="mac" value="{{ mac }}" placeholder="aa:bb:cc:dd:ee:ff"
@@ -109,4 +126,25 @@
     {% endif %}
 </section>
 
+<script>
+document.addEventListener('click', function (e) {
+    var pill = e.target.closest('[data-ping-ip]');
+    if (!pill) return;
+    var ip = pill.getAttribute('data-ping-ip');
+    var origClass = pill.className;
+    var origText = pill.textContent.trim();
+    pill.className = 'pill pill-pinging';
+    fetch('/dnsmasq/ping?ip=' + encodeURIComponent(ip))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            pill.className = 'pill ' + (data.online ? 'pill-green' : 'pill-gray');
+            pill.textContent = data.online ? 'онлайн' : 'офлайн';
+            pill.setAttribute('data-tooltip', data.online ? 'Пинг успешен' : 'Нет ответа на пинг');
+        })
+        .catch(function () {
+            pill.className = origClass;
+            pill.textContent = origText;
+        });
+});
+</script>
 {% endblock %}

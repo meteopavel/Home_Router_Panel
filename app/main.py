@@ -382,6 +382,7 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
     static_macs = {e.mac for e in static if e.mac}
     static_ips = {e.ip for e in static if e.ip}
     dynamic = [l for l in leases if l.mac and l.mac not in static_macs and l.ip not in static_ips]
+    grouped_static = group_static_entries(static)
     return templates.TemplateResponse(
         request=request,
         name='capture.html',
@@ -393,7 +394,7 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
             'output': output,
             'error': error,
             'active_tab': 'capture',
-            'static': static,
+            'grouped_static': grouped_static,
             'dynamic': dynamic,
             'online_macs': arp_macs,
             'online_ips': arp_ips,
