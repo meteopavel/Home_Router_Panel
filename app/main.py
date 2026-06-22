@@ -391,7 +391,7 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
             'count': count,
             'output': output,
             'error': error,
-            'active_tab': 'dnsmasq',
+            'active_tab': 'capture',
             'static': static,
             'dynamic': dynamic,
             'online_macs': arp_macs,
