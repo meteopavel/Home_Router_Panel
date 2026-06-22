@@ -229,6 +229,17 @@
                                                     </div>
                                                     <div class="actions">
                                                         {% if e.mac %}
+                                                            {% set is_online = e.mac in online_macs %}
+                                                        {% else %}
+                                                            {% set is_online = e.ip in online_ips %}
+                                                        {% endif %}
+                                                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                                              data-ping-ip="{{ e.ip }}"
+                                                              style="cursor:pointer;"
+                                                              data-tooltip="Нажмите для проверки пингом">
+                                                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                                                        </span>
+                                                        {% if e.mac %}
                                                             <input type="checkbox" name="macs" value="{{ e.mac }}"
                                                                    {% if e.mac in vpn_macs_selected %}checked{% endif %}
                                                                    {% if e.mac_from_lease %}data-tooltip="MAC из текущей аренды DHCP: {{ e.mac }}"{% endif %}>
@@ -339,4 +350,25 @@
     </details>
 </section>
 
+<script>
+document.addEventListener('click', function (e) {
+    var pill = e.target.closest('[data-ping-ip]');
+    if (!pill) return;
+    var ip = pill.getAttribute('data-ping-ip');
+    var origClass = pill.className;
+    var origText = pill.textContent.trim();
+    pill.className = 'pill pill-pinging';
+    fetch('/dnsmasq/ping?ip=' + encodeURIComponent(ip))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            pill.className = 'pill ' + (data.online ? 'pill-green' : 'pill-gray');
+            pill.textContent = data.online ? 'онлайн' : 'офлайн';
+            pill.setAttribute('data-tooltip', data.online ? 'Пинг успешен' : 'Нет ответа на пинг');
+        })
+        .catch(function () {
+            pill.className = origClass;
+            pill.textContent = origText;
+        });
+});
+</script>
 {% endblock %}
