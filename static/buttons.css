@@ -60,10 +60,13 @@ a.button,
 a.button:hover,
 a.button:visited,
 a.button:active {
-    color: var(--text);
     text-decoration: none;
     cursor: pointer;
 }
+
+a.button:visited { color: var(--text); }
+a.button.button-secondary:visited { color: var(--muted); }
+a.button.button-danger:visited { color: var(--red); }
 
 .inline-form {
     display: inline-flex;
