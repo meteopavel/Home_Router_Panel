@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T07:43:48.913363+00:00",
+  "generated_at": "2026-06-22T07:47:26.889307+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -891,7 +891,7 @@
             "app.get('/capture')"
           ],
           "lineno": 344,
-          "end_lineno": 391
+          "end_lineno": 400
         },
         {
           "name": "_build_dnsmasq_context",
@@ -900,8 +900,8 @@
           "summary": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 394,
-          "end_lineno": 429
+          "lineno": 403,
+          "end_lineno": 438
         },
         {
           "name": "dnsmasq_view",
@@ -912,8 +912,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 433,
-          "end_lineno": 444
+          "lineno": 442,
+          "end_lineno": 453
         },
         {
           "name": "_dnsmasq_response",
@@ -922,8 +922,8 @@
           "summary": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
           "kind": "function",
           "decorators": [],
-          "lineno": 447,
-          "end_lineno": 459
+          "lineno": 456,
+          "end_lineno": 468
         },
         {
           "name": "dnsmasq_static_add",
@@ -934,8 +934,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 463,
-          "end_lineno": 473
+          "lineno": 472,
+          "end_lineno": 482
         },
         {
           "name": "dnsmasq_static_update",
@@ -946,8 +946,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 477,
-          "end_lineno": 487
+          "lineno": 486,
+          "end_lineno": 496
         },
         {
           "name": "dnsmasq_static_remove",
@@ -958,8 +958,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 491,
-          "end_lineno": 496
+          "lineno": 500,
+          "end_lineno": 505
         },
         {
           "name": "dnsmasq_service_reload",
@@ -970,8 +970,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 500,
-          "end_lineno": 505
+          "lineno": 509,
+          "end_lineno": 514
         },
         {
           "name": "dnsmasq_service_restart",
@@ -982,8 +982,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 509,
-          "end_lineno": 514
+          "lineno": 518,
+          "end_lineno": 523
         },
         {
           "name": "dnsmasq_events",
@@ -994,8 +994,8 @@
           "decorators": [
             "app.get('/dnsmasq/events')"
           ],
-          "lineno": 518,
-          "end_lineno": 576
+          "lineno": 527,
+          "end_lineno": 585
         },
         {
           "name": "dnsmasq_ping",
@@ -1006,8 +1006,8 @@
           "decorators": [
             "app.get('/dnsmasq/ping')"
           ],
-          "lineno": 580,
-          "end_lineno": 592
+          "lineno": 589,
+          "end_lineno": 601
         },
         {
           "name": "health",
@@ -1018,8 +1018,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 596,
-          "end_lineno": 598
+          "lineno": 605,
+          "end_lineno": 607
         }
       ],
       "constants": [
