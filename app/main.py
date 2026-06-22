@@ -185,6 +185,7 @@ def _amnezia_context(request: Request, target: str = '', msg: str = '', error: s
         else:
             entry.mac_from_lease = False
     grouped_dhcp_static = group_static_entries(static_entries)
+    arp_macs, arp_ips = get_arp_online()
     return {
         'title': 'AmneziaWG',
         'status': get_awg_status(),
@@ -200,6 +201,8 @@ def _amnezia_context(request: Request, target: str = '', msg: str = '', error: s
         'error': error,
         'vpn_macs_selected': vpn_macs_selected,
         'grouped_dhcp_static': grouped_dhcp_static,
+        'online_macs': arp_macs,
+        'online_ips': arp_ips,
     }
 
 

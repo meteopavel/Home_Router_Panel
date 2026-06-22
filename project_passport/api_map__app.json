@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T06:31:55.546573+00:00",
+  "generated_at": "2026-06-22T07:43:48.913363+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -759,7 +759,7 @@
           "kind": "function",
           "decorators": [],
           "lineno": 166,
-          "end_lineno": 203
+          "end_lineno": 206
         },
         {
           "name": "amnezia_view",
@@ -770,8 +770,8 @@
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 207,
-          "end_lineno": 213
+          "lineno": 210,
+          "end_lineno": 216
         },
         {
           "name": "amnezia_service_action",
@@ -782,8 +782,8 @@
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 217,
-          "end_lineno": 220
+          "lineno": 220,
+          "end_lineno": 223
         },
         {
           "name": "amnezia_list_save",
@@ -794,8 +794,8 @@
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 224,
-          "end_lineno": 230
+          "lineno": 227,
+          "end_lineno": 233
         },
         {
           "name": "amnezia_list_create",
@@ -806,8 +806,8 @@
           "decorators": [
             "app.post('/amnezia/lists-create')"
           ],
-          "lineno": 234,
-          "end_lineno": 248
+          "lineno": 237,
+          "end_lineno": 251
         },
         {
           "name": "amnezia_list_delete",
@@ -818,8 +818,8 @@
           "decorators": [
             "app.post('/amnezia/lists-delete/{key}')"
           ],
-          "lineno": 252,
-          "end_lineno": 261
+          "lineno": 255,
+          "end_lineno": 264
         },
         {
           "name": "amnezia_list_meta_save",
@@ -830,8 +830,8 @@
           "decorators": [
             "app.post('/amnezia/lists-meta/{key}')"
           ],
-          "lineno": 265,
-          "end_lineno": 280
+          "lineno": 268,
+          "end_lineno": 283
         },
         {
           "name": "amnezia_vpn_macs_save",
@@ -842,8 +842,8 @@
           "decorators": [
             "app.post('/amnezia/vpn-macs/save')"
           ],
-          "lineno": 284,
-          "end_lineno": 291
+          "lineno": 287,
+          "end_lineno": 294
         },
         {
           "name": "amnezia_add_mac",
@@ -854,8 +854,8 @@
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 295,
-          "end_lineno": 298
+          "lineno": 298,
+          "end_lineno": 301
         },
         {
           "name": "service_restart",
@@ -866,8 +866,8 @@
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 302,
-          "end_lineno": 317
+          "lineno": 305,
+          "end_lineno": 320
         },
         {
           "name": "backup_run",
@@ -878,8 +878,8 @@
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 321,
-          "end_lineno": 337
+          "lineno": 324,
+          "end_lineno": 340
         },
         {
           "name": "capture_traffic",
@@ -890,8 +890,8 @@
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 341,
-          "end_lineno": 388
+          "lineno": 344,
+          "end_lineno": 391
         },
         {
           "name": "_build_dnsmasq_context",
@@ -900,8 +900,8 @@
           "summary": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 391,
-          "end_lineno": 426
+          "lineno": 394,
+          "end_lineno": 429
         },
         {
           "name": "dnsmasq_view",
@@ -912,8 +912,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 430,
-          "end_lineno": 441
+          "lineno": 433,
+          "end_lineno": 444
         },
         {
           "name": "_dnsmasq_response",
@@ -922,8 +922,8 @@
           "summary": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
           "kind": "function",
           "decorators": [],
-          "lineno": 444,
-          "end_lineno": 456
+          "lineno": 447,
+          "end_lineno": 459
         },
         {
           "name": "dnsmasq_static_add",
@@ -934,8 +934,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 460,
-          "end_lineno": 470
+          "lineno": 463,
+          "end_lineno": 473
         },
         {
           "name": "dnsmasq_static_update",
@@ -946,8 +946,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 474,
-          "end_lineno": 484
+          "lineno": 477,
+          "end_lineno": 487
         },
         {
           "name": "dnsmasq_static_remove",
@@ -958,8 +958,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 488,
-          "end_lineno": 493
+          "lineno": 491,
+          "end_lineno": 496
         },
         {
           "name": "dnsmasq_service_reload",
@@ -970,8 +970,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 497,
-          "end_lineno": 502
+          "lineno": 500,
+          "end_lineno": 505
         },
         {
           "name": "dnsmasq_service_restart",
@@ -982,8 +982,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 506,
-          "end_lineno": 511
+          "lineno": 509,
+          "end_lineno": 514
         },
         {
           "name": "dnsmasq_events",
@@ -994,8 +994,8 @@
           "decorators": [
             "app.get('/dnsmasq/events')"
           ],
-          "lineno": 515,
-          "end_lineno": 573
+          "lineno": 518,
+          "end_lineno": 576
         },
         {
           "name": "dnsmasq_ping",
@@ -1006,8 +1006,8 @@
           "decorators": [
             "app.get('/dnsmasq/ping')"
           ],
-          "lineno": 577,
-          "end_lineno": 589
+          "lineno": 580,
+          "end_lineno": 592
         },
         {
           "name": "health",
@@ -1018,8 +1018,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 593,
-          "end_lineno": 595
+          "lineno": 596,
+          "end_lineno": 598
         }
       ],
       "constants": [
