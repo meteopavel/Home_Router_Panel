@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T03:44:48.151524+00:00",
+  "generated_at": "2026-06-22T03:50:21.300544+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -319,33 +319,39 @@
               "lineno": 58
             },
             {
-              "name": "mac",
-              "annotation": "str",
+              "name": "ts",
+              "annotation": "int",
               "value_repr": null,
               "lineno": 59
             },
             {
-              "name": "ip",
+              "name": "mac",
               "annotation": "str",
               "value_repr": null,
               "lineno": 60
             },
             {
-              "name": "hostname",
+              "name": "ip",
               "annotation": "str",
               "value_repr": null,
               "lineno": 61
             },
             {
-              "name": "client_id",
+              "name": "hostname",
               "annotation": "str",
               "value_repr": null,
               "lineno": 62
+            },
+            {
+              "name": "client_id",
+              "annotation": "str",
+              "value_repr": null,
+              "lineno": 63
             }
           ],
           "methods": [],
           "lineno": 57,
-          "end_lineno": 62
+          "end_lineno": 63
         },
         {
           "name": "StaticEntry",
@@ -362,24 +368,24 @@
               "name": "mac",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 67
+              "lineno": 68
             },
             {
               "name": "ip",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 68
+              "lineno": 69
             },
             {
               "name": "hostname",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 69
+              "lineno": 70
             }
           ],
           "methods": [],
-          "lineno": 66,
-          "end_lineno": 69
+          "lineno": 67,
+          "end_lineno": 70
         }
       ],
       "functions": [
@@ -410,8 +416,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 72,
-          "end_lineno": 97
+          "lineno": 73,
+          "end_lineno": 99
         },
         {
           "name": "read_system_static",
@@ -420,8 +426,8 @@
           "summary": "Read dhcp-host entries from /etc/dnsmasq.d/*.conf (read-only, for display).",
           "kind": "function",
           "decorators": [],
-          "lineno": 103,
-          "end_lineno": 123
+          "lineno": 105,
+          "end_lineno": 125
         },
         {
           "name": "read_static",
@@ -430,8 +436,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 126,
-          "end_lineno": 153
+          "lineno": 128,
+          "end_lineno": 155
         },
         {
           "name": "write_static",
@@ -440,8 +446,8 @@
           "summary": "Write static entries. Returns (ok, error_or_empty).",
           "kind": "function",
           "decorators": [],
-          "lineno": 156,
-          "end_lineno": 179
+          "lineno": 158,
+          "end_lineno": 181
         },
         {
           "name": "add_static",
@@ -450,8 +456,8 @@
           "summary": "Add or update entry. Returns (ok, error_or_empty).",
           "kind": "function",
           "decorators": [],
-          "lineno": 182,
-          "end_lineno": 202
+          "lineno": 184,
+          "end_lineno": 204
         },
         {
           "name": "remove_static",
@@ -460,8 +466,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 205,
-          "end_lineno": 217
+          "lineno": 207,
+          "end_lineno": 219
         },
         {
           "name": "reload_dnsmasq",
@@ -470,8 +476,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 220,
-          "end_lineno": 230
+          "lineno": 222,
+          "end_lineno": 232
         },
         {
           "name": "restart_dnsmasq",
@@ -480,8 +486,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 233,
-          "end_lineno": 243
+          "lineno": 235,
+          "end_lineno": 245
         },
         {
           "name": "get_ip_group",
@@ -490,8 +496,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 259,
-          "end_lineno": 267
+          "lineno": 261,
+          "end_lineno": 269
         },
         {
           "name": "group_static_entries",
@@ -500,8 +506,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 270,
-          "end_lineno": 290
+          "lineno": 272,
+          "end_lineno": 292
         },
         {
           "name": "get_dnsmasq_state",
@@ -510,8 +516,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 293,
-          "end_lineno": 301
+          "lineno": 295,
+          "end_lineno": 303
         }
       ],
       "constants": [
@@ -543,19 +549,19 @@
           "name": "DNSMASQ_D",
           "annotation": null,
           "value_repr": "Path('/etc/dnsmasq.d')",
-          "lineno": 100
+          "lineno": 102
         },
         {
           "name": "_IP_GROUPS",
           "annotation": "list[tuple[int, int, str]]",
           "value_repr": "[(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 59, 'Телефоны'), (60, 79, 'Динамический пул'), (110, 119, 'Камеры'), (200, 209, 'Майнеры')]",
-          "lineno": 246
+          "lineno": 248
         },
         {
           "name": "IP_GROUP_NAMES",
           "annotation": "list[str]",
           "value_repr": "list(dict.fromkeys((n for _, _, n in _IP_GROUPS)))",
-          "lineno": 256
+          "lineno": 258
         }
       ],
       "stats": {

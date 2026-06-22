@@ -113,6 +113,7 @@
   Нет докстринга.
   Поля:
   - `expiry: str`
+  - `ts: int`
   - `mac: str`
   - `ip: str`
   - `hostname: str`
