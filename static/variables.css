@@ -1,5 +1,5 @@
 :root {
-    /* Colors */
+    /* ── Colors ──────────────────────────────────────────────── */
     --bg: #101827;
     --panel: #172033;
     --panel-soft: #1f2b44;
@@ -11,22 +11,61 @@
     --blue-dark: #2563eb;
     --red: #f87171;
     --yellow: #facc15;
+    --danger: var(--red);                   /* alias */
 
-    /* Shadows */
+    /* ── Color tints (bg / border / text) ────────────────────── */
+    --tint-blue-bg:     rgba(96, 165, 250, 0.12);
+    --tint-blue-border: rgba(96, 165, 250, 0.22);
+    --tint-blue-text:   #bfdbfe;
+
+    --tint-green-bg:     rgba(74, 222, 128, 0.12);
+    --tint-green-border: rgba(74, 222, 128, 0.28);
+    --tint-green-text:   #bbf7d0;
+
+    --tint-red-bg:     rgba(248, 113, 113, 0.12);
+    --tint-red-border: rgba(248, 113, 113, 0.35);
+    --tint-red-text:   #fecaca;
+
+    --tint-yellow-bg:     rgba(250, 204, 21, 0.12);
+    --tint-yellow-border: rgba(250, 204, 21, 0.28);
+    --tint-yellow-text:   #fef08a;
+
+    --tint-gray-bg:     rgba(148, 163, 184, 0.12);
+    --tint-gray-border: rgba(148, 163, 184, 0.28);
+    --tint-gray-text:   #cbd5e1;
+
+    /* ── Shadows ─────────────────────────────────────────────── */
     --shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
 
-    /* Backgrounds */
-    --bg-card: linear-gradient(180deg, rgba(31, 43, 68, 0.95), rgba(23, 32, 51, 0.95));
-    --bg-row: rgba(16, 24, 39, 0.45);
-    --bg-btn: rgba(30, 41, 59, 0.75);
+    /* ── Backgrounds ─────────────────────────────────────────── */
+    --bg-card:     linear-gradient(180deg, rgba(31, 43, 68, 0.95), rgba(23, 32, 51, 0.95));
+    --bg-row:      rgba(16, 24, 39, 0.45);
+    --bg-btn:      rgba(30, 41, 59, 0.75);
     --bg-btn-hover: rgba(51, 65, 85, 0.9);
+    --bg-code:     rgba(15, 23, 42, 0.55);
+    --bg-sunken:   rgba(15, 23, 42, 0.45);
+    --bg-tooltip:  #1e293b;
+    --bg-input:    var(--bg-row);           /* alias */
 
-    /* Border radii */
-    --radius-card: 22px;
-    --radius-row: 16px;
-    --radius-btn: 12px;
-    --radius-pill: 999px;
+    /* ── Border radii ────────────────────────────────────────── */
+    --radius-card:    22px;
+    --radius-row:     16px;
+    --radius-btn:     12px;
+    --radius-pill:    999px;
+    --radius-content: 18px;                /* hotlist-view, empty-state */
+    --radius-tooltip: 10px;
+    --radius:         var(--radius-btn);   /* alias */
 
-    /* Font stacks */
+    /* ── Borders ─────────────────────────────────────────────── */
+    --border-sub: rgba(148, 163, 184, 0.12);
+
+    /* ── Typography ──────────────────────────────────────────── */
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --fs-2xs:  10px;
+    --fs-xs:   11px;
+    --fs-sm:   13px;
+    --fs-base: 14px;
+
+    /* ── Motion ──────────────────────────────────────────────── */
+    --transition: 0.15s ease;
 }
