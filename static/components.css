@@ -241,7 +241,6 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
     width: 10px;
     height: 10px;
     border: 2px solid var(--tint-gray-text);
@@ -251,7 +250,8 @@
 }
 
 @keyframes pill-spin {
-    to { transform: rotate(360deg); }
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* ── Hotlist viewer ───────────────────────────────────────── */
