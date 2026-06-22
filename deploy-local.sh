@@ -66,15 +66,15 @@ require_env() {
 }
 
 rsync_via_tunnel() {
-    local user="$1" host="$2" password="$3" src="$4" dest="$5"
-    shift 5
+    # rsync_via_tunnel USER HOST SRC DEST [EXTRA_FLAGS]
+    local user="$1" host="$2" src="$3" dest="$4"
+    shift 4
     local ctl="/tmp/ssh_ctl_${user}_${host}"
-    export SSHPASS="$password"
-    sshpass -e ssh -o StrictHostKeyChecking=no \
+    ssh -i ~/.ssh/timeweb_shared -o StrictHostKeyChecking=no \
         -o ControlMaster=yes -o ControlPath="$ctl" -o ControlPersist=60s \
         -nNf "${user}@${host}"
     rsync -avz --progress "$@" \
-        --rsh="ssh -o StrictHostKeyChecking=no -o ControlMaster=no -o ControlPath=$ctl" \
+        --rsh="ssh -i ~/.ssh/timeweb_shared -o StrictHostKeyChecking=no -o ControlMaster=no -o ControlPath=$ctl" \
         "$src" "${user}@${host}:${dest}"
     ssh -o ControlPath="$ctl" -O exit "${user}@${host}" 2>/dev/null || true
 }
@@ -154,9 +154,8 @@ if [[ "$BACKUP_OK" -eq 1 ]]; then
         7z a -p"${ARCHIVE_PASSWORD}" -mhe=on "${ARCHIVE_PATH}" ".env" > /dev/null
     )
     # log "📤 Отправляем архив на backup-сервер..."
-    # rsync_via_tunnel "${SECURE_RSYNC_USER}" "${SECURE_RSYNC_HOST}" "${SECURE_RSYNC_PASSWORD}" \
-    #     "${ARCHIVE_PATH}" "${SECURE_RSYNC_PATH}"
-    echo "⚠️  rsync временно отключён — backup-сервер недоступен"
+    rsync_via_tunnel "${SECURE_RSYNC_USER}" "${SECURE_RSYNC_HOST}" \
+        "${ARCHIVE_PATH}" "${SECURE_RSYNC_PATH}"
 fi
 
 log "----------------------------------------"
