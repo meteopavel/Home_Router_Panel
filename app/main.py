@@ -1,4 +1,4 @@
-'''Маршруты FastAPI: обзор, zapret, AmneziaWG, dnsmasq, бэкап, SSE.'''
+"""Маршруты FastAPI: обзор, zapret, AmneziaWG, dnsmasq, бэкап, SSE."""
 
 import asyncio
 import json as _json
@@ -57,7 +57,7 @@ templates = Jinja2Templates(directory=TEMPLATES_DIR)
 
 @app.get('/')
 def index(request: Request):
-    '''Главная страница: карточки обзора и статусы сервисов.'''
+    """Главная страница: карточки обзора и статусы сервисов."""
     config = load_config()
     services = get_services_status(config)
 
@@ -75,7 +75,7 @@ def index(request: Request):
 
 @app.get('/zapret')
 def zapret_view(request: Request):
-    '''Вкладка zapret: список hotlist-файлов и статус сервиса.'''
+    """Вкладка zapret: список hotlist-файлов и статус сервиса."""
     config = load_config()
     hotlists = get_hotlists_config(config)
     services = get_services_status(config)
@@ -95,13 +95,13 @@ def zapret_view(request: Request):
 
 @app.get('/hotlists/{name}')
 def hotlist_view(name: str):
-    '''Перенаправляет на страницу редактирования hotlist.'''
+    """Перенаправляет на страницу редактирования hotlist."""
     return RedirectResponse(url=f'/hotlists/{name}/edit', status_code=302)
 
 
 @app.get('/hotlists/{name}/edit')
 def hotlist_edit_view(request: Request, name: str):
-    '''Редактирование hotlist-файла zapret.'''
+    """Редактирование hotlist-файла zapret."""
     config = load_config()
     hotlist = read_hotlist(config, name)
 
@@ -121,7 +121,7 @@ def hotlist_edit_view(request: Request, name: str):
 
 @app.post('/hotlists/{name}/edit')
 def hotlist_edit_save(request: Request, name: str, content: str = Form(default='')):
-    '''Сохраняет hotlist и перезапускает zapret.'''
+    """Сохраняет hotlist и перезапускает zapret."""
     config = load_config()
 
     try:
@@ -154,7 +154,7 @@ def hotlist_edit_save(request: Request, name: str, content: str = Form(default='
 
 
 def _parse_vpn_macs(content: str) -> set[str]:
-    '''Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).'''
+    """Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные)."""
     result = set()
     for line in content.splitlines():
         mac = line.split('#')[0].strip().lower()
@@ -164,7 +164,7 @@ def _parse_vpn_macs(content: str) -> set[str]:
 
 
 def _amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict:
-    '''Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.'''
+    """Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs."""
     list_meta = get_list_meta()
     check_result = None
     if target:
@@ -205,7 +205,7 @@ def _amnezia_context(request: Request, target: str = '', msg: str = '', error: s
 
 @app.get('/amnezia')
 def amnezia_view(request: Request, target: str = '', msg: str = '', error: str = ''):
-    '''Вкладка AmneziaWG: статус, списки, маршрутизация.'''
+    """Вкладка AmneziaWG: статус, списки, маршрутизация."""
     return templates.TemplateResponse(
         request=request,
         name='amnezia.html',
@@ -215,14 +215,14 @@ def amnezia_view(request: Request, target: str = '', msg: str = '', error: str =
 
 @app.post('/amnezia/service/{action}')
 def amnezia_service_action(action: str):
-    '''Выполняет действие с AWG-сервисом: start / stop / restart / apply.'''
+    """Выполняет действие с AWG-сервисом: start / stop / restart / apply."""
     run_awg_action(action)
     return RedirectResponse(url='/amnezia', status_code=303)
 
 
 @app.post('/amnezia/lists/{name}')
 def amnezia_list_save(name: str, content: str = Form(default='')):
-    '''Сохраняет содержимое одного AWG-списка.'''
+    """Сохраняет содержимое одного AWG-списка."""
     try:
         write_awg_list(name, content)
     except ValueError:
@@ -237,7 +237,7 @@ def amnezia_list_create(
     title: str = Form(default=''),
     hint: str = Form(default=''),
 ):
-    '''Создаёт новый AWG-список (название, ключ, подсказка).'''
+    """Создаёт новый AWG-список (название, ключ, подсказка)."""
     ok, err = create_list(key, title, hint)
     if not ok:
         return templates.TemplateResponse(
@@ -250,7 +250,7 @@ def amnezia_list_create(
 
 @app.post('/amnezia/lists-delete/{key}')
 def amnezia_list_delete(request: Request, key: str):
-    '''Удаляет AWG-список, переименовывает файл в .txt.deleted.'''
+    """Удаляет AWG-список, переименовывает файл в .txt.deleted."""
     ok, err = delete_list(key)
     if not ok:
         return templates.TemplateResponse(
@@ -269,7 +269,7 @@ def amnezia_list_meta_save(
     hint: str = Form(default=''),
     new_key: str = Form(default=''),
 ):
-    '''Сохраняет метаданные списка: название, подсказку, ключ.'''
+    """Сохраняет метаданные списка: название, подсказку, ключ."""
     ok, err = update_list_meta(key, title, hint, new_key)
     if not ok:
         return templates.TemplateResponse(
@@ -282,7 +282,7 @@ def amnezia_list_meta_save(
 
 @app.post('/amnezia/vpn-macs/save')
 def amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[])):
-    '''Сохраняет выбранные MAC-адреса устройств для VPN-маршрутизации.'''
+    """Сохраняет выбранные MAC-адреса устройств для VPN-маршрутизации."""
     content = '\n'.join(sorted(macs)) + '\n' if macs else ''
     try:
         write_awg_list('vpn_device_macs', content)
@@ -293,14 +293,14 @@ def amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[])):
 
 @app.post('/amnezia/devices/add-mac')
 def amnezia_add_mac(mac: str = Form(default='')):
-    '''Добавляет MAC-адрес в vpn_device_macs из LAN-списка.'''
+    """Добавляет MAC-адрес в vpn_device_macs из LAN-списка."""
     add_mac_to_vpn(mac)
     return RedirectResponse(url='/amnezia', status_code=303)
 
 
 @app.post('/services/{name}/restart')
 def service_restart(name: str):
-    '''Перезапускает systemd-сервис по ключу из config.yaml.'''
+    """Перезапускает systemd-сервис по ключу из config.yaml."""
     config = load_config()
 
     try:
@@ -319,7 +319,7 @@ def service_restart(name: str):
 
 @app.post('/backup/run')
 def backup_run():
-    '''Запускает бэкап через home-router-backup, стримит на Mac.'''
+    """Запускает бэкап через home-router-backup, стримит на Mac."""
     try:
         result = subprocess.run(
             ['/usr/bin/sudo', '-n', '/usr/local/sbin/home-router-backup'],
@@ -339,7 +339,7 @@ def backup_run():
 
 @app.get('/capture')
 def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: int = 200):
-    '''Перехват трафика tcpdump по MAC-адресу на интерфейсе enp2s0.'''
+    """Перехват трафика tcpdump по MAC-адресу на интерфейсе enp2s0."""
     mac = mac.strip().lower()
     output = ''
     error = ''
@@ -389,7 +389,7 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
 
 
 def _build_dnsmasq_context(**extra) -> dict:
-    '''Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.'''
+    """Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP."""
     static = read_static()
     system = read_system_static()
     leases = read_leases()
@@ -428,7 +428,7 @@ def _build_dnsmasq_context(**extra) -> dict:
 
 @app.get('/dnsmasq')
 def dnsmasq_view(request: Request, msg: str = '', edit: str = '', edit_host: str = '', pin: str = ''):
-    '''Вкладка dnsmasq: резервации, аренды, онлайн-статусы устройств.'''
+    """Вкладка dnsmasq: резервации, аренды, онлайн-статусы устройств."""
     return templates.TemplateResponse(
         request=request,
         name='dnsmasq.html',
@@ -442,7 +442,7 @@ def dnsmasq_view(request: Request, msg: str = '', edit: str = '', edit_host: str
 
 
 def _dnsmasq_response(request: Request, error: str = '', msg: str = '', edit_mac: str = '', edit_host: str = '', pin_mac: str = ''):
-    '''Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.'''
+    """Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами."""
     return templates.TemplateResponse(
         request=request,
         name='dnsmasq.html',
@@ -463,7 +463,7 @@ def dnsmasq_static_add(
     ip: str = Form(default=''),
     hostname: str = Form(default=''),
 ):
-    '''Добавляет статическую DHCP-резервацию.'''
+    """Добавляет статическую DHCP-резервацию."""
     ok, err = add_static(mac, ip, hostname)
     if not ok:
         return _dnsmasq_response(request, error=err)
@@ -477,7 +477,7 @@ def dnsmasq_static_update(
     ip: str = Form(default=''),
     hostname: str = Form(default=''),
 ):
-    '''Обновляет существующую DHCP-резервацию.'''
+    """Обновляет существующую DHCP-резервацию."""
     ok, err = add_static(mac, ip, hostname)
     if not ok:
         return _dnsmasq_response(request, error=err, edit_mac=mac.strip().lower())
@@ -486,7 +486,7 @@ def dnsmasq_static_update(
 
 @app.post('/dnsmasq/static/remove')
 def dnsmasq_static_remove(request: Request, mac: str = Form(default=''), hostname: str = Form(default='')):
-    '''Удаляет статическую DHCP-резервацию по MAC или имени.'''
+    """Удаляет статическую DHCP-резервацию по MAC или имени."""
     ok, err = remove_static(mac, hostname)
     if not ok:
         return _dnsmasq_response(request, error=err)
@@ -495,7 +495,7 @@ def dnsmasq_static_remove(request: Request, mac: str = Form(default=''), hostnam
 
 @app.post('/dnsmasq/service/reload')
 def dnsmasq_service_reload():
-    '''AJAX: перезагружает dnsmasq (SIGHUP). Возвращает JSON {ok, error?}.'''
+    """AJAX: перезагружает dnsmasq (SIGHUP). Возвращает JSON {ok, error?}."""
     ok, msg = reload_dnsmasq()
     if ok:
         return {'ok': True}
@@ -504,7 +504,7 @@ def dnsmasq_service_reload():
 
 @app.post('/dnsmasq/service/restart')
 def dnsmasq_service_restart():
-    '''AJAX: полный перезапуск dnsmasq. Возвращает JSON {ok, error?}.'''
+    """AJAX: полный перезапуск dnsmasq. Возвращает JSON {ok, error?}."""
     ok, msg = restart_dnsmasq()
     if ok:
         return {'ok': True}
@@ -513,11 +513,11 @@ def dnsmasq_service_restart():
 
 @app.get('/dnsmasq/events')
 async def dnsmasq_events():
-    '''SSE-поток онлайн-статусов: обновляется при изменении ARP или leases.'''
+    """SSE-поток онлайн-статусов: обновляется при изменении ARP или leases."""
     async def _generate():
-        '''Генератор SSE-событий: следит за ARP и leases, шлёт обновления при изменениях.'''
+        """Генератор SSE-событий: следит за ARP и leases, шлёт обновления при изменениях."""
         def _read_online():
-            '''Читает ARP-таблицу и возвращает (sorted_macs, sorted_hostnames).'''
+            """Читает ARP-таблицу и возвращает (sorted_macs, sorted_hostnames)."""
             static = read_static()
             arp_macs, arp_ips = get_arp_online()
             if arp_macs or arp_ips:
@@ -575,5 +575,5 @@ async def dnsmasq_events():
 
 @app.get('/health')
 def health():
-    '''Проверка доступности приложения.'''
+    """Проверка доступности приложения."""
     return {'status': 'ok'}

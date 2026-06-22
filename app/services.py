@@ -1,4 +1,4 @@
-'''Получение статусов и управление systemd-сервисами через systemctl.'''
+"""Получение статусов и управление systemd-сервисами через systemctl."""
 
 import shutil
 import subprocess
@@ -8,7 +8,7 @@ from pathlib import Path
 
 @dataclass
 class ServiceStatus:
-    '''Статус одного systemd-сервиса из config.yaml.'''
+    """Статус одного systemd-сервиса из config.yaml."""
 
     key: str
     name: str
@@ -19,7 +19,7 @@ class ServiceStatus:
 
 
 def find_systemctl() -> str | None:
-    '''Возвращает путь к systemctl или None если не найден.'''
+    """Возвращает путь к systemctl или None если не найден."""
     systemctl_path = shutil.which('systemctl')
     if systemctl_path:
         return systemctl_path
@@ -30,7 +30,7 @@ def find_systemctl() -> str | None:
 
 
 def get_systemd_service_state(unit: str) -> str:
-    '''Возвращает строку состояния юнита: active / inactive / failed / unknown / timeout.'''
+    """Возвращает строку состояния юнита: active / inactive / failed / unknown / timeout."""
     systemctl = find_systemctl()
     if systemctl is None:
         return 'systemctl_not_found'
@@ -51,7 +51,7 @@ def get_systemd_service_state(unit: str) -> str:
 
 
 def get_service_unit(config: dict, service_name: str) -> str | None:
-    '''Возвращает имя юнита для сервиса из конфига или None если сервис не найден.'''
+    """Возвращает имя юнита для сервиса из конфига или None если сервис не найден."""
     services = config.get('services', {})
     meta = services.get(service_name)
     if meta is None:
@@ -64,7 +64,7 @@ def get_service_unit(config: dict, service_name: str) -> str | None:
 
 
 def get_services_status(config: dict) -> list[ServiceStatus]:
-    '''Возвращает список статусов всех сервисов из config.yaml.'''
+    """Возвращает список статусов всех сервисов из config.yaml."""
     services_config = config.get('services', {})
     result = []
     for key, meta in services_config.items():
@@ -89,10 +89,10 @@ def get_services_status(config: dict) -> list[ServiceStatus]:
 
 
 def restart_service(config: dict, service_name: str) -> subprocess.CompletedProcess:
-    '''Перезапускает сервис через sudo systemctl restart.
+    """Перезапускает сервис через sudo systemctl restart.
 
     Вызывает ValueError если сервис не найден в конфиге.
-    '''
+    """
     unit = get_service_unit(config, service_name)
     if unit is None:
         raise ValueError(f'Unknown service: {service_name}')
