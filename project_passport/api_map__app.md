@@ -233,19 +233,19 @@
 Функции:
 
 - `index(request: Request)`
-  Нет докстринга.
+  Главная страница: карточки обзора и статусы сервисов.
 
 - `zapret_view(request: Request)`
-  Нет докстринга.
+  Вкладка zapret: список hotlist-файлов и статус сервиса.
 
 - `hotlist_view(name: str)`
-  Нет докстринга.
+  Перенаправляет на страницу редактирования hotlist.
 
 - `hotlist_edit_view(request: Request, name: str)`
-  Нет докстринга.
+  Редактирование hotlist-файла zapret.
 
 - `hotlist_edit_save(request: Request, name: str, content: str = Form(default=''))`
-  Нет докстринга.
+  Сохраняет hotlist и перезапускает zapret.
 
 - `_parse_vpn_macs(content: str) -> set[str]`
   Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).
@@ -254,67 +254,67 @@
   Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.
 
 - `amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '')`
-  Нет докстринга.
+  Вкладка AmneziaWG: статус, списки, маршрутизация.
 
 - `amnezia_service_action(action: str)`
-  Нет докстринга.
+  Выполняет действие с AWG-сервисом: start / stop / restart / apply.
 
 - `amnezia_list_save(name: str, content: str = Form(default=''))`
-  Нет докстринга.
+  Сохраняет содержимое одного AWG-списка.
 
 - `amnezia_list_create(request: Request, key: str = Form(default=''), title: str = Form(default=''), hint: str = Form(default=''))`
-  Нет докстринга.
+  Создаёт новый AWG-список (название, ключ, подсказка).
 
 - `amnezia_list_delete(request: Request, key: str)`
-  Нет докстринга.
+  Удаляет AWG-список, переименовывает файл в .txt.deleted.
 
 - `amnezia_list_meta_save(request: Request, key: str, title: str = Form(default=''), hint: str = Form(default=''), new_key: str = Form(default=''))`
-  Нет докстринга.
+  Сохраняет метаданные списка: название, подсказку, ключ.
 
 - `amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[]))`
-  Нет докстринга.
+  Сохраняет выбранные MAC-адреса устройств для VPN-маршрутизации.
 
 - `amnezia_add_mac(mac: str = Form(default=''))`
-  Нет докстринга.
+  Добавляет MAC-адрес в vpn_device_macs из LAN-списка.
 
 - `service_restart(name: str)`
-  Нет докстринга.
+  Перезапускает systemd-сервис по ключу из config.yaml.
 
 - `backup_run()`
-  Нет докстринга.
+  Запускает бэкап через home-router-backup, стримит на Mac.
 
 - `capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: int = 200)`
-  Нет докстринга.
+  Перехват трафика tcpdump по MAC-адресу на интерфейсе enp2s0.
 
 - `_build_dnsmasq_context(**extra) -> dict`
   Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.
 
 - `dnsmasq_view(request: Request, msg: str = '', edit: str = '', edit_host: str = '', pin: str = '')`
-  Нет докстринга.
+  Вкладка dnsmasq: резервации, аренды, онлайн-статусы устройств.
 
 - `_dnsmasq_response(request: Request, error: str = '', msg: str = '', edit_mac: str = '', edit_host: str = '', pin_mac: str = '')`
   Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.
 
 - `dnsmasq_static_add(request: Request, mac: str = Form(default=''), ip: str = Form(default=''), hostname: str = Form(default=''))`
-  Нет докстринга.
+  Добавляет статическую DHCP-резервацию.
 
 - `dnsmasq_static_update(request: Request, mac: str = Form(default=''), ip: str = Form(default=''), hostname: str = Form(default=''))`
-  Нет докстринга.
+  Обновляет существующую DHCP-резервацию.
 
 - `dnsmasq_static_remove(request: Request, mac: str = Form(default=''), hostname: str = Form(default=''))`
-  Нет докстринга.
+  Удаляет статическую DHCP-резервацию по MAC или имени.
 
 - `dnsmasq_service_reload()`
-  Нет докстринга.
+  AJAX: перезагружает dnsmasq (SIGHUP). Возвращает JSON {ok, error?}.
 
 - `dnsmasq_service_restart()`
-  Нет докстринга.
+  AJAX: полный перезапуск dnsmasq. Возвращает JSON {ok, error?}.
 
 - `dnsmasq_events()`
-  Нет докстринга.
+  SSE-поток онлайн-статусов: обновляется при изменении ARP или leases.
 
 - `health()`
-  Нет докстринга.
+  Проверка доступности приложения.
 
 ---
 

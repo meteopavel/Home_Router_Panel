@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T04:11:58.934132+00:00",
+  "generated_at": "2026-06-22T04:20:50.029336+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -684,62 +684,62 @@
         {
           "name": "index",
           "signature": "index(request: Request)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Главная страница: карточки обзора и статусы сервисов.",
+          "summary": "Главная страница: карточки обзора и статусы сервисов.",
           "kind": "function",
           "decorators": [
             "app.get('/')"
           ],
           "lineno": 59,
-          "end_lineno": 72
+          "end_lineno": 73
         },
         {
           "name": "zapret_view",
           "signature": "zapret_view(request: Request)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Вкладка zapret: список hotlist-файлов и статус сервиса.",
+          "summary": "Вкладка zapret: список hotlist-файлов и статус сервиса.",
           "kind": "function",
           "decorators": [
             "app.get('/zapret')"
           ],
-          "lineno": 76,
-          "end_lineno": 91
+          "lineno": 77,
+          "end_lineno": 93
         },
         {
           "name": "hotlist_view",
           "signature": "hotlist_view(name: str)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Перенаправляет на страницу редактирования hotlist.",
+          "summary": "Перенаправляет на страницу редактирования hotlist.",
           "kind": "function",
           "decorators": [
             "app.get('/hotlists/{name}')"
           ],
-          "lineno": 95,
-          "end_lineno": 96
+          "lineno": 97,
+          "end_lineno": 99
         },
         {
           "name": "hotlist_edit_view",
           "signature": "hotlist_edit_view(request: Request, name: str)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Редактирование hotlist-файла zapret.",
+          "summary": "Редактирование hotlist-файла zapret.",
           "kind": "function",
           "decorators": [
             "app.get('/hotlists/{name}/edit')"
           ],
-          "lineno": 100,
-          "end_lineno": 115
+          "lineno": 103,
+          "end_lineno": 119
         },
         {
           "name": "hotlist_edit_save",
           "signature": "hotlist_edit_save(request: Request, name: str, content: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Сохраняет hotlist и перезапускает zapret.",
+          "summary": "Сохраняет hotlist и перезапускает zapret.",
           "kind": "function",
           "decorators": [
             "app.post('/hotlists/{name}/edit')"
           ],
-          "lineno": 119,
-          "end_lineno": 148
+          "lineno": 123,
+          "end_lineno": 153
         },
         {
           "name": "_parse_vpn_macs",
@@ -748,8 +748,8 @@
           "summary": "Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).",
           "kind": "function",
           "decorators": [],
-          "lineno": 151,
-          "end_lineno": 158
+          "lineno": 156,
+          "end_lineno": 163
         },
         {
           "name": "_amnezia_context",
@@ -758,140 +758,140 @@
           "summary": "Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.",
           "kind": "function",
           "decorators": [],
-          "lineno": 161,
-          "end_lineno": 198
+          "lineno": 166,
+          "end_lineno": 203
         },
         {
           "name": "amnezia_view",
           "signature": "amnezia_view(request: Request, target: str = '', msg: str = '', error: str = '')",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Вкладка AmneziaWG: статус, списки, маршрутизация.",
+          "summary": "Вкладка AmneziaWG: статус, списки, маршрутизация.",
           "kind": "function",
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 202,
-          "end_lineno": 207
+          "lineno": 207,
+          "end_lineno": 213
         },
         {
           "name": "amnezia_service_action",
           "signature": "amnezia_service_action(action: str)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Выполняет действие с AWG-сервисом: start / stop / restart / apply.",
+          "summary": "Выполняет действие с AWG-сервисом: start / stop / restart / apply.",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 211,
-          "end_lineno": 213
+          "lineno": 217,
+          "end_lineno": 220
         },
         {
           "name": "amnezia_list_save",
           "signature": "amnezia_list_save(name: str, content: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Сохраняет содержимое одного AWG-списка.",
+          "summary": "Сохраняет содержимое одного AWG-списка.",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 217,
-          "end_lineno": 222
+          "lineno": 224,
+          "end_lineno": 230
         },
         {
           "name": "amnezia_list_create",
           "signature": "amnezia_list_create(request: Request, key: str = Form(default=''), title: str = Form(default=''), hint: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Создаёт новый AWG-список (название, ключ, подсказка).",
+          "summary": "Создаёт новый AWG-список (название, ключ, подсказка).",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/lists-create')"
           ],
-          "lineno": 226,
-          "end_lineno": 239
+          "lineno": 234,
+          "end_lineno": 248
         },
         {
           "name": "amnezia_list_delete",
           "signature": "amnezia_list_delete(request: Request, key: str)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Удаляет AWG-список, переименовывает файл в .txt.deleted.",
+          "summary": "Удаляет AWG-список, переименовывает файл в .txt.deleted.",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/lists-delete/{key}')"
           ],
-          "lineno": 243,
-          "end_lineno": 251
+          "lineno": 252,
+          "end_lineno": 261
         },
         {
           "name": "amnezia_list_meta_save",
           "signature": "amnezia_list_meta_save(request: Request, key: str, title: str = Form(default=''), hint: str = Form(default=''), new_key: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Сохраняет метаданные списка: название, подсказку, ключ.",
+          "summary": "Сохраняет метаданные списка: название, подсказку, ключ.",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/lists-meta/{key}')"
           ],
-          "lineno": 255,
-          "end_lineno": 269
+          "lineno": 265,
+          "end_lineno": 280
         },
         {
           "name": "amnezia_vpn_macs_save",
           "signature": "amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[]))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Сохраняет выбранные MAC-адреса устройств для VPN-маршрутизации.",
+          "summary": "Сохраняет выбранные MAC-адреса устройств для VPN-маршрутизации.",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/vpn-macs/save')"
           ],
-          "lineno": 273,
-          "end_lineno": 279
+          "lineno": 284,
+          "end_lineno": 291
         },
         {
           "name": "amnezia_add_mac",
           "signature": "amnezia_add_mac(mac: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Добавляет MAC-адрес в vpn_device_macs из LAN-списка.",
+          "summary": "Добавляет MAC-адрес в vpn_device_macs из LAN-списка.",
           "kind": "function",
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 283,
-          "end_lineno": 285
+          "lineno": 295,
+          "end_lineno": 298
         },
         {
           "name": "service_restart",
           "signature": "service_restart(name: str)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Перезапускает systemd-сервис по ключу из config.yaml.",
+          "summary": "Перезапускает systemd-сервис по ключу из config.yaml.",
           "kind": "function",
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 289,
-          "end_lineno": 303
+          "lineno": 302,
+          "end_lineno": 317
         },
         {
           "name": "backup_run",
           "signature": "backup_run()",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Запускает бэкап через home-router-backup, стримит на Mac.",
+          "summary": "Запускает бэкап через home-router-backup, стримит на Mac.",
           "kind": "function",
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 307,
-          "end_lineno": 322
+          "lineno": 321,
+          "end_lineno": 337
         },
         {
           "name": "capture_traffic",
           "signature": "capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: int = 200)",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Перехват трафика tcpdump по MAC-адресу на интерфейсе enp2s0.",
+          "summary": "Перехват трафика tcpdump по MAC-адресу на интерфейсе enp2s0.",
           "kind": "function",
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 326,
-          "end_lineno": 372
+          "lineno": 341,
+          "end_lineno": 388
         },
         {
           "name": "_build_dnsmasq_context",
@@ -900,20 +900,20 @@
           "summary": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 375,
-          "end_lineno": 410
+          "lineno": 391,
+          "end_lineno": 426
         },
         {
           "name": "dnsmasq_view",
           "signature": "dnsmasq_view(request: Request, msg: str = '', edit: str = '', edit_host: str = '', pin: str = '')",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Вкладка dnsmasq: резервации, аренды, онлайн-статусы устройств.",
+          "summary": "Вкладка dnsmasq: резервации, аренды, онлайн-статусы устройств.",
           "kind": "function",
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 414,
-          "end_lineno": 424
+          "lineno": 430,
+          "end_lineno": 441
         },
         {
           "name": "_dnsmasq_response",
@@ -922,92 +922,92 @@
           "summary": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
           "kind": "function",
           "decorators": [],
-          "lineno": 427,
-          "end_lineno": 439
+          "lineno": 444,
+          "end_lineno": 456
         },
         {
           "name": "dnsmasq_static_add",
           "signature": "dnsmasq_static_add(request: Request, mac: str = Form(default=''), ip: str = Form(default=''), hostname: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Добавляет статическую DHCP-резервацию.",
+          "summary": "Добавляет статическую DHCP-резервацию.",
           "kind": "function",
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 443,
-          "end_lineno": 452
+          "lineno": 460,
+          "end_lineno": 470
         },
         {
           "name": "dnsmasq_static_update",
           "signature": "dnsmasq_static_update(request: Request, mac: str = Form(default=''), ip: str = Form(default=''), hostname: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Обновляет существующую DHCP-резервацию.",
+          "summary": "Обновляет существующую DHCP-резервацию.",
           "kind": "function",
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 456,
-          "end_lineno": 465
+          "lineno": 474,
+          "end_lineno": 484
         },
         {
           "name": "dnsmasq_static_remove",
           "signature": "dnsmasq_static_remove(request: Request, mac: str = Form(default=''), hostname: str = Form(default=''))",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Удаляет статическую DHCP-резервацию по MAC или имени.",
+          "summary": "Удаляет статическую DHCP-резервацию по MAC или имени.",
           "kind": "function",
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 469,
-          "end_lineno": 473
+          "lineno": 488,
+          "end_lineno": 493
         },
         {
           "name": "dnsmasq_service_reload",
           "signature": "dnsmasq_service_reload()",
-          "docstring": null,
-          "summary": null,
+          "docstring": "AJAX: перезагружает dnsmasq (SIGHUP). Возвращает JSON {ok, error?}.",
+          "summary": "AJAX: перезагружает dnsmasq (SIGHUP). Возвращает JSON {ok, error?}.",
           "kind": "function",
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 477,
-          "end_lineno": 481
+          "lineno": 497,
+          "end_lineno": 502
         },
         {
           "name": "dnsmasq_service_restart",
           "signature": "dnsmasq_service_restart()",
-          "docstring": null,
-          "summary": null,
+          "docstring": "AJAX: полный перезапуск dnsmasq. Возвращает JSON {ok, error?}.",
+          "summary": "AJAX: полный перезапуск dnsmasq. Возвращает JSON {ok, error?}.",
           "kind": "function",
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 485,
-          "end_lineno": 489
+          "lineno": 506,
+          "end_lineno": 511
         },
         {
           "name": "dnsmasq_events",
           "signature": "dnsmasq_events()",
-          "docstring": null,
-          "summary": null,
+          "docstring": "SSE-поток онлайн-статусов: обновляется при изменении ARP или leases.",
+          "summary": "SSE-поток онлайн-статусов: обновляется при изменении ARP или leases.",
           "kind": "async_function",
           "decorators": [
             "app.get('/dnsmasq/events')"
           ],
-          "lineno": 493,
-          "end_lineno": 548
+          "lineno": 515,
+          "end_lineno": 573
         },
         {
           "name": "health",
           "signature": "health()",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Проверка доступности приложения.",
+          "summary": "Проверка доступности приложения.",
           "kind": "function",
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 552,
-          "end_lineno": 553
+          "lineno": 577,
+          "end_lineno": 579
         }
       ],
       "constants": [
