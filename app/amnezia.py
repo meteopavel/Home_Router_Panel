@@ -1,4 +1,4 @@
-'''Управление AmneziaWG: конфигурация списков, статус и контроль AWG, LAN-устройства.'''
+"""Управление AmneziaWG: конфигурация списков, статус и контроль AWG, LAN-устройства."""
 
 import json
 import re
@@ -30,7 +30,7 @@ _KEY_RE = re.compile(r'^[a-z][a-z0-9_]{0,31}$')
 # ── Приватные хелперы ──────────────────────────────────────────────────────────
 
 def _run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess:
-    '''Запускает home-router-awg-config через sudo. Возвращает CompletedProcess-подобный объект.'''
+    """Запускает home-router-awg-config через sudo. Возвращает CompletedProcess-подобный объект."""
     try:
         return subprocess.run(
             [SUDO, '-n', HELPER] + list(args),
@@ -53,7 +53,7 @@ def _run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess:
 
 
 def _list_path(name: str) -> Path:
-    '''Возвращает путь к файлу списка. Вызывает ValueError если ключ не зарегистрирован.'''
+    """Возвращает путь к файлу списка. Вызывает ValueError если ключ не зарегистрирован."""
     lists = load_lists_config()
     if not any(item['key'] == name for item in lists):
         raise ValueError(f'Unknown list: {name}')
@@ -61,7 +61,7 @@ def _list_path(name: str) -> Path:
 
 
 def _read_dnsmasq_leases() -> dict[str, str]:
-    '''Читает файл аренд dnsmasq, возвращает словарь MAC → hostname.'''
+    """Читает файл аренд dnsmasq, возвращает словарь MAC → hostname."""
     if not DNSMASQ_LEASES.exists():
         return {}
     try:
@@ -81,7 +81,7 @@ def _read_dnsmasq_leases() -> dict[str, str]:
 # ── Управление метаданными списков ────────────────────────────────────────────
 
 def load_lists_config() -> list[dict]:
-    '''Читает lists_config.json. Возвращает дефолтный список если файл отсутствует или повреждён.'''
+    """Читает lists_config.json. Возвращает дефолтный список если файл отсутствует или повреждён."""
     if not LISTS_CONFIG_FILE.exists():
         return list(_DEFAULT_LISTS)
     try:
@@ -94,7 +94,7 @@ def load_lists_config() -> list[dict]:
 
 
 def save_lists_config(lists: list[dict]) -> None:
-    '''Сохраняет метаданные списков в lists_config.json.'''
+    """Сохраняет метаданные списков в lists_config.json."""
     LISTS_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
     LISTS_CONFIG_FILE.write_text(
         json.dumps(lists, ensure_ascii=False, indent=2), encoding='utf-8'
@@ -102,13 +102,13 @@ def save_lists_config(lists: list[dict]) -> None:
 
 
 def get_list_meta() -> dict:
-    '''Возвращает словарь {ключ: {title, hint}} для использования в шаблонах.'''
+    """Возвращает словарь {ключ: {title, hint}} для использования в шаблонах."""
     return {item['key']: {'title': item['title'], 'hint': item['hint']}
             for item in load_lists_config()}
 
 
 def create_list(key: str, title: str, hint: str) -> tuple[bool, str]:
-    '''Создаёт новый список и пустой txt-файл. Возвращает (ok, ошибка_или_пусто).'''
+    """Создаёт новый список и пустой txt-файл. Возвращает (ok, ошибка_или_пусто)."""
     key = key.strip().lower()
     if not _KEY_RE.match(key):
         return False, 'Ключ: только строчные буквы, цифры и _, начинается с буквы, до 32 символов'
@@ -128,7 +128,7 @@ def create_list(key: str, title: str, hint: str) -> tuple[bool, str]:
 
 
 def update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tuple[bool, str]:
-    '''Обновляет название/подсказку списка, при необходимости переименовывает ключ и файл.'''
+    """Обновляет название/подсказку списка, при необходимости переименовывает ключ и файл."""
     title = title.strip()
     if not title:
         return False, 'Название обязательно'
@@ -155,7 +155,7 @@ def update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tupl
 
 
 def delete_list(key: str) -> tuple[bool, str]:
-    '''Удаляет список из конфига и переименовывает файл в .txt.deleted.'''
+    """Удаляет список из конфига и переименовывает файл в .txt.deleted."""
     lists = load_lists_config()
     new_lists = [item for item in lists if item['key'] != key]
     if len(new_lists) == len(lists):
@@ -170,7 +170,7 @@ def delete_list(key: str) -> tuple[bool, str]:
 # ── Файловые операции со списками AWG ─────────────────────────────────────────
 
 def read_awg_list(name: str) -> str:
-    '''Читает содержимое txt-файла списка. Возвращает пустую строку если файл не существует.'''
+    """Читает содержимое txt-файла списка. Возвращает пустую строку если файл не существует."""
     path = _list_path(name)
     if not path.exists():
         return ''
@@ -181,7 +181,7 @@ def read_awg_list(name: str) -> str:
 
 
 def write_awg_list(name: str, content: str) -> None:
-    '''Записывает содержимое в txt-файл списка, сохраняет .bak-резервную копию.'''
+    """Записывает содержимое в txt-файл списка, сохраняет .bak-резервную копию."""
     path = _list_path(name)
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -190,7 +190,7 @@ def write_awg_list(name: str, content: str) -> None:
 
 
 def add_mac_to_vpn(mac: str) -> bool:
-    '''Добавляет MAC-адрес в vpn_device_macs.txt. Возвращает False при некорректном MAC.'''
+    """Добавляет MAC-адрес в vpn_device_macs.txt. Возвращает False при некорректном MAC."""
     mac = mac.strip().lower()
     if not re.match(r'^([0-9a-f]{2}:){5}[0-9a-f]{2}$', mac):
         return False
@@ -207,7 +207,7 @@ def add_mac_to_vpn(mac: str) -> bool:
 # ── Статус и управление AWG ───────────────────────────────────────────────────
 
 def get_awg_status() -> dict:
-    '''Возвращает словарь со статусом AWG-сервиса и интерфейса от helper-скрипта.'''
+    """Возвращает словарь со статусом AWG-сервиса и интерфейса от helper-скрипта."""
     result = _run_helper('status')
     status: dict = {
         'available': result.returncode == 0,
@@ -222,13 +222,13 @@ def get_awg_status() -> dict:
 
 
 def get_awg_show() -> Optional[str]:
-    '''Возвращает вывод awg show awg0 или None если helper недоступен.'''
+    """Возвращает вывод awg show awg0 или None если helper недоступен."""
     result = _run_helper('awg-show')
     return result.stdout.strip() if result.returncode == 0 else None
 
 
 def run_awg_action(action: str) -> tuple[bool, str]:
-    '''Выполняет одно из допустимых действий: start / stop / restart / apply.'''
+    """Выполняет одно из допустимых действий: start / stop / restart / apply."""
     allowed = {'start', 'stop', 'restart', 'apply'}
     if action not in allowed:
         return False, 'Неизвестное действие'
@@ -239,7 +239,7 @@ def run_awg_action(action: str) -> tuple[bool, str]:
 
 
 def get_diagnostics() -> Optional[str]:
-    '''Возвращает диагностический вывод от helper-скрипта или сообщение об ошибке.'''
+    """Возвращает диагностический вывод от helper-скрипта или сообщение об ошибке."""
     result = _run_helper('diagnostics', timeout=10)
     return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
 
@@ -247,7 +247,7 @@ def get_diagnostics() -> Optional[str]:
 # ── LAN-устройства и проверка маршрутов ──────────────────────────────────────
 
 def get_lan_devices() -> list[dict]:
-    '''Возвращает список {ip, mac, state, hostname} из ARP-таблицы через helper.'''
+    """Возвращает список {ip, mac, state, hostname} из ARP-таблицы через helper."""
     result = _run_helper('lan-neigh')
     if result.returncode != 0:
         return []
@@ -272,7 +272,7 @@ def get_lan_devices() -> list[dict]:
 
 
 def check_route(target: str) -> str:
-    '''Проверяет маршрут для домена или IP через helper. Возвращает текстовый вывод.'''
+    """Проверяет маршрут для домена или IP через helper. Возвращает текстовый вывод."""
     if not re.match(r'^[a-zA-Z0-9.\-_]+$', target):
         return 'Некорректный формат — только домен или IP'
     result = _run_helper('check-route', target, timeout=10)

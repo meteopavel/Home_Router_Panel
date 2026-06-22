@@ -1,4 +1,4 @@
-'''Работа с dnsmasq: статические резервации, аренды DHCP, статус сервиса, ARP.'''
+"""Работа с dnsmasq: статические резервации, аренды DHCP, статус сервиса, ARP."""
 
 import re
 import subprocess
@@ -34,7 +34,7 @@ IP_GROUP_NAMES: list[str] = list(dict.fromkeys(n for _, _, n in _IP_GROUPS))
 
 @dataclass
 class Lease:
-    '''Одна запись из файла аренд dnsmasq.'''
+    """Одна запись из файла аренд dnsmasq."""
 
     expiry: str    # человекочитаемое время истечения или «постоянная»
     ts: int        # unix-timestamp истечения; 0 = бессрочная аренда
@@ -46,7 +46,7 @@ class Lease:
 
 @dataclass
 class StaticEntry:
-    '''Статическая DHCP-резервация из управляемого файла панели.'''
+    """Статическая DHCP-резервация из управляемого файла панели."""
 
     mac: str       # пустая строка для резерваций по имени устройства
     ip: str
@@ -57,7 +57,7 @@ class StaticEntry:
 # ── Приватные хелперы ──────────────────────────────────────────────────────────
 
 def _test_config() -> tuple[bool, str]:
-    '''Запускает dnsmasq --test для проверки конфига. Возвращает (ok, вывод).'''
+    """Запускает dnsmasq --test для проверки конфига. Возвращает (ok, вывод)."""
     try:
         result = subprocess.run(
             ['/usr/bin/dnsmasq', '--test'],
@@ -74,7 +74,7 @@ def _test_config() -> tuple[bool, str]:
 # ── Валидация ─────────────────────────────────────────────────────────────────
 
 def validate_entry(mac: str, ip: str, hostname: str) -> str | None:
-    '''Проверяет корректность полей записи. Возвращает строку ошибки или None.'''
+    """Проверяет корректность полей записи. Возвращает строку ошибки или None."""
     mac = mac.strip().lower()
     if mac:
         if not re.match(r'^([0-9a-f]{2}:){5}[0-9a-f]{2}$', mac):
@@ -102,7 +102,7 @@ def validate_entry(mac: str, ip: str, hostname: str) -> str | None:
 # ── Чтение данных ─────────────────────────────────────────────────────────────
 
 def read_leases() -> list[Lease]:
-    '''Читает файл аренд dnsmasq, возвращает список отсортированный по IP.'''
+    """Читает файл аренд dnsmasq, возвращает список отсортированный по IP."""
     if not LEASES_FILE.exists():
         return []
     try:
@@ -132,7 +132,7 @@ def read_leases() -> list[Lease]:
 
 
 def read_system_static() -> list[dict]:
-    '''Читает dhcp-host записи из /etc/dnsmasq.d/*.conf. Только для отображения, не редактируется.'''
+    """Читает dhcp-host записи из /etc/dnsmasq.d/*.conf. Только для отображения, не редактируется."""
     entries = []
     if not DNSMASQ_D.exists():
         return entries
@@ -155,7 +155,7 @@ def read_system_static() -> list[dict]:
 
 
 def read_static() -> list[StaticEntry]:
-    '''Читает управляемый файл резерваций dnsmasq-static.conf, сортирует по IP.'''
+    """Читает управляемый файл резерваций dnsmasq-static.conf, сортирует по IP."""
     if not STATIC_FILE.exists():
         return []
     try:
@@ -188,7 +188,7 @@ def read_static() -> list[StaticEntry]:
 # ── Запись и изменение резерваций ─────────────────────────────────────────────
 
 def write_static(entries: list[StaticEntry]) -> tuple[bool, str]:
-    '''Записывает список резерваций в файл. Проверяет конфиг через dnsmasq --test, при ошибке откатывает.'''
+    """Записывает список резерваций в файл. Проверяет конфиг через dnsmasq --test, при ошибке откатывает."""
     STATIC_FILE.parent.mkdir(parents=True, exist_ok=True)
     lines = ['# Home Router Panel — DHCP static reservations', '# dhcp-host=MAC,IP,hostname', '']
     for e in entries:
@@ -213,7 +213,7 @@ def write_static(entries: list[StaticEntry]) -> tuple[bool, str]:
 
 
 def add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]:
-    '''Добавляет или обновляет резервацию. Возвращает (ok, ошибка_или_пусто).'''
+    """Добавляет или обновляет резервацию. Возвращает (ok, ошибка_или_пусто)."""
     mac = mac.strip().lower()
     hostname = hostname.strip()
     err = validate_entry(mac, ip, hostname)
@@ -236,7 +236,7 @@ def add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]:
 
 
 def remove_static(mac: str, hostname: str = '') -> tuple[bool, str]:
-    '''Удаляет резервацию по MAC или имени устройства. Возвращает (ok, ошибка_или_пусто).'''
+    """Удаляет резервацию по MAC или имени устройства. Возвращает (ok, ошибка_или_пусто)."""
     mac = mac.strip().lower()
     hostname = hostname.strip()
     entries = read_static()
@@ -254,7 +254,7 @@ def remove_static(mac: str, hostname: str = '') -> tuple[bool, str]:
 # ── Управление сервисом ────────────────────────────────────────────────────────
 
 def get_dnsmasq_state() -> str:
-    '''Возвращает строку состояния сервиса dnsmasq (active / inactive / failed / unknown).'''
+    """Возвращает строку состояния сервиса dnsmasq (active / inactive / failed / unknown)."""
     try:
         result = subprocess.run(
             ['/usr/bin/systemctl', 'is-active', 'dnsmasq'],
@@ -266,7 +266,7 @@ def get_dnsmasq_state() -> str:
 
 
 def reload_dnsmasq() -> tuple[bool, str]:
-    '''Отправляет SIGHUP dnsmasq (применяет конфиг без обрыва аренд). Возвращает (ok, сообщение).'''
+    """Отправляет SIGHUP dnsmasq (применяет конфиг без обрыва аренд). Возвращает (ok, сообщение)."""
     try:
         result = subprocess.run(
             ['/usr/bin/sudo', '-n', '/usr/bin/systemctl', 'reload', 'dnsmasq'],
@@ -280,7 +280,7 @@ def reload_dnsmasq() -> tuple[bool, str]:
 
 
 def restart_dnsmasq() -> tuple[bool, str]:
-    '''Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение).'''
+    """Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение)."""
     try:
         result = subprocess.run(
             ['/usr/bin/sudo', '-n', '/usr/bin/systemctl', 'restart', 'dnsmasq'],
@@ -296,7 +296,7 @@ def restart_dnsmasq() -> tuple[bool, str]:
 # ── Группировка по диапазонам IP ──────────────────────────────────────────────
 
 def get_ip_group(ip: str) -> str:
-    '''Возвращает название группы по последнему октету IP или пустую строку.'''
+    """Возвращает название группы по последнему октету IP или пустую строку."""
     try:
         last = int(ip.rsplit('.', 1)[-1])
     except (ValueError, IndexError):
@@ -308,7 +308,7 @@ def get_ip_group(ip: str) -> str:
 
 
 def group_static_entries(entries: list[StaticEntry]) -> list[dict]:
-    '''Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}.'''
+    """Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}."""
     buckets: dict[str, list[StaticEntry]] = {n: [] for n in IP_GROUP_NAMES}
     ungrouped: list[StaticEntry] = []
     for e in entries:
@@ -332,13 +332,13 @@ def group_static_entries(entries: list[StaticEntry]) -> list[dict]:
 # ── Определение онлайн-статуса через ARP ─────────────────────────────────────
 
 def get_arp_online() -> tuple[set[str], set[str]]:
-    '''Возвращает (online_macs, online_ips) из ARP-таблицы интерфейса enp2s0.
+    """Возвращает (online_macs, online_ips) из ARP-таблицы интерфейса enp2s0.
 
     Устройство считается онлайн если имеет lladdr и состояние не FAILED.
     Состояния REACHABLE / STALE / DELAY / PROBE — онлайн.
     После отключения запись переходит в FAILED примерно за 1–3 минуты.
     При ошибке вызова ip возвращает два пустых множества.
-    '''
+    """
     try:
         result = subprocess.run(
             ['/usr/sbin/ip', 'neigh', 'show', 'dev', 'enp2s0'],

@@ -1,4 +1,4 @@
-'''Загрузка конфигурации приложения из config.yaml.'''
+"""Загрузка конфигурации приложения из config.yaml."""
 
 from pathlib import Path
 from typing import Any
@@ -11,11 +11,11 @@ CONFIG_PATH = PROJECT_ROOT / 'config.yaml'
 
 
 def load_config() -> dict[str, Any]:
-    '''Читает config.yaml и возвращает словарь конфигурации.
+    """Читает config.yaml и возвращает словарь конфигурации.
 
     Вызывает RuntimeError если файл не найден.
     Возвращает пустой dict если файл пустой.
-    '''
+    """
     if not CONFIG_PATH.exists():
         raise RuntimeError(
             'config.yaml not found. Copy config.example.yaml to config.yaml'
