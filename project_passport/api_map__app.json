@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T05:09:02.575985+00:00",
+  "generated_at": "2026-06-22T06:20:34.197609+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -463,7 +463,7 @@
           "kind": "function",
           "decorators": [],
           "lineno": 215,
-          "end_lineno": 235
+          "end_lineno": 249
         },
         {
           "name": "remove_static",
@@ -472,8 +472,8 @@
           "summary": "Удаляет резервацию по MAC или имени устройства. Возвращает (ok, ошибка_или_пусто).",
           "kind": "function",
           "decorators": [],
-          "lineno": 238,
-          "end_lineno": 251
+          "lineno": 252,
+          "end_lineno": 265
         },
         {
           "name": "get_dnsmasq_state",
@@ -482,8 +482,8 @@
           "summary": "Возвращает строку состояния сервиса dnsmasq (active / inactive / failed / unknown).",
           "kind": "function",
           "decorators": [],
-          "lineno": 256,
-          "end_lineno": 265
+          "lineno": 270,
+          "end_lineno": 279
         },
         {
           "name": "reload_dnsmasq",
@@ -492,8 +492,8 @@
           "summary": "Отправляет SIGHUP dnsmasq (применяет конфиг без обрыва аренд). Возвращает (ok, сообщение).",
           "kind": "function",
           "decorators": [],
-          "lineno": 268,
-          "end_lineno": 279
+          "lineno": 282,
+          "end_lineno": 293
         },
         {
           "name": "restart_dnsmasq",
@@ -502,8 +502,8 @@
           "summary": "Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение).",
           "kind": "function",
           "decorators": [],
-          "lineno": 282,
-          "end_lineno": 293
+          "lineno": 296,
+          "end_lineno": 307
         },
         {
           "name": "get_ip_group",
@@ -512,8 +512,8 @@
           "summary": "Возвращает название группы по последнему октету IP или пустую строку.",
           "kind": "function",
           "decorators": [],
-          "lineno": 298,
-          "end_lineno": 307
+          "lineno": 312,
+          "end_lineno": 321
         },
         {
           "name": "group_static_entries",
@@ -522,8 +522,8 @@
           "summary": "Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}.",
           "kind": "function",
           "decorators": [],
-          "lineno": 310,
-          "end_lineno": 329
+          "lineno": 324,
+          "end_lineno": 343
         },
         {
           "name": "get_arp_online",
@@ -532,8 +532,8 @@
           "summary": "Возвращает (online_macs, online_ips) из ARP-таблицы интерфейса enp2s0.",
           "kind": "function",
           "decorators": [],
-          "lineno": 334,
-          "end_lineno": 360
+          "lineno": 348,
+          "end_lineno": 374
         }
       ],
       "constants": [

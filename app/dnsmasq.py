@@ -219,19 +219,33 @@ def add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]:
     err = validate_entry(mac, ip, hostname)
     if err:
         return False, err
+    ip = ip.strip()
     entries = read_static()
     if mac:
         for e in entries:
             if e.mac == mac:
-                e.ip = ip.strip()
+                # обновляем существующую запись — проверяем что новый IP не занят другим MAC
+                if ip and e.ip != ip:
+                    conflict = next((x for x in entries if x.ip == ip and x.mac != mac), None)
+                    if conflict:
+                        return False, f'IP {ip} уже занят: {conflict.mac or conflict.hostname}'
+                e.ip = ip
                 e.hostname = hostname
                 return write_static(entries)
     else:
         for e in entries:
             if not e.mac and e.hostname == hostname:
-                e.ip = ip.strip()
+                if ip and e.ip != ip:
+                    conflict = next((x for x in entries if x.ip == ip and not (not x.mac and x.hostname == hostname)), None)
+                    if conflict:
+                        return False, f'IP {ip} уже занят: {conflict.mac or conflict.hostname}'
+                e.ip = ip
                 return write_static(entries)
-    entries.append(StaticEntry(mac=mac, ip=ip.strip(), hostname=hostname))
+    if ip:
+        conflict = next((e for e in entries if e.ip == ip), None)
+        if conflict:
+            return False, f'IP {ip} уже занят: {conflict.mac or conflict.hostname}'
+    entries.append(StaticEntry(mac=mac, ip=ip, hostname=hostname))
     return write_static(entries)
 
 
