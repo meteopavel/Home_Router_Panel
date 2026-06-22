@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T04:23:22.390808+00:00",
+  "generated_at": "2026-06-22T04:51:25.150658+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -44,7 +44,7 @@
     "scanned_python_files": 7,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 69,
+    "functions": 70,
     "methods": 0,
     "constants": 19,
     "has_cli": false,
@@ -70,7 +70,7 @@
         "stats": {
           "classes": 0,
           "dataclasses": 0,
-          "functions": 28,
+          "functions": 29,
           "methods": 0,
           "constants": 3
         }
@@ -140,7 +140,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-06-22T04:23:22.296387+00:00",
+    "api_map_generated_at": "2026-06-22T04:51:25.054016+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T04:23:22.296387+00:00",
+  "generated_at": "2026-06-22T04:51:25.054016+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -13,7 +13,7 @@
     "modules": 6,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 69,
+    "functions": 70,
     "methods": 0,
     "constants": 19
   },
@@ -998,6 +998,18 @@
           "end_lineno": 573
         },
         {
+          "name": "dnsmasq_ping",
+          "signature": "dnsmasq_ping(ip: str = '')",
+          "docstring": "Пинг устройства по IP. Возвращает JSON {online: bool, ip: str}.",
+          "summary": "Пинг устройства по IP. Возвращает JSON {online: bool, ip: str}.",
+          "kind": "function",
+          "decorators": [
+            "app.get('/dnsmasq/ping')"
+          ],
+          "lineno": 577,
+          "end_lineno": 589
+        },
+        {
           "name": "health",
           "signature": "health()",
           "docstring": "Проверка доступности приложения.",
@@ -1006,8 +1018,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 577,
-          "end_lineno": 579
+          "lineno": 593,
+          "end_lineno": 595
         }
       ],
       "constants": [
@@ -1033,7 +1045,7 @@
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 28,
+        "functions": 29,
         "methods": 0,
         "constants": 3
       }

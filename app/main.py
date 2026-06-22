@@ -573,6 +573,22 @@ async def dnsmasq_events():
     )
 
 
+@app.get('/dnsmasq/ping')
+def dnsmasq_ping(ip: str = ''):
+    """Пинг устройства по IP. Возвращает JSON {online: bool, ip: str}."""
+    import re as _re
+    if not _re.match(r'^(\d{1,3}\.){3}\d{1,3}$', ip.strip()):
+        return {'online': False, 'ip': ip, 'error': 'invalid IP'}
+    try:
+        result = subprocess.run(
+            ['/usr/bin/ping', '-c', '1', '-W', '1', ip.strip()],
+            capture_output=True, timeout=3,
+        )
+        return {'online': result.returncode == 0, 'ip': ip}
+    except Exception:
+        return {'online': False, 'ip': ip}
+
+
 @app.get('/health')
 def health():
     """Проверка доступности приложения."""

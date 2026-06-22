@@ -177,14 +177,18 @@
                                                 {% set is_online = e.mac in online_macs %}
                                                 <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
                                                       data-status-mac="{{ e.mac }}"
-                                                      data-tooltip="{% if is_online %}Активная аренда DHCP{% else %}Нет активной аренды DHCP{% endif %}">
+                                                      data-ping-ip="{{ e.ip }}"
+                                                      data-tooltip="Нажмите для проверки пингом"
+                                                      style="cursor:pointer;">
                                                     {% if is_online %}онлайн{% else %}офлайн{% endif %}
                                                 </span>
                                             {% elif e.hostname %}
                                                 {% set is_online = e.hostname.lower() in online_hostnames %}
                                                 <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
                                                       data-status-host="{{ e.hostname.lower() }}"
-                                                      data-tooltip="{% if is_online %}Активная аренда DHCP{% else %}Нет активной аренды DHCP{% endif %}">
+                                                      data-ping-ip="{{ e.ip }}"
+                                                      data-tooltip="Нажмите для проверки пингом"
+                                                      style="cursor:pointer;">
                                                     {% if is_online %}онлайн{% else %}офлайн{% endif %}
                                                 </span>
                                             {% endif %}
@@ -411,15 +415,37 @@
             var online = macs.indexOf(el.getAttribute('data-status-mac')) !== -1;
             el.className = 'pill ' + (online ? 'pill-green' : 'pill-gray');
             el.textContent = online ? 'онлайн' : 'офлайн';
-            el.setAttribute('data-tooltip', online ? 'Активная аренда DHCP' : 'Нет активной аренды DHCP');
+            el.setAttribute('data-tooltip', 'Нажмите для проверки пингом');
         });
         document.querySelectorAll('[data-status-host]').forEach(function (el) {
             var online = hosts.indexOf(el.getAttribute('data-status-host')) !== -1;
             el.className = 'pill ' + (online ? 'pill-green' : 'pill-gray');
             el.textContent = online ? 'онлайн' : 'офлайн';
-            el.setAttribute('data-tooltip', online ? 'Активная аренда DHCP' : 'Нет активной аренды DHCP');
+            el.setAttribute('data-tooltip', 'Нажмите для проверки пингом');
         });
     };
+
+    document.addEventListener('click', function (e) {
+        var pill = e.target.closest('[data-ping-ip]');
+        if (!pill) return;
+        var ip = pill.getAttribute('data-ping-ip');
+        var origClass = pill.className;
+        var origText = pill.textContent.trim();
+        pill.textContent = '…';
+        pill.style.opacity = '0.6';
+        fetch('/dnsmasq/ping?ip=' + encodeURIComponent(ip))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                pill.className = 'pill ' + (data.online ? 'pill-green' : 'pill-gray');
+                pill.textContent = data.online ? 'онлайн' : 'офлайн';
+                pill.setAttribute('data-tooltip', data.online ? 'Пинг успешен' : 'Нет ответа на пинг');
+            })
+            .catch(function () {
+                pill.className = origClass;
+                pill.textContent = origText;
+            })
+            .finally(function () { pill.style.opacity = ''; });
+    });
 })();
 </script>
 
