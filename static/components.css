@@ -236,7 +236,7 @@
     pointer-events: none;
 }
 
-.pill-pinging::after {
+.pill-pinging::before {
     content: '';
     position: absolute;
     top: 50%;
