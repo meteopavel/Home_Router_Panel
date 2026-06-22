@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T04:04:29.500289+00:00",
+  "generated_at": "2026-06-22T04:11:58.934132+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -20,189 +20,189 @@
   "modules": [
     {
       "path": "app/amnezia.py",
-      "module_docstring": null,
-      "module_summary": null,
+      "module_docstring": "Управление AmneziaWG: конфигурация списков, статус и контроль AWG, LAN-устройства.",
+      "module_summary": "Управление AmneziaWG: конфигурация списков, статус и контроль AWG, LAN-устройства.",
       "classes": [],
       "functions": [
         {
-          "name": "load_lists_config",
-          "signature": "load_lists_config() -> list[dict]",
-          "docstring": "Return list of {key, title, hint} dicts. Falls back to defaults if file absent.",
-          "summary": "Return list of {key, title, hint} dicts. Falls back to defaults if file absent.",
-          "kind": "function",
-          "decorators": [],
-          "lineno": 24,
-          "end_lineno": 34
-        },
-        {
-          "name": "save_lists_config",
-          "signature": "save_lists_config(lists: list[dict]) -> None",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 37,
-          "end_lineno": 41
-        },
-        {
-          "name": "get_list_meta",
-          "signature": "get_list_meta() -> dict",
-          "docstring": "Return {key: {title, hint}} dict for template use.",
-          "summary": "Return {key: {title, hint}} dict for template use.",
-          "kind": "function",
-          "decorators": [],
-          "lineno": 44,
-          "end_lineno": 47
-        },
-        {
-          "name": "create_list",
-          "signature": "create_list(key: str, title: str, hint: str) -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 50,
-          "end_lineno": 66
-        },
-        {
-          "name": "update_list_meta",
-          "signature": "update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 69,
-          "end_lineno": 92
-        },
-        {
-          "name": "delete_list",
-          "signature": "delete_list(key: str) -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 95,
-          "end_lineno": 105
-        },
-        {
           "name": "_run_helper",
           "signature": "_run_helper(*args, timeout: int = 15) -> subprocess.CompletedProcess",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Запускает home-router-awg-config через sudo. Возвращает CompletedProcess-подобный объект.",
+          "summary": "Запускает home-router-awg-config через sudo. Возвращает CompletedProcess-подобный объект.",
           "kind": "function",
           "decorators": [],
-          "lineno": 108,
-          "end_lineno": 127
-        },
-        {
-          "name": "get_awg_status",
-          "signature": "get_awg_status() -> dict",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 130,
-          "end_lineno": 141
-        },
-        {
-          "name": "get_awg_show",
-          "signature": "get_awg_show() -> Optional[str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 144,
-          "end_lineno": 146
-        },
-        {
-          "name": "run_awg_action",
-          "signature": "run_awg_action(action: str) -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 149,
-          "end_lineno": 156
-        },
-        {
-          "name": "get_diagnostics",
-          "signature": "get_diagnostics() -> Optional[str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 159,
-          "end_lineno": 161
-        },
-        {
-          "name": "_read_dnsmasq_leases",
-          "signature": "_read_dnsmasq_leases() -> dict[str, str]",
-          "docstring": "Return MAC→hostname map from dnsmasq leases file.",
-          "summary": "Return MAC→hostname map from dnsmasq leases file.",
-          "kind": "function",
-          "decorators": [],
-          "lineno": 167,
-          "end_lineno": 182
-        },
-        {
-          "name": "get_lan_devices",
-          "signature": "get_lan_devices() -> list[dict]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 185,
-          "end_lineno": 206
-        },
-        {
-          "name": "check_route",
-          "signature": "check_route(target: str) -> str",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 209,
-          "end_lineno": 213
+          "lineno": 32,
+          "end_lineno": 52
         },
         {
           "name": "_list_path",
           "signature": "_list_path(name: str) -> Path",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Возвращает путь к файлу списка. Вызывает ValueError если ключ не зарегистрирован.",
+          "summary": "Возвращает путь к файлу списка. Вызывает ValueError если ключ не зарегистрирован.",
           "kind": "function",
           "decorators": [],
-          "lineno": 216,
-          "end_lineno": 220
+          "lineno": 55,
+          "end_lineno": 60
+        },
+        {
+          "name": "_read_dnsmasq_leases",
+          "signature": "_read_dnsmasq_leases() -> dict[str, str]",
+          "docstring": "Читает файл аренд dnsmasq, возвращает словарь MAC → hostname.",
+          "summary": "Читает файл аренд dnsmasq, возвращает словарь MAC → hostname.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 63,
+          "end_lineno": 78
+        },
+        {
+          "name": "load_lists_config",
+          "signature": "load_lists_config() -> list[dict]",
+          "docstring": "Читает lists_config.json. Возвращает дефолтный список если файл отсутствует или повреждён.",
+          "summary": "Читает lists_config.json. Возвращает дефолтный список если файл отсутствует или повреждён.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 83,
+          "end_lineno": 93
+        },
+        {
+          "name": "save_lists_config",
+          "signature": "save_lists_config(lists: list[dict]) -> None",
+          "docstring": "Сохраняет метаданные списков в lists_config.json.",
+          "summary": "Сохраняет метаданные списков в lists_config.json.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 96,
+          "end_lineno": 101
+        },
+        {
+          "name": "get_list_meta",
+          "signature": "get_list_meta() -> dict",
+          "docstring": "Возвращает словарь {ключ: {title, hint}} для использования в шаблонах.",
+          "summary": "Возвращает словарь {ключ: {title, hint}} для использования в шаблонах.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 104,
+          "end_lineno": 107
+        },
+        {
+          "name": "create_list",
+          "signature": "create_list(key: str, title: str, hint: str) -> tuple[bool, str]",
+          "docstring": "Создаёт новый список и пустой txt-файл. Возвращает (ok, ошибка_или_пусто).",
+          "summary": "Создаёт новый список и пустой txt-файл. Возвращает (ok, ошибка_или_пусто).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 110,
+          "end_lineno": 127
+        },
+        {
+          "name": "update_list_meta",
+          "signature": "update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tuple[bool, str]",
+          "docstring": "Обновляет название/подсказку списка, при необходимости переименовывает ключ и файл.",
+          "summary": "Обновляет название/подсказку списка, при необходимости переименовывает ключ и файл.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 130,
+          "end_lineno": 154
+        },
+        {
+          "name": "delete_list",
+          "signature": "delete_list(key: str) -> tuple[bool, str]",
+          "docstring": "Удаляет список из конфига и переименовывает файл в .txt.deleted.",
+          "summary": "Удаляет список из конфига и переименовывает файл в .txt.deleted.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 157,
+          "end_lineno": 167
         },
         {
           "name": "read_awg_list",
           "signature": "read_awg_list(name: str) -> str",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Читает содержимое txt-файла списка. Возвращает пустую строку если файл не существует.",
+          "summary": "Читает содержимое txt-файла списка. Возвращает пустую строку если файл не существует.",
           "kind": "function",
           "decorators": [],
-          "lineno": 223,
-          "end_lineno": 230
+          "lineno": 172,
+          "end_lineno": 180
         },
         {
           "name": "write_awg_list",
           "signature": "write_awg_list(name: str, content: str) -> None",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Записывает содержимое в txt-файл списка, сохраняет .bak-резервную копию.",
+          "summary": "Записывает содержимое в txt-файл списка, сохраняет .bak-резервную копию.",
           "kind": "function",
           "decorators": [],
-          "lineno": 233,
-          "end_lineno": 238
+          "lineno": 183,
+          "end_lineno": 189
         },
         {
           "name": "add_mac_to_vpn",
           "signature": "add_mac_to_vpn(mac: str) -> bool",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Добавляет MAC-адрес в vpn_device_macs.txt. Возвращает False при некорректном MAC.",
+          "summary": "Добавляет MAC-адрес в vpn_device_macs.txt. Возвращает False при некорректном MAC.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 192,
+          "end_lineno": 204
+        },
+        {
+          "name": "get_awg_status",
+          "signature": "get_awg_status() -> dict",
+          "docstring": "Возвращает словарь со статусом AWG-сервиса и интерфейса от helper-скрипта.",
+          "summary": "Возвращает словарь со статусом AWG-сервиса и интерфейса от helper-скрипта.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 209,
+          "end_lineno": 221
+        },
+        {
+          "name": "get_awg_show",
+          "signature": "get_awg_show() -> Optional[str]",
+          "docstring": "Возвращает вывод awg show awg0 или None если helper недоступен.",
+          "summary": "Возвращает вывод awg show awg0 или None если helper недоступен.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 224,
+          "end_lineno": 227
+        },
+        {
+          "name": "run_awg_action",
+          "signature": "run_awg_action(action: str) -> tuple[bool, str]",
+          "docstring": "Выполняет одно из допустимых действий: start / stop / restart / apply.",
+          "summary": "Выполняет одно из допустимых действий: start / stop / restart / apply.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 230,
+          "end_lineno": 238
+        },
+        {
+          "name": "get_diagnostics",
+          "signature": "get_diagnostics() -> Optional[str]",
+          "docstring": "Возвращает диагностический вывод от helper-скрипта или сообщение об ошибке.",
+          "summary": "Возвращает диагностический вывод от helper-скрипта или сообщение об ошибке.",
           "kind": "function",
           "decorators": [],
           "lineno": 241,
-          "end_lineno": 252
+          "end_lineno": 244
+        },
+        {
+          "name": "get_lan_devices",
+          "signature": "get_lan_devices() -> list[dict]",
+          "docstring": "Возвращает список {ip, mac, state, hostname} из ARP-таблицы через helper.",
+          "summary": "Возвращает список {ip, mac, state, hostname} из ARP-таблицы через helper.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 249,
+          "end_lineno": 271
+        },
+        {
+          "name": "check_route",
+          "signature": "check_route(target: str) -> str",
+          "docstring": "Проверяет маршрут для домена или IP через helper. Возвращает текстовый вывод.",
+          "summary": "Проверяет маршрут для домена или IP через helper. Возвращает текстовый вывод.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 274,
+          "end_lineno": 279
         }
       ],
       "constants": [
@@ -210,43 +210,43 @@
           "name": "SUDO",
           "annotation": null,
           "value_repr": "'/usr/bin/sudo'",
-          "lineno": 7
+          "lineno": 12
         },
         {
           "name": "HELPER",
           "annotation": null,
           "value_repr": "'/usr/local/sbin/home-router-awg-config'",
-          "lineno": 8
+          "lineno": 13
         },
         {
           "name": "AWG_CONFIG_DIR",
           "annotation": null,
           "value_repr": "Path('/etc/home-router-panel/awg')",
-          "lineno": 9
+          "lineno": 14
         },
         {
           "name": "LISTS_CONFIG_FILE",
           "annotation": null,
           "value_repr": "AWG_CONFIG_DIR / 'lists_config.json'",
-          "lineno": 10
-        },
-        {
-          "name": "_DEFAULT_LISTS",
-          "annotation": null,
-          "value_repr": "[{'key': 'tg_nets', 'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, {'key': 'figma_domains', 'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'claude_domains', 'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'bebra_domains', 'title': 'Bebra домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'ss_server_ips', 'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, {'key': 'vpn_device_macs', 'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}]",
-          "lineno": 12
-        },
-        {
-          "name": "_KEY_RE",
-          "annotation": null,
-          "value_repr": "re.compile('^[a-z][a-z0-9_]{0,31}$')",
-          "lineno": 21
+          "lineno": 15
         },
         {
           "name": "DNSMASQ_LEASES",
           "annotation": null,
           "value_repr": "Path('/var/lib/misc/dnsmasq.leases')",
-          "lineno": 164
+          "lineno": 16
+        },
+        {
+          "name": "_DEFAULT_LISTS",
+          "annotation": null,
+          "value_repr": "[{'key': 'tg_nets', 'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, {'key': 'figma_domains', 'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'claude_domains', 'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'bebra_domains', 'title': 'Bebra домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'ss_server_ips', 'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, {'key': 'vpn_device_macs', 'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}]",
+          "lineno": 18
+        },
+        {
+          "name": "_KEY_RE",
+          "annotation": null,
+          "value_repr": "re.compile('^[a-z][a-z0-9_]{0,31}$')",
+          "lineno": 27
         }
       ],
       "stats": {
@@ -259,19 +259,19 @@
     },
     {
       "path": "app/config.py",
-      "module_docstring": null,
-      "module_summary": null,
+      "module_docstring": "Загрузка конфигурации приложения из config.yaml.",
+      "module_summary": "Загрузка конфигурации приложения из config.yaml.",
       "classes": [],
       "functions": [
         {
           "name": "load_config",
           "signature": "load_config() -> dict[str, Any]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Читает config.yaml и возвращает словарь конфигурации.\n\nВызывает RuntimeError если файл не найден.\nВозвращает пустой dict если файл пустой.",
+          "summary": "Читает config.yaml и возвращает словарь конфигурации.",
           "kind": "function",
           "decorators": [],
-          "lineno": 11,
-          "end_lineno": 23
+          "lineno": 13,
+          "end_lineno": 30
         }
       ],
       "constants": [
@@ -279,13 +279,13 @@
           "name": "PROJECT_ROOT",
           "annotation": null,
           "value_repr": "Path(__file__).resolve().parent.parent",
-          "lineno": 7
+          "lineno": 9
         },
         {
           "name": "CONFIG_PATH",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'config.yaml'",
-          "lineno": 8
+          "lineno": 10
         }
       ],
       "stats": {
@@ -298,14 +298,14 @@
     },
     {
       "path": "app/dnsmasq.py",
-      "module_docstring": null,
-      "module_summary": null,
+      "module_docstring": "Работа с dnsmasq: статические резервации, аренды DHCP, статус сервиса, ARP.",
+      "module_summary": "Работа с dnsmasq: статические резервации, аренды DHCP, статус сервиса, ARP.",
       "classes": [
         {
           "name": "Lease",
           "signature": "Lease [dataclass]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Одна запись из файла аренд dnsmasq.",
+          "summary": "Одна запись из файла аренд dnsmasq.",
           "kind": "dataclass",
           "bases": [],
           "decorators": [
@@ -316,48 +316,48 @@
               "name": "expiry",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 58
+              "lineno": 39
             },
             {
               "name": "ts",
               "annotation": "int",
               "value_repr": null,
-              "lineno": 59
+              "lineno": 40
             },
             {
               "name": "mac",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 60
+              "lineno": 41
             },
             {
               "name": "ip",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 61
+              "lineno": 42
             },
             {
               "name": "hostname",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 62
+              "lineno": 43
             },
             {
               "name": "client_id",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 63
+              "lineno": 44
             }
           ],
           "methods": [],
-          "lineno": 57,
-          "end_lineno": 63
+          "lineno": 36,
+          "end_lineno": 44
         },
         {
           "name": "StaticEntry",
           "signature": "StaticEntry [dataclass]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Статическая DHCP-резервация из управляемого файла панели.",
+          "summary": "Статическая DHCP-резервация из управляемого файла панели.",
           "kind": "dataclass",
           "bases": [],
           "decorators": [
@@ -368,166 +368,172 @@
               "name": "mac",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 68
+              "lineno": 51
             },
             {
               "name": "ip",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 69
+              "lineno": 52
             },
             {
               "name": "hostname",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 70
+              "lineno": 53
+            },
+            {
+              "name": "mac_from_lease",
+              "annotation": "bool",
+              "value_repr": "False",
+              "lineno": 54
             }
           ],
           "methods": [],
-          "lineno": 67,
-          "end_lineno": 70
+          "lineno": 48,
+          "end_lineno": 54
         }
       ],
       "functions": [
         {
-          "name": "validate_entry",
-          "signature": "validate_entry(mac: str, ip: str, hostname: str) -> str | None",
-          "docstring": "Return error string if invalid, None if ok.",
-          "summary": "Return error string if invalid, None if ok.",
-          "kind": "function",
-          "decorators": [],
-          "lineno": 15,
-          "end_lineno": 38
-        },
-        {
           "name": "_test_config",
           "signature": "_test_config() -> tuple[bool, str]",
-          "docstring": "Run dnsmasq --test to validate current config. Returns (ok, output).",
-          "summary": "Run dnsmasq --test to validate current config. Returns (ok, output).",
+          "docstring": "Запускает dnsmasq --test для проверки конфига. Возвращает (ok, вывод).",
+          "summary": "Запускает dnsmasq --test для проверки конфига. Возвращает (ok, вывод).",
           "kind": "function",
           "decorators": [],
-          "lineno": 41,
-          "end_lineno": 53
+          "lineno": 59,
+          "end_lineno": 71
+        },
+        {
+          "name": "validate_entry",
+          "signature": "validate_entry(mac: str, ip: str, hostname: str) -> str | None",
+          "docstring": "Проверяет корректность полей записи. Возвращает строку ошибки или None.",
+          "summary": "Проверяет корректность полей записи. Возвращает строку ошибки или None.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 76,
+          "end_lineno": 99
         },
         {
           "name": "read_leases",
           "signature": "read_leases() -> list[Lease]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Читает файл аренд dnsmasq, возвращает список отсортированный по IP.",
+          "summary": "Читает файл аренд dnsmasq, возвращает список отсортированный по IP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 73,
-          "end_lineno": 99
+          "lineno": 104,
+          "end_lineno": 131
         },
         {
           "name": "read_system_static",
           "signature": "read_system_static() -> list[dict]",
-          "docstring": "Read dhcp-host entries from /etc/dnsmasq.d/*.conf (read-only, for display).",
-          "summary": "Read dhcp-host entries from /etc/dnsmasq.d/*.conf (read-only, for display).",
+          "docstring": "Читает dhcp-host записи из /etc/dnsmasq.d/*.conf. Только для отображения, не редактируется.",
+          "summary": "Читает dhcp-host записи из /etc/dnsmasq.d/*.conf. Только для отображения, не редактируется.",
           "kind": "function",
           "decorators": [],
-          "lineno": 105,
-          "end_lineno": 125
+          "lineno": 134,
+          "end_lineno": 154
         },
         {
           "name": "read_static",
           "signature": "read_static() -> list[StaticEntry]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Читает управляемый файл резерваций dnsmasq-static.conf, сортирует по IP.",
+          "summary": "Читает управляемый файл резерваций dnsmasq-static.conf, сортирует по IP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 128,
-          "end_lineno": 155
+          "lineno": 157,
+          "end_lineno": 185
         },
         {
           "name": "write_static",
           "signature": "write_static(entries: list[StaticEntry]) -> tuple[bool, str]",
-          "docstring": "Write static entries. Returns (ok, error_or_empty).",
-          "summary": "Write static entries. Returns (ok, error_or_empty).",
+          "docstring": "Записывает список резерваций в файл. Проверяет конфиг через dnsmasq --test, при ошибке откатывает.",
+          "summary": "Записывает список резерваций в файл. Проверяет конфиг через dnsmasq --test, при ошибке откатывает.",
           "kind": "function",
           "decorators": [],
-          "lineno": 158,
-          "end_lineno": 181
+          "lineno": 190,
+          "end_lineno": 212
         },
         {
           "name": "add_static",
           "signature": "add_static(mac: str, ip: str, hostname: str) -> tuple[bool, str]",
-          "docstring": "Add or update entry. Returns (ok, error_or_empty).",
-          "summary": "Add or update entry. Returns (ok, error_or_empty).",
+          "docstring": "Добавляет или обновляет резервацию. Возвращает (ok, ошибка_или_пусто).",
+          "summary": "Добавляет или обновляет резервацию. Возвращает (ok, ошибка_или_пусто).",
           "kind": "function",
           "decorators": [],
-          "lineno": 184,
-          "end_lineno": 204
+          "lineno": 215,
+          "end_lineno": 235
         },
         {
           "name": "remove_static",
           "signature": "remove_static(mac: str, hostname: str = '') -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Удаляет резервацию по MAC или имени устройства. Возвращает (ok, ошибка_или_пусто).",
+          "summary": "Удаляет резервацию по MAC или имени устройства. Возвращает (ok, ошибка_или_пусто).",
           "kind": "function",
           "decorators": [],
-          "lineno": 207,
-          "end_lineno": 219
-        },
-        {
-          "name": "reload_dnsmasq",
-          "signature": "reload_dnsmasq() -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 222,
-          "end_lineno": 232
-        },
-        {
-          "name": "restart_dnsmasq",
-          "signature": "restart_dnsmasq() -> tuple[bool, str]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 235,
-          "end_lineno": 245
-        },
-        {
-          "name": "get_ip_group",
-          "signature": "get_ip_group(ip: str) -> str",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 261,
-          "end_lineno": 269
-        },
-        {
-          "name": "group_static_entries",
-          "signature": "group_static_entries(entries: list[StaticEntry]) -> list[dict]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 272,
-          "end_lineno": 292
+          "lineno": 238,
+          "end_lineno": 251
         },
         {
           "name": "get_dnsmasq_state",
           "signature": "get_dnsmasq_state() -> str",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Возвращает строку состояния сервиса dnsmasq (active / inactive / failed / unknown).",
+          "summary": "Возвращает строку состояния сервиса dnsmasq (active / inactive / failed / unknown).",
           "kind": "function",
           "decorators": [],
-          "lineno": 295,
-          "end_lineno": 303
+          "lineno": 256,
+          "end_lineno": 265
+        },
+        {
+          "name": "reload_dnsmasq",
+          "signature": "reload_dnsmasq() -> tuple[bool, str]",
+          "docstring": "Отправляет SIGHUP dnsmasq (применяет конфиг без обрыва аренд). Возвращает (ok, сообщение).",
+          "summary": "Отправляет SIGHUP dnsmasq (применяет конфиг без обрыва аренд). Возвращает (ok, сообщение).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 268,
+          "end_lineno": 279
+        },
+        {
+          "name": "restart_dnsmasq",
+          "signature": "restart_dnsmasq() -> tuple[bool, str]",
+          "docstring": "Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение).",
+          "summary": "Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение).",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 282,
+          "end_lineno": 293
+        },
+        {
+          "name": "get_ip_group",
+          "signature": "get_ip_group(ip: str) -> str",
+          "docstring": "Возвращает название группы по последнему октету IP или пустую строку.",
+          "summary": "Возвращает название группы по последнему октету IP или пустую строку.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 298,
+          "end_lineno": 307
+        },
+        {
+          "name": "group_static_entries",
+          "signature": "group_static_entries(entries: list[StaticEntry]) -> list[dict]",
+          "docstring": "Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}.",
+          "summary": "Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 310,
+          "end_lineno": 329
         },
         {
           "name": "get_arp_online",
           "signature": "get_arp_online() -> tuple[set[str], set[str]]",
-          "docstring": "Return (online_macs, online_ips) from ARP table on enp2s0.\n\nA device is considered online if it has an lladdr and state is not FAILED.\nREACHABLE/STALE/DELAY/PROBE all count as online.\nAfter disconnect, entry transitions to FAILED within ~1-3 minutes.",
-          "summary": "Return (online_macs, online_ips) from ARP table on enp2s0.",
+          "docstring": "Возвращает (online_macs, online_ips) из ARP-таблицы интерфейса enp2s0.\n\nУстройство считается онлайн если имеет lladdr и состояние не FAILED.\nСостояния REACHABLE / STALE / DELAY / PROBE — онлайн.\nПосле отключения запись переходит в FAILED примерно за 1–3 минуты.\nПри ошибке вызова ip возвращает два пустых множества.",
+          "summary": "Возвращает (online_macs, online_ips) из ARP-таблицы интерфейса enp2s0.",
           "kind": "function",
           "decorators": [],
-          "lineno": 306,
-          "end_lineno": 331
+          "lineno": 334,
+          "end_lineno": 360
         }
       ],
       "constants": [
@@ -535,43 +541,43 @@
           "name": "LEASES_FILE",
           "annotation": null,
           "value_repr": "Path('/var/lib/misc/dnsmasq.leases')",
-          "lineno": 7
+          "lineno": 12
         },
         {
           "name": "STATIC_FILE",
           "annotation": null,
           "value_repr": "Path('/etc/home-router-panel/awg/dnsmasq-static.conf')",
-          "lineno": 8
-        },
-        {
-          "name": "_HOSTNAME_RE",
-          "annotation": null,
-          "value_repr": "re.compile('^[a-zA-Z0-9\\\\-]{1,63}$')",
-          "lineno": 11
-        },
-        {
-          "name": "_IP_RE",
-          "annotation": null,
-          "value_repr": "re.compile('^(\\\\d{1,3}\\\\.){3}\\\\d{1,3}$')",
-          "lineno": 12
+          "lineno": 13
         },
         {
           "name": "DNSMASQ_D",
           "annotation": null,
           "value_repr": "Path('/etc/dnsmasq.d')",
-          "lineno": 102
+          "lineno": 14
+        },
+        {
+          "name": "_HOSTNAME_RE",
+          "annotation": null,
+          "value_repr": "re.compile('^[a-zA-Z0-9\\\\-]{1,63}$')",
+          "lineno": 16
+        },
+        {
+          "name": "_IP_RE",
+          "annotation": null,
+          "value_repr": "re.compile('^(\\\\d{1,3}\\\\.){3}\\\\d{1,3}$')",
+          "lineno": 17
         },
         {
           "name": "_IP_GROUPS",
           "annotation": "list[tuple[int, int, str]]",
           "value_repr": "[(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 59, 'Телефоны'), (60, 79, 'Динамический пул'), (110, 119, 'Камеры'), (200, 209, 'Майнеры')]",
-          "lineno": 248
+          "lineno": 20
         },
         {
           "name": "IP_GROUP_NAMES",
           "annotation": "list[str]",
           "value_repr": "list(dict.fromkeys((n for _, _, n in _IP_GROUPS)))",
-          "lineno": 258
+          "lineno": 30
         }
       ],
       "stats": {
@@ -584,14 +590,14 @@
     },
     {
       "path": "app/hotlists.py",
-      "module_docstring": null,
-      "module_summary": null,
+      "module_docstring": "Чтение и запись hotlist-файлов zapret (hosts, exclude).",
+      "module_summary": "Чтение и запись hotlist-файлов zapret (hosts, exclude).",
       "classes": [
         {
           "name": "HotlistContent",
           "signature": "HotlistContent [dataclass]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Содержимое одного hotlist-файла.",
+          "summary": "Содержимое одного hotlist-файла.",
           "kind": "dataclass",
           "bases": [],
           "decorators": [
@@ -602,62 +608,62 @@
               "name": "name",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 7
+              "lineno": 11
             },
             {
               "name": "path",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 8
+              "lineno": 12
             },
             {
               "name": "lines",
               "annotation": "list[str]",
               "value_repr": null,
-              "lineno": 9
+              "lineno": 13
             },
             {
               "name": "text",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 10
+              "lineno": 14
             }
           ],
           "methods": [],
-          "lineno": 6,
-          "end_lineno": 10
+          "lineno": 8,
+          "end_lineno": 14
         }
       ],
       "functions": [
         {
           "name": "get_hotlists_config",
           "signature": "get_hotlists_config(config: dict) -> list[dict]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Возвращает список {name, path} для всех hotlist'ов из конфига.",
+          "summary": "Возвращает список {name, path} для всех hotlist'ов из конфига.",
           "kind": "function",
           "decorators": [],
-          "lineno": 13,
-          "end_lineno": 22
+          "lineno": 17,
+          "end_lineno": 20
         },
         {
           "name": "read_hotlist",
           "signature": "read_hotlist(config: dict, name: str) -> HotlistContent | None",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Читает hotlist по имени. Возвращает None если имя не найдено в конфиге.",
+          "summary": "Читает hotlist по имени. Возвращает None если имя не найдено в конфиге.",
           "kind": "function",
           "decorators": [],
-          "lineno": 25,
-          "end_lineno": 44
+          "lineno": 23,
+          "end_lineno": 37
         },
         {
           "name": "write_hotlist",
           "signature": "write_hotlist(config: dict, name: str, content: str) -> None",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Записывает содержимое hotlist-файла, нормализует переносы строк.\n\nВызывает ValueError если имя не найдено в конфиге.",
+          "summary": "Записывает содержимое hotlist-файла, нормализует переносы строк.",
           "kind": "function",
           "decorators": [],
-          "lineno": 47,
-          "end_lineno": 55
+          "lineno": 40,
+          "end_lineno": 51
         }
       ],
       "constants": [],
@@ -671,8 +677,8 @@
     },
     {
       "path": "app/main.py",
-      "module_docstring": null,
-      "module_summary": null,
+      "module_docstring": "Маршруты FastAPI: обзор, zapret, AmneziaWG, dnsmasq, бэкап, SSE.",
+      "module_summary": "Маршруты FastAPI: обзор, zapret, AmneziaWG, dnsmasq, бэкап, SSE.",
       "classes": [],
       "functions": [
         {
@@ -684,8 +690,8 @@
           "decorators": [
             "app.get('/')"
           ],
-          "lineno": 57,
-          "end_lineno": 70
+          "lineno": 59,
+          "end_lineno": 72
         },
         {
           "name": "zapret_view",
@@ -696,8 +702,8 @@
           "decorators": [
             "app.get('/zapret')"
           ],
-          "lineno": 74,
-          "end_lineno": 89
+          "lineno": 76,
+          "end_lineno": 91
         },
         {
           "name": "hotlist_view",
@@ -708,8 +714,8 @@
           "decorators": [
             "app.get('/hotlists/{name}')"
           ],
-          "lineno": 93,
-          "end_lineno": 94
+          "lineno": 95,
+          "end_lineno": 96
         },
         {
           "name": "hotlist_edit_view",
@@ -720,8 +726,8 @@
           "decorators": [
             "app.get('/hotlists/{name}/edit')"
           ],
-          "lineno": 98,
-          "end_lineno": 113
+          "lineno": 100,
+          "end_lineno": 115
         },
         {
           "name": "hotlist_edit_save",
@@ -732,28 +738,28 @@
           "decorators": [
             "app.post('/hotlists/{name}/edit')"
           ],
-          "lineno": 117,
-          "end_lineno": 146
+          "lineno": 119,
+          "end_lineno": 148
         },
         {
           "name": "_parse_vpn_macs",
           "signature": "_parse_vpn_macs(content: str) -> set[str]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).",
+          "summary": "Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).",
           "kind": "function",
           "decorators": [],
-          "lineno": 149,
-          "end_lineno": 155
+          "lineno": 151,
+          "end_lineno": 158
         },
         {
           "name": "_amnezia_context",
           "signature": "_amnezia_context(request: Request, target: str = '', msg: str = '', error: str = '') -> dict",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.",
+          "summary": "Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.",
           "kind": "function",
           "decorators": [],
-          "lineno": 158,
-          "end_lineno": 194
+          "lineno": 161,
+          "end_lineno": 198
         },
         {
           "name": "amnezia_view",
@@ -764,8 +770,8 @@
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 198,
-          "end_lineno": 203
+          "lineno": 202,
+          "end_lineno": 207
         },
         {
           "name": "amnezia_service_action",
@@ -776,8 +782,8 @@
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 207,
-          "end_lineno": 209
+          "lineno": 211,
+          "end_lineno": 213
         },
         {
           "name": "amnezia_list_save",
@@ -788,8 +794,8 @@
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 213,
-          "end_lineno": 218
+          "lineno": 217,
+          "end_lineno": 222
         },
         {
           "name": "amnezia_list_create",
@@ -800,8 +806,8 @@
           "decorators": [
             "app.post('/amnezia/lists-create')"
           ],
-          "lineno": 222,
-          "end_lineno": 235
+          "lineno": 226,
+          "end_lineno": 239
         },
         {
           "name": "amnezia_list_delete",
@@ -812,8 +818,8 @@
           "decorators": [
             "app.post('/amnezia/lists-delete/{key}')"
           ],
-          "lineno": 239,
-          "end_lineno": 247
+          "lineno": 243,
+          "end_lineno": 251
         },
         {
           "name": "amnezia_list_meta_save",
@@ -824,8 +830,8 @@
           "decorators": [
             "app.post('/amnezia/lists-meta/{key}')"
           ],
-          "lineno": 251,
-          "end_lineno": 265
+          "lineno": 255,
+          "end_lineno": 269
         },
         {
           "name": "amnezia_vpn_macs_save",
@@ -836,8 +842,8 @@
           "decorators": [
             "app.post('/amnezia/vpn-macs/save')"
           ],
-          "lineno": 269,
-          "end_lineno": 275
+          "lineno": 273,
+          "end_lineno": 279
         },
         {
           "name": "amnezia_add_mac",
@@ -848,8 +854,8 @@
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 279,
-          "end_lineno": 281
+          "lineno": 283,
+          "end_lineno": 285
         },
         {
           "name": "service_restart",
@@ -860,8 +866,8 @@
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 285,
-          "end_lineno": 299
+          "lineno": 289,
+          "end_lineno": 303
         },
         {
           "name": "backup_run",
@@ -872,8 +878,8 @@
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 303,
-          "end_lineno": 318
+          "lineno": 307,
+          "end_lineno": 322
         },
         {
           "name": "capture_traffic",
@@ -884,18 +890,18 @@
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 322,
-          "end_lineno": 368
+          "lineno": 326,
+          "end_lineno": 372
         },
         {
           "name": "_build_dnsmasq_context",
           "signature": "_build_dnsmasq_context(**extra) -> dict",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
+          "summary": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 371,
-          "end_lineno": 405
+          "lineno": 375,
+          "end_lineno": 410
         },
         {
           "name": "dnsmasq_view",
@@ -906,18 +912,18 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 409,
-          "end_lineno": 419
+          "lineno": 414,
+          "end_lineno": 424
         },
         {
           "name": "_dnsmasq_response",
           "signature": "_dnsmasq_response(request: Request, error: str = '', msg: str = '', edit_mac: str = '', edit_host: str = '', pin_mac: str = '')",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
+          "summary": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
           "kind": "function",
           "decorators": [],
-          "lineno": 422,
-          "end_lineno": 433
+          "lineno": 427,
+          "end_lineno": 439
         },
         {
           "name": "dnsmasq_static_add",
@@ -928,8 +934,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 437,
-          "end_lineno": 446
+          "lineno": 443,
+          "end_lineno": 452
         },
         {
           "name": "dnsmasq_static_update",
@@ -940,8 +946,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 450,
-          "end_lineno": 459
+          "lineno": 456,
+          "end_lineno": 465
         },
         {
           "name": "dnsmasq_static_remove",
@@ -952,8 +958,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 463,
-          "end_lineno": 467
+          "lineno": 469,
+          "end_lineno": 473
         },
         {
           "name": "dnsmasq_service_reload",
@@ -964,8 +970,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 471,
-          "end_lineno": 475
+          "lineno": 477,
+          "end_lineno": 481
         },
         {
           "name": "dnsmasq_service_restart",
@@ -976,8 +982,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 479,
-          "end_lineno": 483
+          "lineno": 485,
+          "end_lineno": 489
         },
         {
           "name": "dnsmasq_events",
@@ -988,8 +994,8 @@
           "decorators": [
             "app.get('/dnsmasq/events')"
           ],
-          "lineno": 487,
-          "end_lineno": 542
+          "lineno": 493,
+          "end_lineno": 548
         },
         {
           "name": "health",
@@ -1000,8 +1006,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 546,
-          "end_lineno": 547
+          "lineno": 552,
+          "end_lineno": 553
         }
       ],
       "constants": [
@@ -1009,19 +1015,19 @@
           "name": "PROJECT_ROOT",
           "annotation": null,
           "value_repr": "Path(__file__).resolve().parent.parent",
-          "lineno": 44
+          "lineno": 46
         },
         {
           "name": "STATIC_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'static'",
-          "lineno": 45
+          "lineno": 47
         },
         {
           "name": "TEMPLATES_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'templates'",
-          "lineno": 46
+          "lineno": 48
         }
       ],
       "stats": {
@@ -1034,14 +1040,14 @@
     },
     {
       "path": "app/services.py",
-      "module_docstring": null,
-      "module_summary": null,
+      "module_docstring": "Получение статусов и управление systemd-сервисами через systemctl.",
+      "module_summary": "Получение статусов и управление systemd-сервисами через systemctl.",
       "classes": [
         {
           "name": "ServiceStatus",
           "signature": "ServiceStatus [dataclass]",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Статус одного systemd-сервиса из config.yaml.",
+          "summary": "Статус одного systemd-сервиса из config.yaml.",
           "kind": "dataclass",
           "bases": [],
           "decorators": [
@@ -1052,94 +1058,94 @@
               "name": "key",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 9
+              "lineno": 13
             },
             {
               "name": "name",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 10
+              "lineno": 14
             },
             {
               "name": "unit",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 11
+              "lineno": 15
             },
             {
               "name": "state",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 12
+              "lineno": 16
             },
             {
               "name": "description",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 13
+              "lineno": 17
             },
             {
               "name": "is_active",
               "annotation": "bool",
               "value_repr": null,
-              "lineno": 14
+              "lineno": 18
             }
           ],
           "methods": [],
-          "lineno": 8,
-          "end_lineno": 14
+          "lineno": 10,
+          "end_lineno": 18
         }
       ],
       "functions": [
         {
           "name": "find_systemctl",
           "signature": "find_systemctl() -> str | None",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Возвращает путь к systemctl или None если не найден.",
+          "summary": "Возвращает путь к systemctl или None если не найден.",
           "kind": "function",
           "decorators": [],
-          "lineno": 17,
-          "end_lineno": 24
+          "lineno": 21,
+          "end_lineno": 29
         },
         {
           "name": "get_systemd_service_state",
           "signature": "get_systemd_service_state(unit: str) -> str",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Возвращает строку состояния юнита: active / inactive / failed / unknown / timeout.",
+          "summary": "Возвращает строку состояния юнита: active / inactive / failed / unknown / timeout.",
           "kind": "function",
           "decorators": [],
-          "lineno": 27,
-          "end_lineno": 44
-        },
-        {
-          "name": "get_services_status",
-          "signature": "get_services_status(config: dict) -> list[ServiceStatus]",
-          "docstring": null,
-          "summary": null,
-          "kind": "function",
-          "decorators": [],
-          "lineno": 47,
-          "end_lineno": 68
+          "lineno": 32,
+          "end_lineno": 50
         },
         {
           "name": "get_service_unit",
           "signature": "get_service_unit(config: dict, service_name: str) -> str | None",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Возвращает имя юнита для сервиса из конфига или None если сервис не найден.",
+          "summary": "Возвращает имя юнита для сервиса из конфига или None если сервис не найден.",
           "kind": "function",
           "decorators": [],
-          "lineno": 71,
-          "end_lineno": 80
+          "lineno": 53,
+          "end_lineno": 63
+        },
+        {
+          "name": "get_services_status",
+          "signature": "get_services_status(config: dict) -> list[ServiceStatus]",
+          "docstring": "Возвращает список статусов всех сервисов из config.yaml.",
+          "summary": "Возвращает список статусов всех сервисов из config.yaml.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 66,
+          "end_lineno": 88
         },
         {
           "name": "restart_service",
           "signature": "restart_service(config: dict, service_name: str) -> subprocess.CompletedProcess",
-          "docstring": null,
-          "summary": null,
+          "docstring": "Перезапускает сервис через sudo systemctl restart.\n\nВызывает ValueError если сервис не найден в конфиге.",
+          "summary": "Перезапускает сервис через sudo systemctl restart.",
           "kind": "function",
           "decorators": [],
-          "lineno": 83,
-          "end_lineno": 92
+          "lineno": 91,
+          "end_lineno": 104
         }
       ],
       "constants": [],

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-22T04:04:29.594432+00:00",
+  "generated_at": "2026-06-22T04:11:59.045187+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -66,7 +66,7 @@
     "key_modules": [
       {
         "path": "app/main.py",
-        "summary": null,
+        "summary": "Маршруты FastAPI: обзор, zapret, AmneziaWG, dnsmasq, бэкап, SSE.",
         "stats": {
           "classes": 0,
           "dataclasses": 0,
@@ -77,7 +77,7 @@
       },
       {
         "path": "app/dnsmasq.py",
-        "summary": null,
+        "summary": "Работа с dnsmasq: статические резервации, аренды DHCP, статус сервиса, ARP.",
         "stats": {
           "classes": 2,
           "dataclasses": 2,
@@ -88,7 +88,7 @@
       },
       {
         "path": "app/amnezia.py",
-        "summary": null,
+        "summary": "Управление AmneziaWG: конфигурация списков, статус и контроль AWG, LAN-устройства.",
         "stats": {
           "classes": 0,
           "dataclasses": 0,
@@ -99,7 +99,7 @@
       },
       {
         "path": "app/services.py",
-        "summary": null,
+        "summary": "Получение статусов и управление systemd-сервисами через systemctl.",
         "stats": {
           "classes": 1,
           "dataclasses": 1,
@@ -110,7 +110,7 @@
       },
       {
         "path": "app/hotlists.py",
-        "summary": null,
+        "summary": "Чтение и запись hotlist-файлов zapret (hosts, exclude).",
         "stats": {
           "classes": 1,
           "dataclasses": 1,
@@ -121,7 +121,7 @@
       },
       {
         "path": "app/config.py",
-        "summary": null,
+        "summary": "Загрузка конфигурации приложения из config.yaml.",
         "stats": {
           "classes": 0,
           "dataclasses": 0,
@@ -140,7 +140,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-06-22T04:04:29.500289+00:00",
+    "api_map_generated_at": "2026-06-22T04:11:58.934132+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"
