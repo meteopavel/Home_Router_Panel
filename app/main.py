@@ -380,7 +380,8 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
     leases = read_leases()
     arp_macs, arp_ips = get_arp_online()
     static_macs = {e.mac for e in static if e.mac}
-    dynamic = [l for l in leases if l.mac and l.mac not in static_macs]
+    static_ips = {e.ip for e in static if e.ip}
+    dynamic = [l for l in leases if l.mac and l.mac not in static_macs and l.ip not in static_ips]
     return templates.TemplateResponse(
         request=request,
         name='capture.html',
