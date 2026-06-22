@@ -5,14 +5,71 @@
     <div class="section-header">
         <div>
             <h2>Перехват трафика</h2>
-            <p>tcpdump на enp2s0 по MAC-адресу устройства</p>
-        </div>
-        <div class="actions">
-            <a href="/amnezia" class="button button-secondary">← AmneziaWG</a>
+            <p>tcpdump на enp2s0 · нажмите «Захватить» рядом с устройством</p>
         </div>
     </div>
 
-    <form method="get" action="/capture" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
+    {# ── Список устройств ──────────────────────────────────────────── #}
+    {% set all_static = static | selectattr('mac') | list %}
+    {% if all_static %}
+        <div class="section-label" style="margin-bottom: 8px;">Статические резервации</div>
+        <div class="service-list" style="margin-bottom: 20px;">
+            {% for e in all_static %}
+                {% set is_online = e.mac in online_macs %}
+                <div class="service-row {% if mac == e.mac %}service-row-highlight{% endif %}">
+                    <div class="service-main">
+                        <div class="device-line">
+                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}
+                            {{ e.ip }}
+                            <span class="device-meta"> · {{ e.mac }}</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                              style="font-size: 11px; padding: 3px 8px;">
+                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                        </span>
+                        <a href="/capture?mac={{ e.mac }}&seconds={{ seconds }}&count={{ count }}"
+                           class="button button-sm {% if mac == e.mac %}button-active{% endif %}">
+                            Захватить
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if dynamic %}
+        <div class="section-label" style="margin-bottom: 8px;">Динамические аренды</div>
+        <div class="service-list" style="margin-bottom: 20px;">
+            {% for l in dynamic %}
+                {% set is_online = l.mac in online_macs %}
+                <div class="service-row {% if mac == l.mac %}service-row-highlight{% endif %}">
+                    <div class="service-main">
+                        <div class="device-line">
+                            {% if l.hostname %}<strong>{{ l.hostname }}</strong> · {% endif %}
+                            {{ l.ip }}
+                            <span class="device-meta"> · {{ l.mac }}</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                              style="font-size: 11px; padding: 3px 8px;">
+                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                        </span>
+                        <a href="/capture?mac={{ l.mac }}&seconds={{ seconds }}&count={{ count }}"
+                           class="button button-sm {% if mac == l.mac %}button-active{% endif %}">
+                            Захватить
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# ── Параметры захвата ──────────────────────────────────────────── #}
+    <form method="get" action="/capture"
+          style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 24px;">
         <div>
             <label class="form-label">MAC-адрес</label>
             <input type="text" name="mac" value="{{ mac }}" placeholder="aa:bb:cc:dd:ee:ff"
@@ -37,6 +94,7 @@
         <button type="submit" class="button">Запустить захват</button>
     </form>
 
+    {# ── Результат ──────────────────────────────────────────────────── #}
     {% if error %}
         <div class="alert alert-error">{{ error }}</div>
     {% endif %}

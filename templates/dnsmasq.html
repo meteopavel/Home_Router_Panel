@@ -9,6 +9,7 @@
             <p>DHCP-сервер · 192.168.100.x · enp2s0</p>
         </div>
         <div class="actions">
+            <a href="/capture" class="button button-secondary button-sm">Перехват трафика</a>
             {% if state == 'active' %}
                 <span class="pill pill-green">active</span>
             {% elif state == 'failed' %}

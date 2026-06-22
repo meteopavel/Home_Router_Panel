@@ -70,6 +70,11 @@
     background: var(--bg-row);
 }
 
+.service-row-highlight {
+    border-color: rgba(96, 165, 250, 0.4);
+    background: rgba(96, 165, 250, 0.06);
+}
+
 .service-row-compact {
     height: 48px;
     padding-top: 0;

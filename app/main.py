@@ -376,6 +376,11 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
             except Exception as e:
                 error = str(e)
 
+    static = read_static()
+    leases = read_leases()
+    arp_macs, arp_ips = get_arp_online()
+    static_macs = {e.mac for e in static if e.mac}
+    dynamic = [l for l in leases if l.mac and l.mac not in static_macs]
     return templates.TemplateResponse(
         request=request,
         name='capture.html',
@@ -386,7 +391,11 @@ def capture_traffic(request: Request, mac: str = '', seconds: int = 15, count: i
             'count': count,
             'output': output,
             'error': error,
-            'active_tab': 'amnezia',
+            'active_tab': 'dnsmasq',
+            'static': static,
+            'dynamic': dynamic,
+            'online_macs': arp_macs,
+            'online_ips': arp_ips,
         },
     )
 
