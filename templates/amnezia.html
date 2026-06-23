@@ -113,7 +113,16 @@
         {# ── Трафик через awg0 (vnstat) ──────────────────────────── #}
         {% if awg_traffic.available %}
             <div style="margin-top: 20px;">
-                <div style="font-size: 13px; color: var(--muted); margin-bottom: 10px;">Трафик через awg0</div>
+                <div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
+                    <div style="font-size: 13px; color: var(--muted);">Трафик через awg0</div>
+                    <div style="font-size: 13px; font-family: var(--font-mono);">
+                        <span style="color: var(--muted);">↓</span>
+                        <span id="awg-rx-speed">…</span>
+                        &nbsp;
+                        <span style="color: var(--muted);">↑</span>
+                        <span id="awg-tx-speed">…</span>
+                    </div>
+                </div>
                 {% if not awg_traffic.has_data %}
                     <div style="font-size: 13px; color: var(--muted);">
                         vnstat собирает данные — статистика появится через несколько минут
@@ -452,5 +461,23 @@ document.addEventListener('click', function (e) {
             pill.textContent = origText;
         });
 });
+
+// ── AWG speed polling ────────────────────────────────────────────
+(function () {
+    var rxEl = document.getElementById('awg-rx-speed');
+    var txEl = document.getElementById('awg-tx-speed');
+    if (!rxEl || !txEl) return;
+    function poll() {
+        fetch('/amnezia/awg-speed')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                rxEl.textContent = d.rx;
+                txEl.textContent = d.tx;
+            })
+            .catch(function () {})
+            .finally(function () { setTimeout(poll, 2000); });
+    }
+    poll();
+})();
 </script>
 {% endblock %}
