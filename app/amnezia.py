@@ -288,3 +288,65 @@ def check_route(target: str) -> str:
         return 'Некорректный формат — только домен или IP'
     result = _run_helper('check-route', target, timeout=10)
     return result.stdout.strip() if result.returncode == 0 else (result.stderr.strip() or 'Ошибка')
+
+
+def _fmt_bytes(n: int) -> str:
+    """Форматирует байты в читаемый вид: B / KiB / MiB / GiB."""
+    for unit in ('B', 'KiB', 'MiB', 'GiB'):
+        if n < 1024:
+            return f'{n:.1f} {unit}' if unit != 'B' else f'{n} {unit}'
+        n /= 1024
+    return f'{n:.1f} TiB'
+
+
+def get_awg_traffic() -> dict:
+    """Читает статистику awg0 из vnstat. Возвращает dict с полями для шаблона."""
+    empty = {'available': False, 'total_rx': '—', 'total_tx': '—',
+             'today_rx': '—', 'today_tx': '—',
+             'hour_rx': '—', 'hour_tx': '—',
+             'month_rx': '—', 'month_tx': '—'}
+    try:
+        r = subprocess.run(
+            ['vnstat', '-i', 'awg0', '--json'],
+            capture_output=True, text=True, timeout=5, check=False,
+        )
+        if r.returncode != 0:
+            return empty
+        data = json.loads(r.stdout)
+        iface = data['interfaces'][0]['traffic']
+
+        def day_sum(days, n=1):
+            rx = tx = 0
+            for d in days[-n:]:
+                rx += d.get('rx', 0)
+                tx += d.get('tx', 0)
+            return rx, tx
+
+        total_rx = iface['total']['rx']
+        total_tx = iface['total']['tx']
+
+        today_days = iface.get('day', [])
+        today_rx, today_tx = day_sum(today_days, 1)
+
+        hours = iface.get('hour', [])
+        hour_rx, hour_tx = day_sum(hours, 1)
+
+        months = iface.get('month', [])
+        month_rx, month_tx = day_sum(months, 1)
+
+        has_data = total_rx + total_tx > 0
+
+        return {
+            'available': True,
+            'has_data': has_data,
+            'total_rx': _fmt_bytes(total_rx),
+            'total_tx': _fmt_bytes(total_tx),
+            'today_rx': _fmt_bytes(today_rx) if today_rx else '—',
+            'today_tx': _fmt_bytes(today_tx) if today_tx else '—',
+            'hour_rx': _fmt_bytes(hour_rx) if hour_rx else '—',
+            'hour_tx': _fmt_bytes(hour_tx) if hour_tx else '—',
+            'month_rx': _fmt_bytes(month_rx) if month_rx else '—',
+            'month_tx': _fmt_bytes(month_tx) if month_tx else '—',
+        }
+    except Exception:
+        return empty
