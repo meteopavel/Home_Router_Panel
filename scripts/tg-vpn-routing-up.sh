@@ -15,9 +15,7 @@
 #
 # ВНИМАНИЕ: перед установкой убедитесь, что файлы конфигурации существуют:
 #   /etc/home-router-panel/awg/tg_nets.txt
-#   /etc/home-router-panel/awg/figma_domains.txt
-#   /etc/home-router-panel/awg/claude_domains.txt
-#   /etc/home-router-panel/awg/bebra_domains.txt
+#   /etc/home-router-panel/awg/*_domains.txt  — любые файлы вида <name>_domains.txt подхватываются автоматически
 #   /etc/home-router-panel/awg/ss_server_ips.txt   — IP SS-серверов (маршрутизируются через awg0 напрямую)
 #   /etc/home-router-panel/awg/vpn_device_macs.txt
 
@@ -118,50 +116,26 @@ log "  tg_nets: $count записей"
 
 iptables -t mangle -A "$CHAIN" -m set --match-set tg_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
 
-# ── ipset: Figma ──────────────────────────────────────────────────────────────
+# ── ipset: домены (все *_domains.txt из CONF_DIR) ────────────────────────────
 
-log "Резолвинг доменов figma из $CONF_DIR/figma_domains.txt..."
-ensure_ipset figma_nets "hash:ip"
-count=0
-while IFS= read -r domain; do
-    while IFS= read -r ip; do
-        ipset add figma_nets "$ip" 2>/dev/null || true
-        (( count++ )) || true
-    done < <(getent ahostsv4 "$domain" 2>/dev/null | awk '{print $1}' | sort -u || true)
-done < <(read_conf_lines "figma_domains.txt")
-log "  figma_nets: $count IP"
+for domains_file in "$CONF_DIR"/*_domains.txt; do
+    [ -f "$domains_file" ] || continue
+    base="$(basename "$domains_file" .txt)"   # напр. figma_domains
+    ipset_name="${base%_domains}_nets"         # напр. figma_nets
 
-iptables -t mangle -A "$CHAIN" -m set --match-set figma_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+    log "Резолвинг доменов из $domains_file..."
+    ensure_ipset "$ipset_name" "hash:ip"
+    count=0
+    while IFS= read -r domain; do
+        while IFS= read -r ip; do
+            ipset add "$ipset_name" "$ip" 2>/dev/null || true
+            (( count++ )) || true
+        done < <(getent ahostsv4 "$domain" 2>/dev/null | awk '{print $1}' | sort -u || true)
+    done < <(read_conf_lines "$(basename "$domains_file")")
+    log "  $ipset_name: $count IP"
 
-# ── ipset: Claude/Anthropic ───────────────────────────────────────────────────
-
-log "Резолвинг доменов claude из $CONF_DIR/claude_domains.txt..."
-ensure_ipset claude_nets "hash:ip"
-count=0
-while IFS= read -r domain; do
-    while IFS= read -r ip; do
-        ipset add claude_nets "$ip" 2>/dev/null || true
-        (( count++ )) || true
-    done < <(getent ahostsv4 "$domain" 2>/dev/null | awk '{print $1}' | sort -u || true)
-done < <(read_conf_lines "claude_domains.txt")
-log "  claude_nets: $count IP"
-
-iptables -t mangle -A "$CHAIN" -m set --match-set claude_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
-
-# ── ipset: Bebra ──────────────────────────────────────────────────────────────
-
-log "Резолвинг доменов bebra из $CONF_DIR/bebra_domains.txt..."
-ensure_ipset bebra_nets "hash:ip"
-count=0
-while IFS= read -r domain; do
-    while IFS= read -r ip; do
-        ipset add bebra_nets "$ip" 2>/dev/null || true
-        (( count++ )) || true
-    done < <(getent ahostsv4 "$domain" 2>/dev/null | awk '{print $1}' | sort -u || true)
-done < <(read_conf_lines "bebra_domains.txt")
-log "  bebra_nets: $count IP"
-
-iptables -t mangle -A "$CHAIN" -m set --match-set bebra_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+    iptables -t mangle -A "$CHAIN" -m set --match-set "$ipset_name" dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+done
 
 # ── Статические маршруты для SS-серверов ─────────────────────────────────────
 # IP SS-серверов заблокированы в РФ — маршрутизируем их через awg0 напрямую
