@@ -334,6 +334,9 @@ def get_awg_traffic() -> dict:
         months = iface.get('month', [])
         month_rx, month_tx = day_sum(months, 1)
 
+        five = iface.get('fiveminute', [])
+        five_rx, five_tx = day_sum(five, 1)
+
         has_data = total_rx + total_tx > 0
 
         return {
@@ -347,6 +350,8 @@ def get_awg_traffic() -> dict:
             'hour_tx': _fmt_bytes(hour_tx) if hour_tx else '—',
             'month_rx': _fmt_bytes(month_rx) if month_rx else '—',
             'month_tx': _fmt_bytes(month_tx) if month_tx else '—',
+            'five_rx': _fmt_bytes(five_rx) if five_rx else '—',
+            'five_tx': _fmt_bytes(five_tx) if five_tx else '—',
         }
     except Exception:
         return empty
