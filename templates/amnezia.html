@@ -109,6 +109,35 @@
                 <pre class="code-block">{{ awg_show }}</pre>
             </details>
         {% endif %}
+
+        {# ── Трафик через awg0 (vnstat) ──────────────────────────── #}
+        {% if awg_traffic.available %}
+            <div style="margin-top: 20px;">
+                <div style="font-size: 13px; color: var(--muted); margin-bottom: 10px;">Трафик через awg0</div>
+                {% if not awg_traffic.has_data %}
+                    <div style="font-size: 13px; color: var(--muted);">
+                        vnstat собирает данные — статистика появится через несколько минут
+                    </div>
+                {% else %}
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                        {% for label, rx, tx in [
+                            ('За час',     awg_traffic.hour_rx,  awg_traffic.hour_tx),
+                            ('За сегодня', awg_traffic.today_rx, awg_traffic.today_tx),
+                            ('За месяц',   awg_traffic.month_rx, awg_traffic.month_tx),
+                            ('Всего',      awg_traffic.total_rx, awg_traffic.total_tx),
+                        ] %}
+                            <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px;">
+                                <div style="font-size: 11px; color: var(--muted); margin-bottom: 6px;">{{ label }}</div>
+                                <div style="font-size: 13px; line-height: 1.6;">
+                                    <span style="color: var(--muted);">↓</span> {{ rx }}<br>
+                                    <span style="color: var(--muted);">↑</span> {{ tx }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
     {% endif %}
 </section>
 
