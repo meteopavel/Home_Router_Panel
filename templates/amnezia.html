@@ -121,6 +121,7 @@
                 {% else %}
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
                         {% for label, rx, tx in [
+                            ('За 5 мин',   awg_traffic.five_rx,  awg_traffic.five_tx),
                             ('За час',     awg_traffic.hour_rx,  awg_traffic.hour_tx),
                             ('За сегодня', awg_traffic.today_rx, awg_traffic.today_tx),
                             ('За месяц',   awg_traffic.month_rx, awg_traffic.month_tx),
