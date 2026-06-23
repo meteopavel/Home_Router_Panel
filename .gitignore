@@ -82,6 +82,9 @@ logs/
 *.sqlite3
 *.db
 
+# Claude Code local config
+.claude/
+
 # IDEs / editors
 .idea/
 .vscode/
