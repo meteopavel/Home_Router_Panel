@@ -154,6 +154,17 @@ def update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tupl
     return False, f"Список '{key}' не найден"
 
 
+def reorder_lists(keys: list[str]) -> None:
+    """Переставляет списки в lists_config.json согласно переданному порядку ключей."""
+    lists = load_lists_config()
+    by_key = {item['key']: item for item in lists}
+    reordered = [by_key[k] for k in keys if k in by_key]
+    # Списки, которых нет в keys — добавляем в конец
+    present = set(keys)
+    reordered += [item for item in lists if item['key'] not in present]
+    save_lists_config(reordered)
+
+
 def delete_list(key: str) -> tuple[bool, str]:
     """Удаляет список из конфига и переименовывает файл в .txt.deleted."""
     lists = load_lists_config()

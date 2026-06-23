@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-23T04:04:48.046282+00:00",
+  "generated_at": "2026-06-23T04:10:32.451222+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 7,
@@ -13,7 +13,7 @@
     "modules": 6,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 70,
+    "functions": 72,
     "methods": 0,
     "constants": 19
   },
@@ -105,14 +105,24 @@
           "end_lineno": 154
         },
         {
+          "name": "reorder_lists",
+          "signature": "reorder_lists(keys: list[str]) -> None",
+          "docstring": "Переставляет списки в lists_config.json согласно переданному порядку ключей.",
+          "summary": "Переставляет списки в lists_config.json согласно переданному порядку ключей.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 157,
+          "end_lineno": 165
+        },
+        {
           "name": "delete_list",
           "signature": "delete_list(key: str) -> tuple[bool, str]",
           "docstring": "Удаляет список из конфига и переименовывает файл в .txt.deleted.",
           "summary": "Удаляет список из конфига и переименовывает файл в .txt.deleted.",
           "kind": "function",
           "decorators": [],
-          "lineno": 157,
-          "end_lineno": 167
+          "lineno": 168,
+          "end_lineno": 178
         },
         {
           "name": "read_awg_list",
@@ -121,8 +131,8 @@
           "summary": "Читает содержимое txt-файла списка. Возвращает пустую строку если файл не существует.",
           "kind": "function",
           "decorators": [],
-          "lineno": 172,
-          "end_lineno": 180
+          "lineno": 183,
+          "end_lineno": 191
         },
         {
           "name": "write_awg_list",
@@ -131,8 +141,8 @@
           "summary": "Записывает содержимое в txt-файл списка, сохраняет .bak-резервную копию.",
           "kind": "function",
           "decorators": [],
-          "lineno": 183,
-          "end_lineno": 189
+          "lineno": 194,
+          "end_lineno": 200
         },
         {
           "name": "add_mac_to_vpn",
@@ -141,8 +151,8 @@
           "summary": "Добавляет MAC-адрес в vpn_device_macs.txt. Возвращает False при некорректном MAC.",
           "kind": "function",
           "decorators": [],
-          "lineno": 192,
-          "end_lineno": 204
+          "lineno": 203,
+          "end_lineno": 215
         },
         {
           "name": "get_awg_status",
@@ -151,8 +161,8 @@
           "summary": "Возвращает словарь со статусом AWG-сервиса и интерфейса от helper-скрипта.",
           "kind": "function",
           "decorators": [],
-          "lineno": 209,
-          "end_lineno": 221
+          "lineno": 220,
+          "end_lineno": 232
         },
         {
           "name": "get_awg_show",
@@ -161,8 +171,8 @@
           "summary": "Возвращает вывод awg show awg0 или None если helper недоступен.",
           "kind": "function",
           "decorators": [],
-          "lineno": 224,
-          "end_lineno": 227
+          "lineno": 235,
+          "end_lineno": 238
         },
         {
           "name": "run_awg_action",
@@ -171,8 +181,8 @@
           "summary": "Выполняет одно из допустимых действий: start / stop / restart / apply.",
           "kind": "function",
           "decorators": [],
-          "lineno": 230,
-          "end_lineno": 238
+          "lineno": 241,
+          "end_lineno": 249
         },
         {
           "name": "get_diagnostics",
@@ -181,8 +191,8 @@
           "summary": "Возвращает диагностический вывод от helper-скрипта или сообщение об ошибке.",
           "kind": "function",
           "decorators": [],
-          "lineno": 241,
-          "end_lineno": 244
+          "lineno": 252,
+          "end_lineno": 255
         },
         {
           "name": "get_lan_devices",
@@ -191,8 +201,8 @@
           "summary": "Возвращает список {ip, mac, state, hostname} из ARP-таблицы через helper.",
           "kind": "function",
           "decorators": [],
-          "lineno": 249,
-          "end_lineno": 271
+          "lineno": 260,
+          "end_lineno": 282
         },
         {
           "name": "check_route",
@@ -201,8 +211,8 @@
           "summary": "Проверяет маршрут для домена или IP через helper. Возвращает текстовый вывод.",
           "kind": "function",
           "decorators": [],
-          "lineno": 274,
-          "end_lineno": 279
+          "lineno": 285,
+          "end_lineno": 290
         }
       ],
       "constants": [
@@ -252,7 +262,7 @@
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 18,
+        "functions": 19,
         "methods": 0,
         "constants": 7
       }
@@ -690,8 +700,8 @@
           "decorators": [
             "app.get('/')"
           ],
-          "lineno": 59,
-          "end_lineno": 73
+          "lineno": 60,
+          "end_lineno": 74
         },
         {
           "name": "zapret_view",
@@ -702,8 +712,8 @@
           "decorators": [
             "app.get('/zapret')"
           ],
-          "lineno": 77,
-          "end_lineno": 93
+          "lineno": 78,
+          "end_lineno": 94
         },
         {
           "name": "hotlist_view",
@@ -714,8 +724,8 @@
           "decorators": [
             "app.get('/hotlists/{name}')"
           ],
-          "lineno": 97,
-          "end_lineno": 99
+          "lineno": 98,
+          "end_lineno": 100
         },
         {
           "name": "hotlist_edit_view",
@@ -726,8 +736,8 @@
           "decorators": [
             "app.get('/hotlists/{name}/edit')"
           ],
-          "lineno": 103,
-          "end_lineno": 119
+          "lineno": 104,
+          "end_lineno": 120
         },
         {
           "name": "hotlist_edit_save",
@@ -738,8 +748,8 @@
           "decorators": [
             "app.post('/hotlists/{name}/edit')"
           ],
-          "lineno": 123,
-          "end_lineno": 153
+          "lineno": 124,
+          "end_lineno": 154
         },
         {
           "name": "_parse_vpn_macs",
@@ -748,8 +758,8 @@
           "summary": "Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).",
           "kind": "function",
           "decorators": [],
-          "lineno": 156,
-          "end_lineno": 163
+          "lineno": 157,
+          "end_lineno": 164
         },
         {
           "name": "_amnezia_context",
@@ -758,8 +768,8 @@
           "summary": "Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.",
           "kind": "function",
           "decorators": [],
-          "lineno": 166,
-          "end_lineno": 206
+          "lineno": 167,
+          "end_lineno": 207
         },
         {
           "name": "amnezia_view",
@@ -770,8 +780,8 @@
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 210,
-          "end_lineno": 216
+          "lineno": 211,
+          "end_lineno": 217
         },
         {
           "name": "amnezia_service_action",
@@ -782,8 +792,8 @@
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 220,
-          "end_lineno": 223
+          "lineno": 221,
+          "end_lineno": 224
         },
         {
           "name": "amnezia_list_save",
@@ -794,8 +804,8 @@
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 227,
-          "end_lineno": 233
+          "lineno": 228,
+          "end_lineno": 234
         },
         {
           "name": "amnezia_list_create",
@@ -806,8 +816,8 @@
           "decorators": [
             "app.post('/amnezia/lists-create')"
           ],
-          "lineno": 237,
-          "end_lineno": 251
+          "lineno": 238,
+          "end_lineno": 252
         },
         {
           "name": "amnezia_list_delete",
@@ -818,8 +828,8 @@
           "decorators": [
             "app.post('/amnezia/lists-delete/{key}')"
           ],
-          "lineno": 255,
-          "end_lineno": 264
+          "lineno": 256,
+          "end_lineno": 265
         },
         {
           "name": "amnezia_list_meta_save",
@@ -830,8 +840,20 @@
           "decorators": [
             "app.post('/amnezia/lists-meta/{key}')"
           ],
-          "lineno": 268,
-          "end_lineno": 283
+          "lineno": 269,
+          "end_lineno": 284
+        },
+        {
+          "name": "amnezia_lists_reorder",
+          "signature": "amnezia_lists_reorder(request: Request)",
+          "docstring": "Принимает JSON {keys: [...]} и переставляет списки в config.",
+          "summary": "Принимает JSON {keys: [...]} и переставляет списки в config.",
+          "kind": "async_function",
+          "decorators": [
+            "app.post('/amnezia/lists-reorder')"
+          ],
+          "lineno": 288,
+          "end_lineno": 294
         },
         {
           "name": "amnezia_vpn_macs_save",
@@ -842,8 +864,8 @@
           "decorators": [
             "app.post('/amnezia/vpn-macs/save')"
           ],
-          "lineno": 287,
-          "end_lineno": 294
+          "lineno": 298,
+          "end_lineno": 305
         },
         {
           "name": "amnezia_add_mac",
@@ -854,8 +876,8 @@
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 298,
-          "end_lineno": 301
+          "lineno": 309,
+          "end_lineno": 312
         },
         {
           "name": "service_restart",
@@ -866,8 +888,8 @@
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 305,
-          "end_lineno": 320
+          "lineno": 316,
+          "end_lineno": 331
         },
         {
           "name": "backup_run",
@@ -878,8 +900,8 @@
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 324,
-          "end_lineno": 340
+          "lineno": 335,
+          "end_lineno": 351
         },
         {
           "name": "capture_traffic",
@@ -890,8 +912,8 @@
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 344,
-          "end_lineno": 406
+          "lineno": 355,
+          "end_lineno": 417
         },
         {
           "name": "_build_dnsmasq_context",
@@ -900,8 +922,8 @@
           "summary": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 409,
-          "end_lineno": 444
+          "lineno": 420,
+          "end_lineno": 455
         },
         {
           "name": "dnsmasq_view",
@@ -912,8 +934,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 448,
-          "end_lineno": 459
+          "lineno": 459,
+          "end_lineno": 470
         },
         {
           "name": "_dnsmasq_response",
@@ -922,8 +944,8 @@
           "summary": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
           "kind": "function",
           "decorators": [],
-          "lineno": 462,
-          "end_lineno": 474
+          "lineno": 473,
+          "end_lineno": 485
         },
         {
           "name": "dnsmasq_static_add",
@@ -934,8 +956,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 478,
-          "end_lineno": 488
+          "lineno": 489,
+          "end_lineno": 499
         },
         {
           "name": "dnsmasq_static_update",
@@ -946,8 +968,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 492,
-          "end_lineno": 502
+          "lineno": 503,
+          "end_lineno": 513
         },
         {
           "name": "dnsmasq_static_remove",
@@ -958,8 +980,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 506,
-          "end_lineno": 511
+          "lineno": 517,
+          "end_lineno": 522
         },
         {
           "name": "dnsmasq_service_reload",
@@ -970,8 +992,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 515,
-          "end_lineno": 520
+          "lineno": 526,
+          "end_lineno": 531
         },
         {
           "name": "dnsmasq_service_restart",
@@ -982,8 +1004,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 524,
-          "end_lineno": 529
+          "lineno": 535,
+          "end_lineno": 540
         },
         {
           "name": "dnsmasq_events",
@@ -994,8 +1016,8 @@
           "decorators": [
             "app.get('/dnsmasq/events')"
           ],
-          "lineno": 533,
-          "end_lineno": 591
+          "lineno": 544,
+          "end_lineno": 602
         },
         {
           "name": "dnsmasq_ping",
@@ -1006,8 +1028,8 @@
           "decorators": [
             "app.get('/dnsmasq/ping')"
           ],
-          "lineno": 595,
-          "end_lineno": 607
+          "lineno": 606,
+          "end_lineno": 618
         },
         {
           "name": "health",
@@ -1018,8 +1040,8 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 611,
-          "end_lineno": 613
+          "lineno": 622,
+          "end_lineno": 624
         }
       ],
       "constants": [
@@ -1027,25 +1049,25 @@
           "name": "PROJECT_ROOT",
           "annotation": null,
           "value_repr": "Path(__file__).resolve().parent.parent",
-          "lineno": 46
+          "lineno": 47
         },
         {
           "name": "STATIC_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'static'",
-          "lineno": 47
+          "lineno": 48
         },
         {
           "name": "TEMPLATES_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'templates'",
-          "lineno": 48
+          "lineno": 49
         }
       ],
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 29,
+        "functions": 30,
         "methods": 0,
         "constants": 3
       }

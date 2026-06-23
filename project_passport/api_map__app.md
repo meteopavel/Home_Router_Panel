@@ -8,7 +8,7 @@
 - модулей: 6
 - классов: 0
 - dataclass: 4
-- функций: 70
+- функций: 72
 - методов: 0
 - констант: 19
 
@@ -53,6 +53,9 @@
 
 - `update_list_meta(key: str, title: str, hint: str, new_key: str = '') -> tuple[bool, str]`
   Обновляет название/подсказку списка, при необходимости переименовывает ключ и файл.
+
+- `reorder_lists(keys: list[str]) -> None`
+  Переставляет списки в lists_config.json согласно переданному порядку ключей.
 
 - `delete_list(key: str) -> tuple[bool, str]`
   Удаляет список из конфига и переименовывает файл в .txt.deleted.
@@ -270,6 +273,9 @@
 
 - `amnezia_list_meta_save(request: Request, key: str, title: str = Form(default=''), hint: str = Form(default=''), new_key: str = Form(default=''))`
   Сохраняет метаданные списка: название, подсказку, ключ.
+
+- `amnezia_lists_reorder(request: Request)`
+  Принимает JSON {keys: [...]} и переставляет списки в config.
 
 - `amnezia_vpn_macs_save(request: Request, macs: list[str] = Form(default=[]))`
   Сохраняет выбранные MAC-адреса устройств для VPN-маршрутизации.
