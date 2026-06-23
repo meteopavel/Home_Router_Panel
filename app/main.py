@@ -634,6 +634,34 @@ def health():
     return {'status': 'ok'}
 
 
+@app.get('/amnezia/awg-speed')
+async def awg_speed():
+    """Возвращает текущую скорость awg0 в байт/с (два чтения /proc/net/dev с паузой 1 с)."""
+    import asyncio
+
+    def read_awg_bytes() -> tuple[int, int]:
+        try:
+            for line in Path('/proc/net/dev').read_text().splitlines():
+                if 'awg0:' in line:
+                    parts = line.split()
+                    return int(parts[1]), int(parts[9])  # rx_bytes, tx_bytes
+        except Exception:
+            pass
+        return 0, 0
+
+    def fmt(bps: int) -> str:
+        for unit in ('B/s', 'KiB/s', 'MiB/s', 'GiB/s'):
+            if bps < 1024:
+                return f'{bps:.1f} {unit}' if unit != 'B/s' else f'{bps} B/s'
+            bps /= 1024
+        return f'{bps:.1f} TiB/s'
+
+    rx0, tx0 = read_awg_bytes()
+    await asyncio.sleep(1)
+    rx1, tx1 = read_awg_bytes()
+    return {'rx': fmt(max(rx1 - rx0, 0)), 'tx': fmt(max(tx1 - tx0, 0))}
+
+
 # ── OpenVPN ───────────────────────────────────────────────────────
 
 def _openvpn_context(request: Request, msg: str = '', error: str = '') -> dict:

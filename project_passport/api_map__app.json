@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-23T07:19:34.282467+00:00",
+  "generated_at": "2026-06-23T07:22:02.592997+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 8,
@@ -13,7 +13,7 @@
     "modules": 7,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 85,
+    "functions": 86,
     "methods": 0,
     "constants": 23
   },
@@ -1064,14 +1064,26 @@
           "end_lineno": 634
         },
         {
+          "name": "awg_speed",
+          "signature": "awg_speed()",
+          "docstring": "Возвращает текущую скорость awg0 в байт/с (два чтения /proc/net/dev с паузой 1 с).",
+          "summary": "Возвращает текущую скорость awg0 в байт/с (два чтения /proc/net/dev с паузой 1 с).",
+          "kind": "async_function",
+          "decorators": [
+            "app.get('/amnezia/awg-speed')"
+          ],
+          "lineno": 638,
+          "end_lineno": 662
+        },
+        {
           "name": "_openvpn_context",
           "signature": "_openvpn_context(request: Request, msg: str = '', error: str = '') -> dict",
           "docstring": null,
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 639,
-          "end_lineno": 661
+          "lineno": 667,
+          "end_lineno": 689
         },
         {
           "name": "openvpn_view",
@@ -1082,8 +1094,8 @@
           "decorators": [
             "app.get('/openvpn')"
           ],
-          "lineno": 665,
-          "end_lineno": 667
+          "lineno": 693,
+          "end_lineno": 695
         },
         {
           "name": "openvpn_service_action",
@@ -1094,8 +1106,8 @@
           "decorators": [
             "app.post('/openvpn/action')"
           ],
-          "lineno": 671,
-          "end_lineno": 677
+          "lineno": 699,
+          "end_lineno": 705
         },
         {
           "name": "openvpn_macs_save",
@@ -1106,8 +1118,8 @@
           "decorators": [
             "app.post('/openvpn/macs/save')"
           ],
-          "lineno": 681,
-          "end_lineno": 683
+          "lineno": 709,
+          "end_lineno": 711
         },
         {
           "name": "openvpn_macs_save_apply",
@@ -1118,8 +1130,8 @@
           "decorators": [
             "app.post('/openvpn/macs/save-apply')"
           ],
-          "lineno": 687,
-          "end_lineno": 693
+          "lineno": 715,
+          "end_lineno": 721
         }
       ],
       "constants": [
@@ -1145,7 +1157,7 @@
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 35,
+        "functions": 36,
         "methods": 0,
         "constants": 3
       }
