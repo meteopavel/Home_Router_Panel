@@ -163,7 +163,7 @@
         <div class="alert alert-error">{{ error }}</div>
     {% endif %}
 
-    <div id="lists-sortable">
+    <div id="lists-sortable" style="display: flex; flex-direction: column; gap: 12px;">
     {% for name, meta in list_meta.items() %}
         <details class="list-details" data-list-key="{{ name }}" {% if name == 'vpn_device_macs' %}style="border-color: rgba(96, 165, 250, 0.22);"{% endif %}>
             <summary class="details-summary">
@@ -281,7 +281,6 @@
                 {% endif %}
             </div>
         </details>
-        {% if not loop.last %}<div style="height: 12px;"></div>{% endif %}
     {% endfor %}
     </div>
 

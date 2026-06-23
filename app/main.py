@@ -40,6 +40,14 @@ from app.amnezia import (
     run_awg_action,
     write_awg_list,
 )
+from app.openvpn import (
+    apply_routing,
+    get_openvpn_status,
+    helper_available,
+    openvpn_action,
+    read_vpn_macs,
+    write_vpn_macs,
+)
 from app.config import load_config
 from app.hotlists import get_hotlists_config, read_hotlist, write_hotlist
 from app.services import get_services_status, restart_service
@@ -622,3 +630,62 @@ def dnsmasq_ping(ip: str = ''):
 def health():
     """Проверка доступности приложения."""
     return {'status': 'ok'}
+
+
+# ── OpenVPN ───────────────────────────────────────────────────────
+
+def _openvpn_context(request: Request, msg: str = '', error: str = '') -> dict:
+    config = load_config()
+    static = read_static()
+    leases = read_leases()
+    arp_macs, arp_ips = get_arp_online()
+    hostname_to_mac = {l.hostname.lower(): l.mac for l in leases
+                       if l.hostname and l.hostname != '*' and l.mac}
+    for e in static:
+        if not e.mac and e.hostname:
+            e.mac = hostname_to_mac.get(e.hostname.lower(), '')
+    grouped_static = group_static_entries(static)
+    return {
+        'request': request,
+        'active_tab': 'openvpn',
+        'status': get_openvpn_status(),
+        'grouped_static': grouped_static,
+        'online_macs': arp_macs,
+        'online_ips': arp_ips,
+        'vpn_macs': set(read_vpn_macs()),
+        'helper_available': helper_available(),
+        'msg': msg,
+        'error': error,
+    }
+
+
+@app.get('/openvpn')
+def openvpn_view(request: Request, msg: str = ''):
+    return templates.TemplateResponse(request=request, name='openvpn.html',
+                                      context=_openvpn_context(request, msg=msg))
+
+
+@app.post('/openvpn/action')
+def openvpn_service_action(request: Request, action: str = Form(default='')):
+    ok, err = openvpn_action(action)
+    if not ok:
+        return templates.TemplateResponse(request=request, name='openvpn.html',
+                                          context=_openvpn_context(request, error=err))
+    msg_map = {'start': 'started', 'stop': 'stopped', 'restart': 'restarted'}
+    return RedirectResponse(url=f'/openvpn?msg={msg_map.get(action, "ok")}', status_code=303)
+
+
+@app.post('/openvpn/macs/save')
+def openvpn_macs_save(request: Request, macs: list[str] = Form(default=[])):
+    write_vpn_macs(macs)
+    return RedirectResponse(url='/openvpn?msg=macs_saved', status_code=303)
+
+
+@app.post('/openvpn/macs/save-apply')
+def openvpn_macs_save_apply(request: Request, macs: list[str] = Form(default=[])):
+    write_vpn_macs(macs)
+    ok, err = apply_routing()
+    if not ok:
+        return templates.TemplateResponse(request=request, name='openvpn.html',
+                                          context=_openvpn_context(request, error=err))
+    return RedirectResponse(url='/openvpn?msg=routing_applied', status_code=303)

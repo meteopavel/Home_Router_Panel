@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-23T04:10:32.540566+00:00",
+  "generated_at": "2026-06-23T06:58:25.796713+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -40,13 +40,13 @@
     "json_artifacts"
   ],
   "tech_profile": {
-    "python_files": 6,
-    "scanned_python_files": 7,
+    "python_files": 7,
+    "scanned_python_files": 8,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 72,
+    "functions": 83,
     "methods": 0,
-    "constants": 19,
+    "constants": 23,
     "has_cli": false,
     "has_redmine_integration": false,
     "has_document_generation": false,
@@ -61,6 +61,7 @@
       "app/dnsmasq",
       "app/hotlists",
       "app/main",
+      "app/openvpn",
       "app/services"
     ],
     "key_modules": [
@@ -70,7 +71,7 @@
         "stats": {
           "classes": 0,
           "dataclasses": 0,
-          "functions": 30,
+          "functions": 35,
           "methods": 0,
           "constants": 3
         }
@@ -98,6 +99,17 @@
         }
       },
       {
+        "path": "app/openvpn.py",
+        "summary": "OpenVPN: статус сервиса openvpn@mailganer, управление, список разрешённых MAC.",
+        "stats": {
+          "classes": 0,
+          "dataclasses": 0,
+          "functions": 6,
+          "methods": 0,
+          "constants": 4
+        }
+      },
+      {
         "path": "app/services.py",
         "summary": "Получение статусов и управление systemd-сервисами через systemctl.",
         "stats": {
@@ -118,17 +130,6 @@
           "methods": 0,
           "constants": 0
         }
-      },
-      {
-        "path": "app/config.py",
-        "summary": "Загрузка конфигурации приложения из config.yaml.",
-        "stats": {
-          "classes": 0,
-          "dataclasses": 0,
-          "functions": 1,
-          "methods": 0,
-          "constants": 2
-        }
       }
     ]
   },
@@ -140,7 +141,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-06-23T04:10:32.451222+00:00",
+    "api_map_generated_at": "2026-06-23T06:58:25.610836+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"

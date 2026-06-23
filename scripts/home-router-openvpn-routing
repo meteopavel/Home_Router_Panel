@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# home-router-openvpn-routing — управляет per-MAC фильтрацией доступа к OpenVPN
+#
+# Использование: home-router-openvpn-routing apply
+#
+# Читает /etc/home-router-panel/openvpn/vpn_device_macs.txt
+# Строит цепочку OPENVPN_ALLOWED в iptables FORWARD:
+#   - разрешает FORWARD через tun0 только для MAC из списка
+#   - остальным DROP через tun0
+#
+# УСТАНОВКА:
+#   sudo cp scripts/home-router-openvpn-routing /usr/local/sbin/
+#   sudo chmod 755 /usr/local/sbin/home-router-openvpn-routing
+#   sudo chown root:root /usr/local/sbin/home-router-openvpn-routing
+#
+# SUDOERS (добавить через visudo):
+#   meteopavel ALL=(root) NOPASSWD: /usr/local/sbin/home-router-openvpn-routing
+
+set -euo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+CONF_DIR="/etc/home-router-panel/openvpn"
+MACS_FILE="$CONF_DIR/vpn_device_macs.txt"
+LAN_IFACE="enp2s0"
+VPN_IFACE="tun0"
+CHAIN="OPENVPN_ALLOWED"
+
+log() { echo "[openvpn-routing] $*"; }
+
+if [[ "${1:-}" != "apply" ]]; then
+    echo "Usage: $0 apply"
+    exit 1
+fi
+
+# Пересоздаём цепочку
+iptables -N "$CHAIN" 2>/dev/null || true
+iptables -F "$CHAIN"
+
+# Прыжок из FORWARD (добавляем один раз)
+if ! iptables -C FORWARD -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN" 2>/dev/null; then
+    iptables -A FORWARD -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN"
+    log "jump из FORWARD добавлен"
+fi
+
+# Добавляем ACCEPT для каждого MAC из списка
+count=0
+if [[ -f "$MACS_FILE" ]]; then
+    while IFS= read -r mac; do
+        [[ -z "$mac" || "$mac" == \#* ]] && continue
+        iptables -A "$CHAIN" -m mac --mac-source "$mac" -j ACCEPT
+        log "  ALLOW $mac"
+        (( count++ )) || true
+    done < "$MACS_FILE"
+fi
+log "MAC-правил: $count"
+
+# В конце цепочки — DROP (запрещаем всем остальным)
+iptables -A "$CHAIN" -j DROP
+
+log "Маршрутизация OpenVPN применена."

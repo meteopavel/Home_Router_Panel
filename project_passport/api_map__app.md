@@ -1,16 +1,16 @@
 # API map: app
 
-Просканировано Python-файлов: 7
-Включено в карту: 6
+Просканировано Python-файлов: 8
+Включено в карту: 7
 Пропущено без значимой API-информации: 1
 
 Сводная статистика:
-- модулей: 6
+- модулей: 7
 - классов: 0
 - dataclass: 4
-- функций: 72
+- функций: 83
 - методов: 0
-- констант: 19
+- констант: 23
 
 ---
 
@@ -324,6 +324,54 @@
 
 - `health()`
   Проверка доступности приложения.
+
+- `_openvpn_context(request: Request, msg: str = '', error: str = '') -> dict`
+  Нет докстринга.
+
+- `openvpn_view(request: Request, msg: str = '')`
+  Нет докстринга.
+
+- `openvpn_service_action(request: Request, action: str = Form(default=''))`
+  Нет докстринга.
+
+- `openvpn_macs_save(request: Request, macs: list[str] = Form(default=[]))`
+  Нет докстринга.
+
+- `openvpn_macs_save_apply(request: Request, macs: list[str] = Form(default=[]))`
+  Нет докстринга.
+
+---
+
+# app/openvpn.py
+
+Модуль:
+OpenVPN: статус сервиса openvpn@mailganer, управление, список разрешённых MAC.
+
+Константы:
+- `CONF_DIR = Path('/etc/home-router-panel/openvpn')`
+- `VPN_MACS_FILE = CONF_DIR / 'vpn_device_macs.txt'`
+- `SERVICE_UNIT = 'openvpn@mailganer'`
+- `HELPER = '/usr/local/sbin/home-router-openvpn-routing'`
+
+Функции:
+
+- `get_openvpn_status() -> dict`
+  Возвращает состояние сервиса openvpn@mailganer и наличие интерфейса tun0.
+
+- `openvpn_action(action: str) -> tuple[bool, str]`
+  Выполняет start/stop/restart для openvpn@mailganer через sudo.
+
+- `read_vpn_macs() -> list[str]`
+  Читает список MAC-адресов из vpn_device_macs.txt.
+
+- `write_vpn_macs(macs: list[str]) -> None`
+  Сохраняет список MAC-адресов в vpn_device_macs.txt.
+
+- `apply_routing() -> tuple[bool, str]`
+  Запускает скрипт маршрутизации через sudo.
+
+- `helper_available() -> bool`
+  Нет докстринга.
 
 ---
 

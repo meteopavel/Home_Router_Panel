@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+
+{# ── Статус ─────────────────────────────────────────────────────── #}
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>OpenVPN — Mailganer</h2>
+            <p>Рабочая сеть: REDACTED_CIDR_1, REDACTED_CIDR_2 · REDACTED_VPN_HOST:443</p>
+        </div>
+        <div class="actions">
+            <a href="/openvpn" class="button button-secondary">Обновить</a>
+        </div>
+    </div>
+
+    {% if msg == 'started' %}<div class="pill pill-green" style="margin-bottom: 12px;">Запущен</div>{% endif %}
+    {% if msg == 'stopped' %}<div class="pill pill-gray" style="margin-bottom: 12px;">Остановлен</div>{% endif %}
+    {% if msg == 'restarted' %}<div class="pill pill-green" style="margin-bottom: 12px;">Перезапущен</div>{% endif %}
+    {% if msg == 'routing_applied' %}<div class="pill pill-green" style="margin-bottom: 12px;">Маршрутизация применена</div>{% endif %}
+    {% if msg == 'macs_saved' %}<div class="pill pill-green" style="margin-bottom: 12px;">Список сохранён</div>{% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+    <div class="service-list">
+        <div class="service-row">
+            <div class="service-main">
+                <div class="service-name">openvpn@mailganer</div>
+                <div class="service-unit">
+                    {% if status.service_since %}с {{ status.service_since }}{% endif %}
+                </div>
+            </div>
+            <div class="actions">
+                {% if status.service_state == 'active' %}
+                    <span class="pill pill-green">active</span>
+                {% elif status.service_state == 'failed' %}
+                    <span class="pill pill-red">failed</span>
+                {% elif status.service_state == 'inactive' %}
+                    <span class="pill pill-gray">inactive</span>
+                {% else %}
+                    <span class="pill pill-yellow">{{ status.service_state }}</span>
+                {% endif %}
+                <form method="post" action="/openvpn/action" style="display:contents;">
+                    <input type="hidden" name="action" value="start">
+                    <button type="submit" class="button button-secondary button-sm">Запустить</button>
+                </form>
+                <form method="post" action="/openvpn/action" style="display:contents;">
+                    <input type="hidden" name="action" value="stop">
+                    <button type="submit" class="button button-secondary button-sm">Остановить</button>
+                </form>
+                <form method="post" action="/openvpn/action" style="display:contents;">
+                    <input type="hidden" name="action" value="restart">
+                    <button type="submit" class="button button-secondary button-sm">Перезапустить</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="service-row">
+            <div class="service-main">
+                <div class="service-name">Интерфейс tun0</div>
+            </div>
+            <div class="actions">
+                {% if status.tun0_up %}
+                    <span class="pill pill-green">up</span>
+                {% else %}
+                    <span class="pill pill-gray">down</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Устройства через VPN ───────────────────────────────────────── #}
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Устройства через VPN</h2>
+            <p>Только отмеченные устройства получат доступ к рабочей сети через tun0</p>
+        </div>
+    </div>
+
+    <form method="post" action="/openvpn/macs/save">
+        {% if grouped_static %}
+            {% for group in grouped_static %}
+                {% if group.entries %}
+                    <div class="group-block">
+                        <div class="group-header">
+                            {{ group.name }}
+                            {% if group.lo is not none %}
+                                <span class="group-range">.{{ group.lo }}–.{{ group.hi }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="service-list">
+                            {% for e in group.entries %}
+                                <label class="service-row service-row-compact"
+                                       style="cursor: {% if e.mac %}pointer{% else %}default{% endif %};">
+                                    <div class="service-main">
+                                        <div class="device-line">
+                                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                                            <span class="device-meta"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="actions">
+                                        {% if e.mac %}
+                                            {% set is_online = e.mac in online_macs %}
+                                        {% else %}
+                                            {% set is_online = e.ip in online_ips %}
+                                        {% endif %}
+                                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                              data-ping-ip="{{ e.ip }}"
+                                              style="cursor:pointer;"
+                                              data-tooltip="Нажмите для проверки пингом">
+                                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                                        </span>
+                                        {% if e.mac %}
+                                            <input type="checkbox" name="macs" value="{{ e.mac }}"
+                                                   {% if e.mac in vpn_macs %}checked{% endif %}>
+                                        {% else %}
+                                            <input type="checkbox" disabled
+                                                   data-tooltip="Устройство офлайн — MAC неизвестен">
+                                        {% endif %}
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">Нет статических резерваций</div>
+        {% endif %}
+
+        <div style="display: flex; gap: 10px; margin-top: 16px; align-items: center;">
+            <button type="submit" class="button">Сохранить список</button>
+            {% if helper_available %}
+                <button type="submit" formaction="/openvpn/macs/save-apply" class="button button-secondary">
+                    Сохранить и применить маршрутизацию
+                </button>
+            {% else %}
+                <span class="pill pill-gray" data-tooltip="Установите scripts/home-router-openvpn-routing в /usr/local/sbin/">
+                    helper недоступен
+                </span>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<script>
+document.addEventListener('click', function (e) {
+    var pill = e.target.closest('[data-ping-ip]');
+    if (!pill) return;
+    var ip = pill.getAttribute('data-ping-ip');
+    var origClass = pill.className;
+    var origText = pill.textContent.trim();
+    pill.className = 'pill pill-pinging';
+    fetch('/dnsmasq/ping?ip=' + encodeURIComponent(ip))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            pill.className = 'pill ' + (data.online ? 'pill-green' : 'pill-gray');
+            pill.textContent = data.online ? 'онлайн' : 'офлайн';
+            pill.setAttribute('data-tooltip', data.online ? 'Пинг успешен' : 'Нет ответа на пинг');
+        })
+        .catch(function () {
+            pill.className = origClass;
+            pill.textContent = origText;
+        });
+});
+</script>
+{% endblock %}

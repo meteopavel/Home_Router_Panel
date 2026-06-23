@@ -1,21 +1,21 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-06-23T04:10:32.451222+00:00",
+  "generated_at": "2026-06-23T06:58:25.610836+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
-  "scanned_python_files": 7,
-  "files_count": 6,
+  "scanned_python_files": 8,
+  "files_count": 7,
   "skipped_files_count": 1,
   "skipped_files": [
     "app/__init__.py"
   ],
   "stats": {
-    "modules": 6,
+    "modules": 7,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 72,
+    "functions": 83,
     "methods": 0,
-    "constants": 19
+    "constants": 23
   },
   "modules": [
     {
@@ -700,8 +700,8 @@
           "decorators": [
             "app.get('/')"
           ],
-          "lineno": 60,
-          "end_lineno": 74
+          "lineno": 68,
+          "end_lineno": 82
         },
         {
           "name": "zapret_view",
@@ -712,8 +712,8 @@
           "decorators": [
             "app.get('/zapret')"
           ],
-          "lineno": 78,
-          "end_lineno": 94
+          "lineno": 86,
+          "end_lineno": 102
         },
         {
           "name": "hotlist_view",
@@ -724,8 +724,8 @@
           "decorators": [
             "app.get('/hotlists/{name}')"
           ],
-          "lineno": 98,
-          "end_lineno": 100
+          "lineno": 106,
+          "end_lineno": 108
         },
         {
           "name": "hotlist_edit_view",
@@ -736,8 +736,8 @@
           "decorators": [
             "app.get('/hotlists/{name}/edit')"
           ],
-          "lineno": 104,
-          "end_lineno": 120
+          "lineno": 112,
+          "end_lineno": 128
         },
         {
           "name": "hotlist_edit_save",
@@ -748,8 +748,8 @@
           "decorators": [
             "app.post('/hotlists/{name}/edit')"
           ],
-          "lineno": 124,
-          "end_lineno": 154
+          "lineno": 132,
+          "end_lineno": 162
         },
         {
           "name": "_parse_vpn_macs",
@@ -758,8 +758,8 @@
           "summary": "Парсит содержимое vpn_device_macs.txt, возвращает множество MAC-адресов (строчные).",
           "kind": "function",
           "decorators": [],
-          "lineno": 157,
-          "end_lineno": 164
+          "lineno": 165,
+          "end_lineno": 172
         },
         {
           "name": "_amnezia_context",
@@ -768,8 +768,8 @@
           "summary": "Собирает контекст шаблона amnezia.html: статус AWG, списки, резервации, VPN-MACs.",
           "kind": "function",
           "decorators": [],
-          "lineno": 167,
-          "end_lineno": 207
+          "lineno": 175,
+          "end_lineno": 215
         },
         {
           "name": "amnezia_view",
@@ -780,8 +780,8 @@
           "decorators": [
             "app.get('/amnezia')"
           ],
-          "lineno": 211,
-          "end_lineno": 217
+          "lineno": 219,
+          "end_lineno": 225
         },
         {
           "name": "amnezia_service_action",
@@ -792,8 +792,8 @@
           "decorators": [
             "app.post('/amnezia/service/{action}')"
           ],
-          "lineno": 221,
-          "end_lineno": 224
+          "lineno": 229,
+          "end_lineno": 232
         },
         {
           "name": "amnezia_list_save",
@@ -804,8 +804,8 @@
           "decorators": [
             "app.post('/amnezia/lists/{name}')"
           ],
-          "lineno": 228,
-          "end_lineno": 234
+          "lineno": 236,
+          "end_lineno": 242
         },
         {
           "name": "amnezia_list_create",
@@ -816,8 +816,8 @@
           "decorators": [
             "app.post('/amnezia/lists-create')"
           ],
-          "lineno": 238,
-          "end_lineno": 252
+          "lineno": 246,
+          "end_lineno": 260
         },
         {
           "name": "amnezia_list_delete",
@@ -828,8 +828,8 @@
           "decorators": [
             "app.post('/amnezia/lists-delete/{key}')"
           ],
-          "lineno": 256,
-          "end_lineno": 265
+          "lineno": 264,
+          "end_lineno": 273
         },
         {
           "name": "amnezia_list_meta_save",
@@ -840,8 +840,8 @@
           "decorators": [
             "app.post('/amnezia/lists-meta/{key}')"
           ],
-          "lineno": 269,
-          "end_lineno": 284
+          "lineno": 277,
+          "end_lineno": 292
         },
         {
           "name": "amnezia_lists_reorder",
@@ -852,8 +852,8 @@
           "decorators": [
             "app.post('/amnezia/lists-reorder')"
           ],
-          "lineno": 288,
-          "end_lineno": 294
+          "lineno": 296,
+          "end_lineno": 302
         },
         {
           "name": "amnezia_vpn_macs_save",
@@ -864,8 +864,8 @@
           "decorators": [
             "app.post('/amnezia/vpn-macs/save')"
           ],
-          "lineno": 298,
-          "end_lineno": 305
+          "lineno": 306,
+          "end_lineno": 313
         },
         {
           "name": "amnezia_add_mac",
@@ -876,8 +876,8 @@
           "decorators": [
             "app.post('/amnezia/devices/add-mac')"
           ],
-          "lineno": 309,
-          "end_lineno": 312
+          "lineno": 317,
+          "end_lineno": 320
         },
         {
           "name": "service_restart",
@@ -888,8 +888,8 @@
           "decorators": [
             "app.post('/services/{name}/restart')"
           ],
-          "lineno": 316,
-          "end_lineno": 331
+          "lineno": 324,
+          "end_lineno": 339
         },
         {
           "name": "backup_run",
@@ -900,8 +900,8 @@
           "decorators": [
             "app.post('/backup/run')"
           ],
-          "lineno": 335,
-          "end_lineno": 351
+          "lineno": 343,
+          "end_lineno": 359
         },
         {
           "name": "capture_traffic",
@@ -912,8 +912,8 @@
           "decorators": [
             "app.get('/capture')"
           ],
-          "lineno": 355,
-          "end_lineno": 417
+          "lineno": 363,
+          "end_lineno": 425
         },
         {
           "name": "_build_dnsmasq_context",
@@ -922,8 +922,8 @@
           "summary": "Собирает контекст шаблона dnsmasq.html: резервации, аренды, онлайн-статусы через ARP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 420,
-          "end_lineno": 455
+          "lineno": 428,
+          "end_lineno": 463
         },
         {
           "name": "dnsmasq_view",
@@ -934,8 +934,8 @@
           "decorators": [
             "app.get('/dnsmasq')"
           ],
-          "lineno": 459,
-          "end_lineno": 470
+          "lineno": 467,
+          "end_lineno": 478
         },
         {
           "name": "_dnsmasq_response",
@@ -944,8 +944,8 @@
           "summary": "Рендерит dnsmasq.html с текущим контекстом и дополнительными параметрами.",
           "kind": "function",
           "decorators": [],
-          "lineno": 473,
-          "end_lineno": 485
+          "lineno": 481,
+          "end_lineno": 493
         },
         {
           "name": "dnsmasq_static_add",
@@ -956,8 +956,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/add')"
           ],
-          "lineno": 489,
-          "end_lineno": 499
+          "lineno": 497,
+          "end_lineno": 507
         },
         {
           "name": "dnsmasq_static_update",
@@ -968,8 +968,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/update')"
           ],
-          "lineno": 503,
-          "end_lineno": 513
+          "lineno": 511,
+          "end_lineno": 521
         },
         {
           "name": "dnsmasq_static_remove",
@@ -980,8 +980,8 @@
           "decorators": [
             "app.post('/dnsmasq/static/remove')"
           ],
-          "lineno": 517,
-          "end_lineno": 522
+          "lineno": 525,
+          "end_lineno": 530
         },
         {
           "name": "dnsmasq_service_reload",
@@ -992,8 +992,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/reload')"
           ],
-          "lineno": 526,
-          "end_lineno": 531
+          "lineno": 534,
+          "end_lineno": 539
         },
         {
           "name": "dnsmasq_service_restart",
@@ -1004,8 +1004,8 @@
           "decorators": [
             "app.post('/dnsmasq/service/restart')"
           ],
-          "lineno": 535,
-          "end_lineno": 540
+          "lineno": 543,
+          "end_lineno": 548
         },
         {
           "name": "dnsmasq_events",
@@ -1016,8 +1016,8 @@
           "decorators": [
             "app.get('/dnsmasq/events')"
           ],
-          "lineno": 544,
-          "end_lineno": 602
+          "lineno": 552,
+          "end_lineno": 610
         },
         {
           "name": "dnsmasq_ping",
@@ -1028,8 +1028,8 @@
           "decorators": [
             "app.get('/dnsmasq/ping')"
           ],
-          "lineno": 606,
-          "end_lineno": 618
+          "lineno": 614,
+          "end_lineno": 626
         },
         {
           "name": "health",
@@ -1040,8 +1040,66 @@
           "decorators": [
             "app.get('/health')"
           ],
-          "lineno": 622,
-          "end_lineno": 624
+          "lineno": 630,
+          "end_lineno": 632
+        },
+        {
+          "name": "_openvpn_context",
+          "signature": "_openvpn_context(request: Request, msg: str = '', error: str = '') -> dict",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 637,
+          "end_lineno": 659
+        },
+        {
+          "name": "openvpn_view",
+          "signature": "openvpn_view(request: Request, msg: str = '')",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.get('/openvpn')"
+          ],
+          "lineno": 663,
+          "end_lineno": 665
+        },
+        {
+          "name": "openvpn_service_action",
+          "signature": "openvpn_service_action(request: Request, action: str = Form(default=''))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/openvpn/action')"
+          ],
+          "lineno": 669,
+          "end_lineno": 675
+        },
+        {
+          "name": "openvpn_macs_save",
+          "signature": "openvpn_macs_save(request: Request, macs: list[str] = Form(default=[]))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/openvpn/macs/save')"
+          ],
+          "lineno": 679,
+          "end_lineno": 681
+        },
+        {
+          "name": "openvpn_macs_save_apply",
+          "signature": "openvpn_macs_save_apply(request: Request, macs: list[str] = Form(default=[]))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "app.post('/openvpn/macs/save-apply')"
+          ],
+          "lineno": 685,
+          "end_lineno": 691
         }
       ],
       "constants": [
@@ -1049,27 +1107,128 @@
           "name": "PROJECT_ROOT",
           "annotation": null,
           "value_repr": "Path(__file__).resolve().parent.parent",
-          "lineno": 47
+          "lineno": 55
         },
         {
           "name": "STATIC_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'static'",
-          "lineno": 48
+          "lineno": 56
         },
         {
           "name": "TEMPLATES_DIR",
           "annotation": null,
           "value_repr": "PROJECT_ROOT / 'templates'",
-          "lineno": 49
+          "lineno": 57
         }
       ],
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 30,
+        "functions": 35,
         "methods": 0,
         "constants": 3
+      }
+    },
+    {
+      "path": "app/openvpn.py",
+      "module_docstring": "OpenVPN: статус сервиса openvpn@mailganer, управление, список разрешённых MAC.",
+      "module_summary": "OpenVPN: статус сервиса openvpn@mailganer, управление, список разрешённых MAC.",
+      "classes": [],
+      "functions": [
+        {
+          "name": "get_openvpn_status",
+          "signature": "get_openvpn_status() -> dict",
+          "docstring": "Возвращает состояние сервиса openvpn@mailganer и наличие интерфейса tun0.",
+          "summary": "Возвращает состояние сервиса openvpn@mailganer и наличие интерфейса tun0.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 12,
+          "end_lineno": 46
+        },
+        {
+          "name": "openvpn_action",
+          "signature": "openvpn_action(action: str) -> tuple[bool, str]",
+          "docstring": "Выполняет start/stop/restart для openvpn@mailganer через sudo.",
+          "summary": "Выполняет start/stop/restart для openvpn@mailganer через sudo.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 49,
+          "end_lineno": 64
+        },
+        {
+          "name": "read_vpn_macs",
+          "signature": "read_vpn_macs() -> list[str]",
+          "docstring": "Читает список MAC-адресов из vpn_device_macs.txt.",
+          "summary": "Читает список MAC-адресов из vpn_device_macs.txt.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 67,
+          "end_lineno": 72
+        },
+        {
+          "name": "write_vpn_macs",
+          "signature": "write_vpn_macs(macs: list[str]) -> None",
+          "docstring": "Сохраняет список MAC-адресов в vpn_device_macs.txt.",
+          "summary": "Сохраняет список MAC-адресов в vpn_device_macs.txt.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 75,
+          "end_lineno": 78
+        },
+        {
+          "name": "apply_routing",
+          "signature": "apply_routing() -> tuple[bool, str]",
+          "docstring": "Запускает скрипт маршрутизации через sudo.",
+          "summary": "Запускает скрипт маршрутизации через sudo.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 81,
+          "end_lineno": 94
+        },
+        {
+          "name": "helper_available",
+          "signature": "helper_available() -> bool",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 97,
+          "end_lineno": 98
+        }
+      ],
+      "constants": [
+        {
+          "name": "CONF_DIR",
+          "annotation": null,
+          "value_repr": "Path('/etc/home-router-panel/openvpn')",
+          "lineno": 6
+        },
+        {
+          "name": "VPN_MACS_FILE",
+          "annotation": null,
+          "value_repr": "CONF_DIR / 'vpn_device_macs.txt'",
+          "lineno": 7
+        },
+        {
+          "name": "SERVICE_UNIT",
+          "annotation": null,
+          "value_repr": "'openvpn@mailganer'",
+          "lineno": 8
+        },
+        {
+          "name": "HELPER",
+          "annotation": null,
+          "value_repr": "'/usr/local/sbin/home-router-openvpn-routing'",
+          "lineno": 9
+        }
+      ],
+      "stats": {
+        "classes": 0,
+        "dataclasses": 0,
+        "functions": 6,
+        "methods": 0,
+        "constants": 4
       }
     },
     {
