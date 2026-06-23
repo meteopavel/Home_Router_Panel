@@ -36,11 +36,12 @@ fi
 iptables -N "$CHAIN" 2>/dev/null || true
 iptables -F "$CHAIN"
 
-# Прыжок из FORWARD (добавляем один раз)
-if ! iptables -C FORWARD -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN" 2>/dev/null; then
-    iptables -A FORWARD -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN"
-    log "jump из FORWARD добавлен"
+# Прыжок из FORWARD — вставляем первым, чтобы опередить любые ACCEPT-правила
+if iptables -C FORWARD -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN" 2>/dev/null; then
+    iptables -D FORWARD -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN"
 fi
+iptables -I FORWARD 1 -i "$LAN_IFACE" -o "$VPN_IFACE" -j "$CHAIN"
+log "jump из FORWARD добавлен первым"
 
 # Добавляем ACCEPT для каждого MAC из списка
 count=0
