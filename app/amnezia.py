@@ -307,7 +307,7 @@ def get_awg_traffic() -> dict:
              'month_rx': '—', 'month_tx': '—'}
     try:
         r = subprocess.run(
-            ['vnstat', '-i', 'awg0', '--json'],
+            ['/usr/bin/vnstat', '-i', 'awg0', '--json'],
             capture_output=True, text=True, timeout=5, check=False,
         )
         if r.returncode != 0:
