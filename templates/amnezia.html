@@ -113,15 +113,17 @@
         {# ── Трафик через awg0 (vnstat) ──────────────────────────── #}
         {% if awg_traffic.available %}
             <div style="margin-top: 20px;">
-                <div style="display: flex; align-items: baseline; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
                     <div style="font-size: 13px; color: var(--muted);">Трафик через awg0</div>
-                    <div style="font-size: 13px; font-family: var(--font-mono);">
+                    <div id="awg-speed-display" style="font-size: 13px; font-family: var(--font-mono); display: none;">
                         <span style="color: var(--muted);">↓</span>
                         <span id="awg-rx-speed">…</span>
                         &nbsp;
                         <span style="color: var(--muted);">↑</span>
                         <span id="awg-tx-speed">…</span>
                     </div>
+                    <button id="awg-speed-toggle" type="button" class="button button-secondary button-sm"
+                            onclick="toggleAwgSpeed()">Смотреть скорость</button>
                 </div>
                 {% if not awg_traffic.has_data %}
                     <div style="font-size: 13px; color: var(--muted);">
@@ -463,21 +465,39 @@ document.addEventListener('click', function (e) {
 });
 
 // ── AWG speed polling ────────────────────────────────────────────
-(function () {
-    var rxEl = document.getElementById('awg-rx-speed');
-    var txEl = document.getElementById('awg-tx-speed');
-    if (!rxEl || !txEl) return;
-    function poll() {
-        fetch('/amnezia/awg-speed')
-            .then(function (r) { return r.json(); })
-            .then(function (d) {
-                rxEl.textContent = d.rx;
-                txEl.textContent = d.tx;
-            })
-            .catch(function () {})
-            .finally(function () { setTimeout(poll, 2000); });
+var _awgSpeedActive = false;
+var _awgSpeedTimer = null;
+
+function toggleAwgSpeed() {
+    var btn = document.getElementById('awg-speed-toggle');
+    var display = document.getElementById('awg-speed-display');
+    if (!btn || !display) return;
+    _awgSpeedActive = !_awgSpeedActive;
+    if (_awgSpeedActive) {
+        btn.textContent = 'Остановить';
+        display.style.display = '';
+        awgSpeedPoll();
+    } else {
+        btn.textContent = 'Смотреть скорость';
+        display.style.display = 'none';
+        if (_awgSpeedTimer) { clearTimeout(_awgSpeedTimer); _awgSpeedTimer = null; }
     }
-    poll();
-})();
+}
+
+function awgSpeedPoll() {
+    if (!_awgSpeedActive) return;
+    fetch('/amnezia/awg-speed')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            var rx = document.getElementById('awg-rx-speed');
+            var tx = document.getElementById('awg-tx-speed');
+            if (rx) rx.textContent = d.rx;
+            if (tx) tx.textContent = d.tx;
+        })
+        .catch(function () {})
+        .finally(function () {
+            if (_awgSpeedActive) _awgSpeedTimer = setTimeout(awgSpeedPoll, 2000);
+        });
+}
 </script>
 {% endblock %}
