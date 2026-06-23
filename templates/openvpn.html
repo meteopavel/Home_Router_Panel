@@ -6,7 +6,7 @@
     <div class="section-header">
         <div>
             <h2>OpenVPN — Mailganer</h2>
-            <p>Рабочая сеть: REDACTED_CIDR_1, REDACTED_CIDR_2 · REDACTED_VPN_HOST:443</p>
+            <p>Рабочая сеть через tun0</p>
         </div>
         <div class="actions">
             <a href="/openvpn" class="button button-secondary">Обновить</a>
@@ -66,6 +66,47 @@
             </div>
         </div>
     </div>
+
+    {# ── Трафик tun0 (vnstat) ────────────────────────────────────── #}
+    {% if tun0_traffic.available %}
+        <div style="margin-top: 20px;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 10px; flex-wrap: wrap;">
+                <div style="font-size: 13px; color: var(--muted);">Трафик через tun0</div>
+                <div id="tun0-speed-display" style="font-size: 13px; font-family: var(--font-mono); display: none;">
+                    <span style="color: var(--muted);">↓</span>
+                    <span id="tun0-rx-speed">…</span>
+                    &nbsp;
+                    <span style="color: var(--muted);">↑</span>
+                    <span id="tun0-tx-speed">…</span>
+                </div>
+                <button id="tun0-speed-toggle" type="button" class="button button-secondary button-sm"
+                        onclick="toggleTun0Speed()">Смотреть скорость</button>
+            </div>
+            {% if not tun0_traffic.has_data %}
+                <div style="font-size: 13px; color: var(--muted);">
+                    vnstat собирает данные — статистика появится через несколько минут
+                </div>
+            {% else %}
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+                    {% for label, rx, tx in [
+                        ('За 5 мин',   tun0_traffic.five_rx,  tun0_traffic.five_tx),
+                        ('За час',     tun0_traffic.hour_rx,  tun0_traffic.hour_tx),
+                        ('За сегодня', tun0_traffic.today_rx, tun0_traffic.today_tx),
+                        ('За месяц',   tun0_traffic.month_rx, tun0_traffic.month_tx),
+                        ('Всего',      tun0_traffic.total_rx, tun0_traffic.total_tx),
+                    ] %}
+                        <div style="background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px;">
+                            <div style="font-size: 11px; color: var(--muted); margin-bottom: 6px;">{{ label }}</div>
+                            <div style="font-size: 13px; line-height: 1.6;">
+                                <span style="color: var(--muted);">↓</span> {{ rx }}<br>
+                                <span style="color: var(--muted);">↑</span> {{ tx }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
 </section>
 
 {# ── Устройства через VPN ───────────────────────────────────────── #}
@@ -163,5 +204,40 @@ document.addEventListener('click', function (e) {
             pill.textContent = origText;
         });
 });
+
+var _tun0SpeedActive = false;
+var _tun0SpeedTimer = null;
+
+function toggleTun0Speed() {
+    var btn = document.getElementById('tun0-speed-toggle');
+    var display = document.getElementById('tun0-speed-display');
+    if (!btn || !display) return;
+    _tun0SpeedActive = !_tun0SpeedActive;
+    if (_tun0SpeedActive) {
+        btn.textContent = 'Остановить';
+        display.style.display = '';
+        tun0SpeedPoll();
+    } else {
+        btn.textContent = 'Смотреть скорость';
+        display.style.display = 'none';
+        if (_tun0SpeedTimer) { clearTimeout(_tun0SpeedTimer); _tun0SpeedTimer = null; }
+    }
+}
+
+function tun0SpeedPoll() {
+    if (!_tun0SpeedActive) return;
+    fetch('/openvpn/tun0-speed')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            var rx = document.getElementById('tun0-rx-speed');
+            var tx = document.getElementById('tun0-tx-speed');
+            if (rx) rx.textContent = d.rx;
+            if (tx) tx.textContent = d.tx;
+        })
+        .catch(function () {})
+        .finally(function () {
+            if (_tun0SpeedActive) _tun0SpeedTimer = setTimeout(tun0SpeedPoll, 2000);
+        });
+}
 </script>
 {% endblock %}

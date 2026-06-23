@@ -8,7 +8,7 @@
 - модулей: 7
 - классов: 0
 - dataclass: 4
-- функций: 86
+- функций: 89
 - методов: 0
 - констант: 23
 
@@ -334,6 +334,9 @@
 - `awg_speed()`
   Возвращает текущую скорость awg0 в байт/с (два чтения /proc/net/dev с паузой 1 с).
 
+- `tun0_speed()`
+  Возвращает текущую скорость tun0 в байт/с.
+
 - `_openvpn_context(request: Request, msg: str = '', error: str = '') -> dict`
   Нет докстринга.
 
@@ -381,6 +384,12 @@ OpenVPN: статус сервиса openvpn@mailganer, управление, с
 
 - `helper_available() -> bool`
   Нет докстринга.
+
+- `_fmt_bytes(n: int) -> str`
+  Нет докстринга.
+
+- `get_tun0_traffic() -> dict`
+  Читает статистику tun0 из vnstat.
 
 ---
 

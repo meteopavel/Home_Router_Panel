@@ -96,3 +96,62 @@ def apply_routing() -> tuple[bool, str]:
 
 def helper_available() -> bool:
     return Path(HELPER).exists()
+
+
+def _fmt_bytes(n: int) -> str:
+    for unit in ('B', 'KiB', 'MiB', 'GiB'):
+        if n < 1024:
+            return f'{n:.1f} {unit}' if unit != 'B' else f'{n} B'
+        n /= 1024
+    return f'{n:.1f} TiB'
+
+
+def get_tun0_traffic() -> dict:
+    """Читает статистику tun0 из vnstat."""
+    empty = {'available': False, 'has_data': False,
+             'five_rx': '—', 'five_tx': '—',
+             'hour_rx': '—', 'hour_tx': '—',
+             'today_rx': '—', 'today_tx': '—',
+             'month_rx': '—', 'month_tx': '—',
+             'total_rx': '—', 'total_tx': '—'}
+    try:
+        r = subprocess.run(
+            ['/usr/bin/vnstat', '-i', 'tun0', '--json'],
+            capture_output=True, text=True, timeout=5, check=False,
+        )
+        if r.returncode != 0:
+            return empty
+        data = __import__('json').loads(r.stdout)
+        iface = data['interfaces'][0]['traffic']
+
+        def last(entries, n=1):
+            rx = tx = 0
+            for e in entries[-n:]:
+                rx += e.get('rx', 0)
+                tx += e.get('tx', 0)
+            return rx, tx
+
+        total_rx = iface['total']['rx']
+        total_tx = iface['total']['tx']
+        five_rx, five_tx = last(iface.get('fiveminute', []))
+        hour_rx, hour_tx = last(iface.get('hour', []))
+        today_rx, today_tx = last(iface.get('day', []))
+        month_rx, month_tx = last(iface.get('month', []))
+
+        has_data = total_rx + total_tx > 0
+        return {
+            'available': True,
+            'has_data': has_data,
+            'five_rx':  _fmt_bytes(five_rx)  if five_rx  else '—',
+            'five_tx':  _fmt_bytes(five_tx)  if five_tx  else '—',
+            'hour_rx':  _fmt_bytes(hour_rx)  if hour_rx  else '—',
+            'hour_tx':  _fmt_bytes(hour_tx)  if hour_tx  else '—',
+            'today_rx': _fmt_bytes(today_rx) if today_rx else '—',
+            'today_tx': _fmt_bytes(today_tx) if today_tx else '—',
+            'month_rx': _fmt_bytes(month_rx) if month_rx else '—',
+            'month_tx': _fmt_bytes(month_tx) if month_tx else '—',
+            'total_rx': _fmt_bytes(total_rx),
+            'total_tx': _fmt_bytes(total_tx),
+        }
+    except Exception:
+        return empty

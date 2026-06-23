@@ -44,6 +44,7 @@ from app.amnezia import (
 from app.openvpn import (
     apply_routing,
     get_openvpn_status,
+    get_tun0_traffic,
     helper_available,
     openvpn_action,
     read_vpn_macs,
@@ -662,6 +663,34 @@ async def awg_speed():
     return {'rx': fmt(max(rx1 - rx0, 0)), 'tx': fmt(max(tx1 - tx0, 0))}
 
 
+@app.get('/openvpn/tun0-speed')
+async def tun0_speed():
+    """Возвращает текущую скорость tun0 в байт/с."""
+    import asyncio
+
+    def read_tun0_bytes() -> tuple[int, int]:
+        try:
+            for line in Path('/proc/net/dev').read_text().splitlines():
+                if 'tun0:' in line:
+                    parts = line.split()
+                    return int(parts[1]), int(parts[9])
+        except Exception:
+            pass
+        return 0, 0
+
+    def fmt(bps: int) -> str:
+        for unit in ('B/s', 'KiB/s', 'MiB/s', 'GiB/s'):
+            if bps < 1024:
+                return f'{bps:.1f} {unit}' if unit != 'B/s' else f'{bps} B/s'
+            bps /= 1024
+        return f'{bps:.1f} TiB/s'
+
+    rx0, tx0 = read_tun0_bytes()
+    await asyncio.sleep(1)
+    rx1, tx1 = read_tun0_bytes()
+    return {'rx': fmt(max(rx1 - rx0, 0)), 'tx': fmt(max(tx1 - tx0, 0))}
+
+
 # ── OpenVPN ───────────────────────────────────────────────────────
 
 def _openvpn_context(request: Request, msg: str = '', error: str = '') -> dict:
@@ -684,6 +713,7 @@ def _openvpn_context(request: Request, msg: str = '', error: str = '') -> dict:
         'online_ips': arp_ips,
         'vpn_macs': set(read_vpn_macs()),
         'helper_available': helper_available(),
+        'tun0_traffic': get_tun0_traffic(),
         'msg': msg,
         'error': error,
     }
