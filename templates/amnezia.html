@@ -163,9 +163,11 @@
         <div class="alert alert-error">{{ error }}</div>
     {% endif %}
 
+    <div id="lists-sortable">
     {% for name, meta in list_meta.items() %}
-        <details class="list-details" {% if name == 'vpn_device_macs' %}style="border-color: rgba(96, 165, 250, 0.22);"{% endif %}>
+        <details class="list-details" data-list-key="{{ name }}" {% if name == 'vpn_device_macs' %}style="border-color: rgba(96, 165, 250, 0.22);"{% endif %}>
             <summary class="details-summary">
+                <span class="drag-handle" title="Перетащить для сортировки">⠿</span>
                 <strong>{{ meta.title }}</strong>
                 {% if name == 'vpn_device_macs' %}
                     <span class="pill" style="font-size: 11px; padding: 3px 8px;">DHCP</span>
@@ -281,6 +283,7 @@
         </details>
         {% if not loop.last %}<div style="height: 12px;"></div>{% endif %}
     {% endfor %}
+    </div>
 
     <details>
         <summary class="details-summary"><strong>+ Добавить список</strong></summary>
@@ -354,6 +357,53 @@
 </section>
 
 <script>
+// ── Drag-and-drop reorder ────────────────────────────────────────
+(function () {
+    var container = document.getElementById('lists-sortable');
+    if (!container) return;
+
+    var dragging = null;
+
+    function items() {
+        return Array.from(container.querySelectorAll(':scope > [data-list-key]'));
+    }
+
+    container.addEventListener('dragstart', function (e) {
+        var el = e.target.closest('[data-list-key]');
+        if (!el) return;
+        dragging = el;
+        el.style.opacity = '0.4';
+        e.dataTransfer.effectAllowed = 'move';
+    });
+
+    container.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        var el = e.target.closest('[data-list-key]');
+        if (!el || el === dragging) return;
+        var rect = el.getBoundingClientRect();
+        var after = e.clientY > rect.top + rect.height / 2;
+        container.insertBefore(dragging, after ? el.nextSibling : el);
+    });
+
+    container.addEventListener('dragend', function () {
+        if (dragging) dragging.style.opacity = '';
+        dragging = null;
+        var keys = items().map(function (el) { return el.getAttribute('data-list-key'); });
+        fetch('/amnezia/lists-reorder', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({keys: keys})
+        });
+    });
+
+    // Make each item draggable (but only when grabbing the handle)
+    items().forEach(function (el) {
+        el.setAttribute('draggable', 'true');
+    });
+})();
+
+// ── Ping pills ───────────────────────────────────────────────────
 document.addEventListener('click', function (e) {
     var pill = e.target.closest('[data-ping-ip]');
     if (!pill) return;

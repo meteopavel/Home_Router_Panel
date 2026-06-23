@@ -36,6 +36,7 @@ from app.amnezia import (
     get_lan_devices,
     get_list_meta,
     read_awg_list,
+    reorder_lists,
     run_awg_action,
     write_awg_list,
 )
@@ -281,6 +282,16 @@ def amnezia_list_meta_save(
             context=_amnezia_context(request, error=err),
         )
     return RedirectResponse(url='/amnezia?msg=meta_saved', status_code=303)
+
+
+@app.post('/amnezia/lists-reorder')
+async def amnezia_lists_reorder(request: Request):
+    """Принимает JSON {keys: [...]} и переставляет списки в config."""
+    data = await request.json()
+    keys = data.get('keys', [])
+    if keys:
+        reorder_lists(keys)
+    return {'ok': True}
 
 
 @app.post('/amnezia/vpn-macs/save')

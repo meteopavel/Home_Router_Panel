@@ -389,6 +389,19 @@ details[open] > .details-summary::before {
     font-weight: 400;
 }
 
+.drag-handle {
+    cursor: grab;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+    flex-shrink: 0;
+    opacity: 0.5;
+    transition: opacity var(--transition);
+    user-select: none;
+}
+.drag-handle:hover { opacity: 1; }
+[data-list-key]:active .drag-handle { cursor: grabbing; }
+
 /* ── Text input ───────────────────────────────────────────── */
 .text-input {
     flex: 1;
