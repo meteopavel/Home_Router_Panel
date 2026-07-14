@@ -65,19 +65,9 @@ require_env() {
     fi
 }
 
-rsync_via_tunnel() {
-    # rsync_via_tunnel USER HOST SRC DEST [EXTRA_FLAGS]
-    local user="$1" host="$2" src="$3" dest="$4"
-    shift 4
-    local ctl="/tmp/ssh_ctl_${user}_${host}"
-    ssh -i ~/.ssh/timeweb_shared -o StrictHostKeyChecking=no \
-        -o ControlMaster=yes -o ControlPath="$ctl" -o ControlPersist=60s \
-        -nNf "${user}@${host}"
-    rsync -avz --progress "$@" \
-        --rsh="ssh -i ~/.ssh/timeweb_shared -o StrictHostKeyChecking=no -o ControlMaster=no -o ControlPath=$ctl" \
-        "$src" "${user}@${host}:${dest}"
-    ssh -o ControlPath="$ctl" -O exit "${user}@${host}" 2>/dev/null || true
-}
+# Общие функции (run_with_heartbeat, timeout_run, rsync_via_tunnel) —
+# используются во всех проектах, см. сам файл.
+source "$(dirname "${PROJECT_ROOT}")/meteopavel/tools/deploy_helpers.sh"
 
 log "🚀 Home_Router_Panel deploy"
 log "📁 Project root: $PROJECT_ROOT"
@@ -94,7 +84,6 @@ ARCHIVE_PASSWORD=$(get_env "ARCHIVE_PASSWORD" "$ENV_FILE")
 SECURE_RSYNC_USER=$(get_env "SECURE_RSYNC_USER" "$ENV_FILE")
 SECURE_RSYNC_HOST=$(get_env "SECURE_RSYNC_HOST" "$ENV_FILE")
 SECURE_RSYNC_PATH=$(get_env "SECURE_RSYNC_PATH" "$ENV_FILE")
-SECURE_RSYNC_PASSWORD=$(get_env "SECURE_RSYNC_PASSWORD" "$ENV_FILE")
 
 DEPLOY_USER=$(get_env "DEPLOY_USER" "$ENV_FILE")
 DEPLOY_HOST=$(get_env "DEPLOY_HOST" "$ENV_FILE")
@@ -131,7 +120,7 @@ log "----------------------------------------"
 log "🔐 Этап 1/3: backup sensitive files"
 
 BACKUP_OK=1
-if [[ -z "$ARCHIVE_PASSWORD" || -z "$SECURE_RSYNC_USER" || -z "$SECURE_RSYNC_HOST" || -z "$SECURE_RSYNC_PATH" || -z "$SECURE_RSYNC_PASSWORD" ]]; then
+if [[ -z "$ARCHIVE_PASSWORD" || -z "$SECURE_RSYNC_USER" || -z "$SECURE_RSYNC_HOST" || -z "$SECURE_RSYNC_PATH" ]]; then
     echo "⚠️  Backup: переменные ARCHIVE_PASSWORD / SECURE_RSYNC_* не заданы в .env — пропускаем резервное копирование"
     BACKUP_OK=0
 fi
@@ -153,8 +142,9 @@ if [[ "$BACKUP_OK" -eq 1 ]]; then
         cd "${PROJECT_ROOT}"
         7z a -p"${ARCHIVE_PASSWORD}" -mhe=on "${ARCHIVE_PATH}" ".env" > /dev/null
     )
-    # log "📤 Отправляем архив на backup-сервер..."
-    rsync_via_tunnel "${SECURE_RSYNC_USER}" "${SECURE_RSYNC_HOST}" \
+    log "📤 Отправляем архив на backup-сервер..."
+    run_with_heartbeat "отправка backup" \
+        rsync_via_tunnel "${SECURE_RSYNC_USER}" "${SECURE_RSYNC_HOST}" \
         "${ARCHIVE_PATH}" "${SECURE_RSYNC_PATH}"
 fi
 
