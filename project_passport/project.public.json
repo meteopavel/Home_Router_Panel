@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-07-14T08:56:57.549443+00:00",
+  "generated_at": "2026-07-23T11:01:55.108322+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -40,13 +40,13 @@
     "json_artifacts"
   ],
   "tech_profile": {
-    "python_files": 7,
-    "scanned_python_files": 8,
+    "python_files": 8,
+    "scanned_python_files": 9,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 89,
+    "functions": 103,
     "methods": 0,
-    "constants": 23,
+    "constants": 32,
     "has_cli": false,
     "has_redmine_integration": false,
     "has_document_generation": false,
@@ -57,6 +57,7 @@
     "target": "app",
     "layers": [
       "app/amnezia",
+      "app/claude",
       "config",
       "app/dnsmasq",
       "app/hotlists",
@@ -99,6 +100,17 @@
         }
       },
       {
+        "path": "app/claude.py",
+        "summary": "Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.",
+        "stats": {
+          "classes": 0,
+          "dataclasses": 0,
+          "functions": 14,
+          "methods": 0,
+          "constants": 9
+        }
+      },
+      {
         "path": "app/openvpn.py",
         "summary": "OpenVPN: статус сервиса openvpn@mailganer, управление, список разрешённых MAC.",
         "stats": {
@@ -119,17 +131,6 @@
           "methods": 0,
           "constants": 0
         }
-      },
-      {
-        "path": "app/hotlists.py",
-        "summary": "Чтение и запись hotlist-файлов zapret (hosts, exclude).",
-        "stats": {
-          "classes": 1,
-          "dataclasses": 1,
-          "functions": 3,
-          "methods": 0,
-          "constants": 0
-        }
       }
     ]
   },
@@ -141,7 +142,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-07-14T08:56:57.433192+00:00",
+    "api_map_generated_at": "2026-07-23T11:01:55.010612+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"

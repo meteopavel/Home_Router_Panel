@@ -749,3 +749,12 @@ def openvpn_macs_save_apply(request: Request, macs: list[str] = Form(default=[])
         return templates.TemplateResponse(request=request, name='openvpn.html',
                                           context=_openvpn_context(request, error=err))
     return RedirectResponse(url='/openvpn?msg=routing_applied', status_code=303)
+
+
+# ── Claude → GLM redirect ─────────────────────────────────────────────────────
+# Перехват — на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC, см.
+# scripts/home-router-claude-gateway); здесь — список MAC из UI + прокси /v1/messages.
+# Остальные пути api.anthropic.com nginx отдаёт настоящему Anthropic сам.
+from app.claude import router as claude_router
+
+app.include_router(claude_router)

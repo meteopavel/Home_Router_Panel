@@ -1,0 +1,135 @@
+#!/usr/bin/env bash
+# home-router-claude-gateway — helper для вкладки Claude→GLM панели.
+#
+# Управляет сетевым перехватом api.anthropic.com → GLM для выбранных MAC:
+#   - ipset claude_anthropic_ips (наполняется dnsmasq ipset= + предзаполнением);
+#   - mangle-цепочка CLAUDE_EXEMPT (per-MAC ACCEPT до прыжка в TG_VPN_ROUTING —
+#     гасит AWG-марку 0x66, иначе DNAT'нутый пакет уйдёт в awg0);
+#   - nat-цепочка CLAUDE_REDIRECT (per-MAC DNAT → 192.168.100.1:443, nginx).
+#
+# Читает MAC из /etc/home-router-panel/claude/macs.txt (панель-владелец).
+# Идемпотентен: безопасно запускать повторно. Чужие правила не трогает.
+#
+# УСТАНОВКА:
+#   sudo cp scripts/home-router-claude-gateway /usr/local/sbin/
+#   sudo chmod 755 /usr/local/sbin/home-router-claude-gateway
+#   sudo chown root:root /usr/local/sbin/home-router-claude-gateway
+# SUDOERS (одна строка):
+#   meteopavel ALL=(root) NOPASSWD: /usr/local/sbin/home-router-claude-gateway
+
+set -euo pipefail
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+CONF_DIR="/etc/home-router-panel/claude"
+MACS_FILE="$CONF_DIR/macs.txt"
+DNSMASQ_CONF="$CONF_DIR/dnsmasq-claude.conf"
+IPSET_NAME="claude_anthropic_ips"
+DOMAIN="api.anthropic.com"
+LAN_IFACE="enp2s0"
+ROUTER_IP="192.168.100.1"
+EXEMPT_CHAIN="CLAUDE_EXEMPT"   # mangle: гасит 0x66 для выбранных MAC
+REDIR_CHAIN="CLAUDE_REDIRECT"  # nat: DNAT на nginx
+
+log() { echo "[claude-gw] $*"; }
+
+read_macs() {
+    [ -f "$MACS_FILE" ] || return 0
+    grep -vE '^\s*(#|$)' "$MACS_FILE" | awk '{print tolower($1)}' | sort -u
+}
+
+ensure_ipset() {
+    if ! ipset list -n "$IPSET_NAME" &>/dev/null; then
+        ipset create "$IPSET_NAME" hash:ip hashsize 1024
+        log "ipset $IPSET_NAME создан"
+    fi
+}
+
+ensure_dnsmasq_directive() {
+    mkdir -p "$CONF_DIR"
+    grep -q "ipset=/$DOMAIN/$IPSET_NAME" "$DNSMASQ_CONF" 2>/dev/null || \
+        echo "ipset=/$DOMAIN/$IPSET_NAME" > "$DNSMASQ_CONF"
+    # conf-file в /etc/dnsmasq.conf (один раз) — по образцу awg/dnsmasq-static.conf
+    if ! grep -q "conf-file=$DNSMASQ_CONF" /etc/dnsmasq.conf; then
+        echo "conf-file=$DNSMASQ_CONF" >> /etc/dnsmasq.conf
+        log "conf-file добавлен в /etc/dnsmasq.conf"
+    fi
+}
+
+rebuild_mangle() {
+    # exempt-цепочка: per-MAC ACCEPT гасит AWG-марку ДО прыжка в TG_VPN_ROUTING.
+    iptables -t mangle -N "$EXEMPT_CHAIN" 2>/dev/null || true
+    iptables -t mangle -F "$EXEMPT_CHAIN"
+    local count=0 mac
+    while IFS= read -r mac; do
+        [ -z "$mac" ] && continue
+        iptables -t mangle -A "$EXEMPT_CHAIN" -m mac --mac-source "$mac" \
+            -m set --match-set "$IPSET_NAME" dst -p tcp --dport 443 -j ACCEPT
+        count=$((count+1))
+    done < <(read_macs)
+    # прыжок в начало PREROUTING (до TG_VPN_ROUTING). AWG свой jump appending-ом не трогает.
+    if ! iptables -t mangle -C PREROUTING -i "$LAN_IFACE" -j "$EXEMPT_CHAIN" 2>/dev/null; then
+        iptables -t mangle -I PREROUTING 1 -i "$LAN_IFACE" -j "$EXEMPT_CHAIN"
+        log "mangle jump в PREROUTING (до TG_VPN_ROUTING)"
+    fi
+    log "mangle $EXEMPT_CHAIN: $count MAC"
+}
+
+rebuild_nat() {
+    iptables -t nat -N "$REDIR_CHAIN" 2>/dev/null || true
+    iptables -t nat -F "$REDIR_CHAIN"
+    local count=0 mac
+    while IFS= read -r mac; do
+        [ -z "$mac" ] && continue
+        iptables -t nat -A "$REDIR_CHAIN" -m mac --mac-source "$mac" \
+            -j DNAT --to-destination "$ROUTER_IP:443"
+        count=$((count+1))
+    done < <(read_macs)
+    if ! iptables -t nat -C PREROUTING -i "$LAN_IFACE" -p tcp --dport 443 \
+            -m set --match-set "$IPSET_NAME" dst -j "$REDIR_CHAIN" 2>/dev/null; then
+        iptables -t nat -I PREROUTING 1 -i "$LAN_IFACE" -p tcp --dport 443 \
+            -m set --match-set "$IPSET_NAME" dst -j "$REDIR_CHAIN"
+        log "nat jump в PREROUTING"
+    fi
+    log "nat $REDIR_CHAIN: $count MAC"
+}
+
+prefill_ipset() {
+    local ip
+    for ip in $(getent ahostsv4 "$DOMAIN" 2>/dev/null | awk '{print $1}' | sort -u); do
+        ipset add "$IPSET_NAME" "$ip" 2>/dev/null || true
+    done
+}
+
+case "${1:-}" in
+    apply)
+        ensure_ipset
+        ensure_dnsmasq_directive
+        rebuild_mangle
+        rebuild_nat
+        prefill_ipset
+        systemctl reload dnsmasq 2>/dev/null || systemctl restart dnsmasq 2>/dev/null || true
+        log "dnsmasq reload, redirect applied"
+        echo "claude_redirect=applied"
+        ;;
+    status)
+        echo "ipset=$([ -n "$(ipset list -n $IPSET_NAME 2>/dev/null)" ] && echo present || echo missing)"
+        echo "macs=$(read_macs | tr '\n' ' ')"
+        echo "mangle_chain=$(iptables -t mangle -nL "$EXEMPT_CHAIN" >/dev/null 2>&1 && echo present || echo missing)"
+        echo "nat_chain=$(iptables -t nat -nL "$REDIR_CHAIN" >/dev/null 2>&1 && echo present || echo missing)"
+        ;;
+    clear)
+        iptables -t mangle -D PREROUTING -i "$LAN_IFACE" -j "$EXEMPT_CHAIN" 2>/dev/null || true
+        iptables -t mangle -F "$EXEMPT_CHAIN" 2>/dev/null || true
+        iptables -t mangle -X "$EXEMPT_CHAIN" 2>/dev/null || true
+        iptables -t nat -D PREROUTING -i "$LAN_IFACE" -p tcp --dport 443 \
+            -m set --match-set "$IPSET_NAME" dst -j "$REDIR_CHAIN" 2>/dev/null || true
+        iptables -t nat -F "$REDIR_CHAIN" 2>/dev/null || true
+        iptables -t nat -X "$REDIR_CHAIN" 2>/dev/null || true
+        log "chains removed"
+        echo "claude_redirect=cleared"
+        ;;
+    *)
+        echo "Usage: $0 {apply|status|clear}" >&2
+        exit 1
+        ;;
+esac

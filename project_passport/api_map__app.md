@@ -1,16 +1,16 @@
 # API map: app
 
-Просканировано Python-файлов: 8
-Включено в карту: 7
+Просканировано Python-файлов: 9
+Включено в карту: 8
 Пропущено без значимой API-информации: 1
 
 Сводная статистика:
-- модулей: 7
+- модулей: 8
 - классов: 0
 - dataclass: 4
-- функций: 89
+- функций: 103
 - методов: 0
-- констант: 23
+- констант: 32
 
 ---
 
@@ -92,6 +92,78 @@
 
 - `get_awg_traffic() -> dict`
   Читает статистику awg0 из vnstat. Возвращает dict с полями для шаблона.
+
+---
+
+# app/claude.py
+
+Модуль:
+Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.
+
+Перехват происходит на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC —
+см. scripts/home-router-claude-gateway). Этот модуль отвечает за:
+  - управление списком MAC (/etc/home-router-panel/claude/macs.txt) из UI;
+  - прокси POST /v1/messages → https://api.z.ai/api/anthropic/v1/messages
+    с маппингом модели (haiku→glm-4.7, sonnet/opus→glm-5.2) и z.ai-ключом.
+
+Остальные пути api.anthropic.com (auth/OAuth/телеметрия) nginx отдаёт настоящему
+Anthropic сам (location / → proxy_pass https://api.anthropic.com) — в Python catch-all
+не нужен, поэтому с UI-роутами панели конфликтов нет.
+
+Константы:
+- `CONF_DIR = Path('/etc/home-router-panel/claude')`
+- `MACS_FILE = CONF_DIR / 'macs.txt'`
+- `ZAI_KEY_FILE = CONF_DIR / 'zai.key'`
+- `HELPER = '/usr/local/sbin/home-router-claude-gateway'`
+- `ZAI_BASE = 'https://api.z.ai/api/anthropic'`
+- `ANTHROPIC_VERSION_DEFAULT = '2023-06-01'`
+- `DEFAULT_GLM_MODEL = 'glm-5.2'`
+- `MODEL_PREFIX_MAP: tuple[tuple[str, str], ...] = (('haiku', 'glm-4.7'), ('sonnet', 'glm-5.2'), ('opus', 'glm-5.2'))`
+- `PROJECT_ROOT = Path(__file__).resolve().parent.parent`
+
+Функции:
+
+- `read_macs() -> list[str]`
+  Список MAC-адресов, для которых api.anthropic.com уходит в GLM.
+
+- `write_macs(macs: list[str]) -> None`
+  Нет докстринга.
+
+- `helper_available() -> bool`
+  Нет докстринга.
+
+- `apply_redirect() -> tuple[bool, str]`
+  Перестраивает ipset + mangle-exempt + DNAT через sudo-helper.
+
+- `get_status() -> dict`
+  Нет докстринга.
+
+- `_map_model(model: str) -> str`
+  Нет докстринга.
+
+- `_read_zai_key() -> str | None`
+  Нет докстринга.
+
+- `_forward_to_zai(request: Request) -> StreamingResponse`
+  POST /v1/messages* → z.ai: маппинг модели, z.ai-ключ, стриминг ответа.
+
+- `_context(request: Request, msg: str = '', error: str = '') -> dict`
+  Нет докстринга.
+
+- `claude_view(request: Request, msg: str = '', error: str = '')`
+  Нет докстринга.
+
+- `claude_macs_save(request: Request, macs: list[str] = Form(default=[]))`
+  Нет докстринга.
+
+- `claude_macs_save_apply(request: Request, macs: list[str] = Form(default=[]))`
+  Нет докстринга.
+
+- `claude_messages(request: Request)`
+  Anthropic Messages API → GLM (z.ai).
+
+- `claude_count_tokens(request: Request)`
+  Счётчик токенов — тоже через GLM.
 
 ---
 
