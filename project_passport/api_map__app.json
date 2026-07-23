@@ -1,21 +1,21 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-07-14T08:56:57.433192+00:00",
+  "generated_at": "2026-07-23T11:01:55.010612+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
-  "scanned_python_files": 8,
-  "files_count": 7,
+  "scanned_python_files": 9,
+  "files_count": 8,
   "skipped_files_count": 1,
   "skipped_files": [
     "app/__init__.py"
   ],
   "stats": {
-    "modules": 7,
+    "modules": 8,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 89,
+    "functions": 103,
     "methods": 0,
-    "constants": 23
+    "constants": 32
   },
   "modules": [
     {
@@ -285,6 +285,227 @@
         "functions": 21,
         "methods": 0,
         "constants": 7
+      }
+    },
+    {
+      "path": "app/claude.py",
+      "module_docstring": "Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.\n\nПерехват происходит на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC —\nсм. scripts/home-router-claude-gateway). Этот модуль отвечает за:\n  - управление списком MAC (/etc/home-router-panel/claude/macs.txt) из UI;\n  - прокси POST /v1/messages → https://api.z.ai/api/anthropic/v1/messages\n    с маппингом модели (haiku→glm-4.7, sonnet/opus→glm-5.2) и z.ai-ключом.\n\nОстальные пути api.anthropic.com (auth/OAuth/телеметрия) nginx отдаёт настоящему\nAnthropic сам (location / → proxy_pass https://api.anthropic.com) — в Python catch-all\nне нужен, поэтому с UI-роутами панели конфликтов нет.",
+      "module_summary": "Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.",
+      "classes": [],
+      "functions": [
+        {
+          "name": "read_macs",
+          "signature": "read_macs() -> list[str]",
+          "docstring": "Список MAC-адресов, для которых api.anthropic.com уходит в GLM.",
+          "summary": "Список MAC-адресов, для которых api.anthropic.com уходит в GLM.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 51,
+          "end_lineno": 56
+        },
+        {
+          "name": "write_macs",
+          "signature": "write_macs(macs: list[str]) -> None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 59,
+          "end_lineno": 61
+        },
+        {
+          "name": "helper_available",
+          "signature": "helper_available() -> bool",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 64,
+          "end_lineno": 65
+        },
+        {
+          "name": "apply_redirect",
+          "signature": "apply_redirect() -> tuple[bool, str]",
+          "docstring": "Перестраивает ipset + mangle-exempt + DNAT через sudo-helper.",
+          "summary": "Перестраивает ipset + mangle-exempt + DNAT через sudo-helper.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 68,
+          "end_lineno": 81
+        },
+        {
+          "name": "get_status",
+          "signature": "get_status() -> dict",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 84,
+          "end_lineno": 89
+        },
+        {
+          "name": "_map_model",
+          "signature": "_map_model(model: str) -> str",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 94,
+          "end_lineno": 99
+        },
+        {
+          "name": "_read_zai_key",
+          "signature": "_read_zai_key() -> str | None",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 102,
+          "end_lineno": 106
+        },
+        {
+          "name": "_forward_to_zai",
+          "signature": "_forward_to_zai(request: Request) -> StreamingResponse",
+          "docstring": "POST /v1/messages* → z.ai: маппинг модели, z.ai-ключ, стриминг ответа.",
+          "summary": "POST /v1/messages* → z.ai: маппинг модели, z.ai-ключ, стриминг ответа.",
+          "kind": "async_function",
+          "decorators": [],
+          "lineno": 109,
+          "end_lineno": 164
+        },
+        {
+          "name": "_context",
+          "signature": "_context(request: Request, msg: str = '', error: str = '') -> dict",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [],
+          "lineno": 169,
+          "end_lineno": 191
+        },
+        {
+          "name": "claude_view",
+          "signature": "claude_view(request: Request, msg: str = '', error: str = '')",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "router.get('/claude')"
+          ],
+          "lineno": 195,
+          "end_lineno": 199
+        },
+        {
+          "name": "claude_macs_save",
+          "signature": "claude_macs_save(request: Request, macs: list[str] = Form(default=[]))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "router.post('/claude/macs/save')"
+          ],
+          "lineno": 203,
+          "end_lineno": 206
+        },
+        {
+          "name": "claude_macs_save_apply",
+          "signature": "claude_macs_save_apply(request: Request, macs: list[str] = Form(default=[]))",
+          "docstring": null,
+          "summary": null,
+          "kind": "function",
+          "decorators": [
+            "router.post('/claude/macs/save-apply')"
+          ],
+          "lineno": 210,
+          "end_lineno": 224
+        },
+        {
+          "name": "claude_messages",
+          "signature": "claude_messages(request: Request)",
+          "docstring": "Anthropic Messages API → GLM (z.ai).",
+          "summary": "Anthropic Messages API → GLM (z.ai).",
+          "kind": "async_function",
+          "decorators": [
+            "router.post('/v1/messages')"
+          ],
+          "lineno": 228,
+          "end_lineno": 230
+        },
+        {
+          "name": "claude_count_tokens",
+          "signature": "claude_count_tokens(request: Request)",
+          "docstring": "Счётчик токенов — тоже через GLM.",
+          "summary": "Счётчик токенов — тоже через GLM.",
+          "kind": "async_function",
+          "decorators": [
+            "router.post('/v1/messages/count_tokens')"
+          ],
+          "lineno": 234,
+          "end_lineno": 236
+        }
+      ],
+      "constants": [
+        {
+          "name": "CONF_DIR",
+          "annotation": null,
+          "value_repr": "Path('/etc/home-router-panel/claude')",
+          "lineno": 25
+        },
+        {
+          "name": "MACS_FILE",
+          "annotation": null,
+          "value_repr": "CONF_DIR / 'macs.txt'",
+          "lineno": 26
+        },
+        {
+          "name": "ZAI_KEY_FILE",
+          "annotation": null,
+          "value_repr": "CONF_DIR / 'zai.key'",
+          "lineno": 27
+        },
+        {
+          "name": "HELPER",
+          "annotation": null,
+          "value_repr": "'/usr/local/sbin/home-router-claude-gateway'",
+          "lineno": 28
+        },
+        {
+          "name": "ZAI_BASE",
+          "annotation": null,
+          "value_repr": "'https://api.z.ai/api/anthropic'",
+          "lineno": 32
+        },
+        {
+          "name": "ANTHROPIC_VERSION_DEFAULT",
+          "annotation": null,
+          "value_repr": "'2023-06-01'",
+          "lineno": 33
+        },
+        {
+          "name": "DEFAULT_GLM_MODEL",
+          "annotation": null,
+          "value_repr": "'glm-5.2'",
+          "lineno": 36
+        },
+        {
+          "name": "MODEL_PREFIX_MAP",
+          "annotation": "tuple[tuple[str, str], ...]",
+          "value_repr": "(('haiku', 'glm-4.7'), ('sonnet', 'glm-5.2'), ('opus', 'glm-5.2'))",
+          "lineno": 37
+        },
+        {
+          "name": "PROJECT_ROOT",
+          "annotation": null,
+          "value_repr": "Path(__file__).resolve().parent.parent",
+          "lineno": 43
+        }
+      ],
+      "stats": {
+        "classes": 0,
+        "dataclasses": 0,
+        "functions": 14,
+        "methods": 0,
+        "constants": 9
       }
     },
     {

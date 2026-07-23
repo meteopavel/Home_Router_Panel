@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block content %}
+
+{# ── Статус ─────────────────────────────────────────────────────── #}
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Claude → GLM</h2>
+            <p>Десктоп Claude Code на выбранных устройствах ходит в GLM (z.ai) вместо Anthropic</p>
+        </div>
+        <div class="actions">
+            <a href="/claude" class="button button-secondary">Обновить</a>
+        </div>
+    </div>
+
+    {% if msg == 'saved' %}<div class="pill pill-green" style="margin-bottom: 12px;">Список сохранён</div>{% endif %}
+    {% if msg == 'applied' %}<div class="pill pill-green" style="margin-bottom: 12px;">Редирект применён</div>{% endif %}
+    {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+    <div class="service-list">
+        <div class="service-row">
+            <div class="service-main">
+                <div class="service-name">helper home-router-claude-gateway</div>
+                <div class="service-unit">/usr/local/sbin/</div>
+            </div>
+            <div class="actions">
+                {% if helper_available %}
+                    <span class="pill pill-green">установлен</span>
+                {% else %}
+                    <span class="pill pill-gray" data-tooltip="Скопируйте scripts/home-router-claude-gateway в /usr/local/sbin/">не установлен</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="service-row">
+            <div class="service-main">
+                <div class="service-name">z.ai-ключ</div>
+                <div class="service-unit">/etc/home-router-panel/claude/zai.key (chmod 600)</div>
+            </div>
+            <div class="actions">
+                {% if has_zai_key %}
+                    <span class="pill pill-green">есть</span>
+                {% else %}
+                    <span class="pill pill-red" data-tooltip="Положите ключ в /etc/home-router-panel/claude/zai.key">отсутствует</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── Устройства на GLM ───────────────────────────────────────────── #}
+<section class="section">
+    <div class="section-header">
+        <div>
+            <h2>Устройства на GLM</h2>
+            <p>Только отмеченные получают редирект api.anthropic.com → GLM. Остальные ходят как обычно (через AWG).</p>
+        </div>
+    </div>
+
+    <form method="post" action="/claude/macs/save">
+        {% if grouped_static %}
+            {% for group in grouped_static %}
+                {% if group.entries %}
+                    <div class="group-block">
+                        <div class="group-header">
+                            {{ group.name }}
+                            {% if group.lo is not none %}
+                                <span class="group-range">.{{ group.lo }}–.{{ group.hi }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="service-list">
+                            {% for e in group.entries %}
+                                <label class="service-row service-row-compact"
+                                       style="cursor: {% if e.mac %}pointer{% else %}default{% endif %};">
+                                    <div class="service-main">
+                                        <div class="device-line">
+                                            {% if e.hostname %}<strong>{{ e.hostname }}</strong> · {% endif %}{{ e.ip }}
+                                            <span class="device-meta"> · {% if e.mac %}{{ e.mac }}{% else %}<em>по имени</em>{% endif %}</span>
+                                        </div>
+                                    </div>
+                                    <div class="actions">
+                                        {% if e.mac %}
+                                            {% set is_online = e.mac in online_macs %}
+                                        {% else %}
+                                            {% set is_online = e.ip in online_ips %}
+                                        {% endif %}
+                                        <span class="pill {% if is_online %}pill-green{% else %}pill-gray{% endif %}"
+                                              data-ping-ip="{{ e.ip }}" style="cursor:pointer;"
+                                              data-tooltip="Нажмите для проверки пингом">
+                                            {% if is_online %}онлайн{% else %}офлайн{% endif %}
+                                        </span>
+                                        {% if e.mac %}
+                                            <input type="checkbox" name="macs" value="{{ e.mac }}"
+                                                   {% if e.mac in macs %}checked{% endif %}>
+                                        {% else %}
+                                            <input type="checkbox" disabled data-tooltip="MAC неизвестен — устройство офлайн">
+                                        {% endif %}
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">Нет статических резерваций</div>
+        {% endif %}
+
+        <div style="display: flex; gap: 10px; margin-top: 16px; align-items: center;">
+            <button type="submit" class="button">Сохранить список</button>
+            {% if helper_available %}
+                <button type="submit" formaction="/claude/macs/save-apply" class="button button-secondary">
+                    Сохранить и применить редирект
+                </button>
+            {% else %}
+                <span class="pill pill-gray">helper недоступен</span>
+            {% endif %}
+        </div>
+    </form>
+</section>
+
+<script>
+document.addEventListener('click', function (e) {
+    var pill = e.target.closest('[data-ping-ip]');
+    if (!pill) return;
+    var ip = pill.getAttribute('data-ping-ip');
+    var origClass = pill.className;
+    var origText = pill.textContent.trim();
+    pill.className = 'pill pill-pinging';
+    fetch('/dnsmasq/ping?ip=' + encodeURIComponent(ip))
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            pill.className = 'pill ' + (data.online ? 'pill-green' : 'pill-gray');
+            pill.textContent = data.online ? 'онлайн' : 'офлайн';
+        })
+        .catch(function () { pill.className = origClass; pill.textContent = origText; });
+});
+</script>
+{% endblock %}
