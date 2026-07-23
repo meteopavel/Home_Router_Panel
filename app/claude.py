@@ -44,6 +44,12 @@ ROUTING: tuple[tuple[str, str, str | None], ...] = (
 )
 DEFAULT_BACKEND = 'anthropic'  # всё прочее → настоящий Anthropic (безопасный фоллбэк)
 
+# Hop-by-hop / служебные заголовки, которые не прокидываются при passthrough.
+_HOP_BY_HOP = frozenset({
+    'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
+    'te', 'trailers', 'transfer-encoding', 'upgrade', 'host', 'content-length',
+})
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=PROJECT_ROOT / 'templates')
 
@@ -142,15 +148,13 @@ async def _proxy(request: Request) -> StreamingResponse:
         upstream_url = ANTHROPIC_BASE + request.url.path
         if target is not None:
             payload['model'] = target
+        # Прозрачно прокидываем ВСЕ заголовки приложения (auth, anthropic-client-*,
+        # anthropic-beta, user-agent и т.д.) — иначе Anthropic режет 403.
         fwd_headers = {
-            'content-type': 'application/json',
-            'anthropic-version': request.headers.get('anthropic-version', ANTHROPIC_VERSION_DEFAULT),
-            'accept-encoding': 'identity',
+            k: v for k, v in request.headers.items()
+            if k.lower() not in _HOP_BY_HOP and k.lower() != 'accept-encoding'
         }
-        for h in ('authorization', 'x-api-key', 'anthropic-beta'):
-            v = request.headers.get(h)
-            if v:
-                fwd_headers[h] = v
+        fwd_headers['accept-encoding'] = 'identity'  # не жмём → отдаём клиенту как есть
 
     timeout = httpx.Timeout(connect=10.0, read=None, write=60.0, pool=10.0)
     client = httpx.AsyncClient(timeout=timeout)
