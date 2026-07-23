@@ -36,10 +36,11 @@ ANTHROPIC_VERSION_DEFAULT = '2023-06-01'
 #   backend='anthropic' → настоящий Anthropic (passthrough, оригинальный auth);
 #                         target=None = без переименования.
 ROUTING: tuple[tuple[str, str, str | None], ...] = (
-    ('fable',  'zai',       'glm-5.2'),       # Fable  → GLM 5.2
-    ('haiku',  'zai',       'glm-4.5-air'),   # Haiku  → GLM 4.5 Air (полегче)
-    ('sonnet', 'anthropic', None),            # настоящий Anthropic
-    ('opus',   'anthropic', None),            # настоящий Anthropic
+    # порядок важен: более частные префиксы проверяются раньше. Fable в пикере приложения не выбирается.
+    ('haiku',    'zai',       'glm-5.2'),     # Haiku → GLM 5.2 (главный GLM-слот)
+    ('sonnet-4', 'zai',       'glm-4.7'),     # Sonnet 4.x (legacy в пикере) → GLM 4.7 (парковка)
+    ('sonnet',   'anthropic', None),          # Sonnet 5 → настоящий Anthropic
+    ('opus',     'anthropic', None),          # Opus → настоящий Anthropic
 )
 DEFAULT_BACKEND = 'anthropic'  # всё прочее → настоящий Anthropic (безопасный фоллбэк)
 
