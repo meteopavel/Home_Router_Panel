@@ -1,14 +1,14 @@
-"""Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.
+"""Вкладка Claude → GLM: перехват api.anthropic.com для выбранных MAC.
 
-Перехват происходит на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC —
-см. scripts/home-router-claude-gateway). Этот модуль отвечает за:
-  - управление списком MAC (/etc/home-router-panel/claude/macs.txt) из UI;
-  - прокси POST /v1/messages → https://api.z.ai/api/anthropic/v1/messages
-    с маппингом модели (haiku→glm-4.7, sonnet/opus→glm-5.2) и z.ai-ключом.
+Перехват на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC — см.
+scripts/home-router-claude-gateway). Этот модуль:
+  - управляет списком MAC (/etc/home-router-panel/claude/macs.txt) из UI;
+  - per-model роутинг POST /v1/messages*:
+      Fable/Haiku → GLM (z.ai), Sonnet/Opus/прочее → настоящий Anthropic (passthrough).
+    Выбором модели в приложении выбирается бэкенд (GLM без лимитов vs. настоящий Anthropic).
 
 Остальные пути api.anthropic.com (auth/OAuth/телеметрия) nginx отдаёт настоящему
-Anthropic сам (location / → proxy_pass https://api.anthropic.com) — в Python catch-all
-не нужен, поэтому с UI-роутами панели конфликтов нет.
+Anthropic сам (location / → proxy_pass). В Python catch-all не нужен.
 """
 
 import json
@@ -27,18 +27,21 @@ MACS_FILE = CONF_DIR / 'macs.txt'
 ZAI_KEY_FILE = CONF_DIR / 'zai.key'
 HELPER = '/usr/local/sbin/home-router-claude-gateway'
 
-# z.ai отдаёт нативный Anthropic Messages API; путь берём из запроса
-# (/v1/messages или /v1/messages/count_tokens).
-ZAI_BASE = 'https://api.z.ai/api/anthropic'
+ZAI_BASE = 'https://api.z.ai/api/anthropic'        # GLM
+ANTHROPIC_BASE = 'https://api.anthropic.com'        # настоящий Anthropic (passthrough)
 ANTHROPIC_VERSION_DEFAULT = '2023-06-01'
 
-# Маппинг моделей: подстрока в имени claude-* → модель z.ai.
-DEFAULT_GLM_MODEL = 'glm-5.2'
-MODEL_PREFIX_MAP: tuple[tuple[str, str], ...] = (
-    ('haiku', 'glm-4.7'),
-    ('sonnet', 'glm-5.2'),
-    ('opus', 'glm-5.2'),
+# Per-model роутинг: подстрока в запрошенной модели → (backend, target_model).
+#   backend='zai'       → GLM через z.ai (zai_key), model заменяется на target.
+#   backend='anthropic' → настоящий Anthropic (passthrough, оригинальный auth);
+#                         target=None = без переименования.
+ROUTING: tuple[tuple[str, str, str | None], ...] = (
+    ('fable',  'zai',       'glm-5.2'),       # Fable  → GLM 5.2
+    ('haiku',  'zai',       'glm-4.5-air'),   # Haiku  → GLM 4.5 Air (полегче)
+    ('sonnet', 'anthropic', None),            # настоящий Anthropic
+    ('opus',   'anthropic', None),            # настоящий Anthropic
 )
+DEFAULT_BACKEND = 'anthropic'  # всё прочее → настоящий Anthropic (безопасный фоллбэк)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 templates = Jinja2Templates(directory=PROJECT_ROOT / 'templates')
@@ -49,7 +52,7 @@ router = APIRouter()
 # ── Список MAC и helper ────────────────────────────────────────────────────────
 
 def read_macs() -> list[str]:
-    """Список MAC-адресов, для которых api.anthropic.com уходит в GLM."""
+    """Список MAC-адресов, для которых api.anthropic.com перехватывается."""
     if not MACS_FILE.exists():
         return []
     return [l.strip().lower() for l in MACS_FILE.read_text(encoding='utf-8').splitlines()
@@ -89,14 +92,15 @@ def get_status() -> dict:
     }
 
 
-# ── Прокси /v1/messages → GLM ──────────────────────────────────────────────────
+# ── Per-model прокси /v1/messages* ─────────────────────────────────────────────
 
-def _map_model(model: str) -> str:
+def _route(model: str) -> tuple[str, str | None]:
+    """Возвращает (backend, target) по префиксу модели. backend: 'zai' | 'anthropic'."""
     m = (model or '').lower()
-    for prefix, glm in MODEL_PREFIX_MAP:
+    for prefix, backend, target in ROUTING:
         if prefix in m:
-            return glm
-    return DEFAULT_GLM_MODEL
+            return backend, target
+    return DEFAULT_BACKEND, None
 
 
 def _read_zai_key() -> str | None:
@@ -106,12 +110,8 @@ def _read_zai_key() -> str | None:
         return None
 
 
-async def _forward_to_zai(request: Request) -> StreamingResponse:
-    """POST /v1/messages* → z.ai: маппинг модели, z.ai-ключ, стриминг ответа."""
-    key = _read_zai_key()
-    if not key:
-        raise HTTPException(status_code=503, detail=f'z.ai key missing: {ZAI_KEY_FILE}')
-
+async def _proxy(request: Request) -> StreamingResponse:
+    """POST /v1/messages* → per-model роутинг: GLM (z.ai) или настоящий Anthropic."""
     raw = await request.body()
     try:
         payload = json.loads(raw)
@@ -120,20 +120,37 @@ async def _forward_to_zai(request: Request) -> StreamingResponse:
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail='expected JSON object')
 
-    payload['model'] = _map_model(payload.get('model', ''))
+    backend, target = _route(payload.get('model', ''))
 
-    # Оставляем anthropic-*, подменяем auth на z.ai-ключ, host выставит httpx.
-    fwd_headers = {
-        'content-type': 'application/json',
-        'authorization': f'Bearer {key}',
-        'anthropic-version': request.headers.get('anthropic-version', ANTHROPIC_VERSION_DEFAULT),
-        # z.ai не жмёт → отдаём клиенту как есть, без возни с Content-Encoding
-        'accept-encoding': 'identity',
-    }
-    if request.headers.get('anthropic-beta'):
-        fwd_headers['anthropic-beta'] = request.headers['anthropic-beta']
+    if backend == 'zai':
+        key = _read_zai_key()
+        if not key:
+            raise HTTPException(status_code=503, detail=f'z.ai key missing: {ZAI_KEY_FILE}')
+        upstream_url = ZAI_BASE + request.url.path
+        payload['model'] = target
+        fwd_headers = {
+            'content-type': 'application/json',
+            'authorization': f'Bearer {key}',
+            'anthropic-version': request.headers.get('anthropic-version', ANTHROPIC_VERSION_DEFAULT),
+            # z.ai не жмёт → отдаём клиенту как есть, без возни с Content-Encoding
+            'accept-encoding': 'identity',
+        }
+        if request.headers.get('anthropic-beta'):
+            fwd_headers['anthropic-beta'] = request.headers['anthropic-beta']
+    else:  # anthropic passthrough — оригинальный auth, расходует квоту Anthropic
+        upstream_url = ANTHROPIC_BASE + request.url.path
+        if target is not None:
+            payload['model'] = target
+        fwd_headers = {
+            'content-type': 'application/json',
+            'anthropic-version': request.headers.get('anthropic-version', ANTHROPIC_VERSION_DEFAULT),
+            'accept-encoding': 'identity',
+        }
+        for h in ('authorization', 'x-api-key', 'anthropic-beta'):
+            v = request.headers.get(h)
+            if v:
+                fwd_headers[h] = v
 
-    upstream_url = ZAI_BASE + request.url.path
     timeout = httpx.Timeout(connect=10.0, read=None, write=60.0, pool=10.0)
     client = httpx.AsyncClient(timeout=timeout)
     try:
@@ -145,7 +162,7 @@ async def _forward_to_zai(request: Request) -> StreamingResponse:
         upstream = await client.send(req, stream=True)
     except Exception as e:
         await client.aclose()
-        raise HTTPException(status_code=502, detail=f'z.ai connect error: {e}')
+        raise HTTPException(status_code=502, detail=f'{backend} upstream error: {e}')
 
     content_type = upstream.headers.get('content-type', 'application/json')
 
@@ -228,11 +245,10 @@ def claude_macs_save_apply(request: Request, macs: list[str] = Form(default=[]))
 
 @router.post('/v1/messages')
 async def claude_messages(request: Request):
-    """Anthropic Messages API → GLM (z.ai)."""
-    return await _forward_to_zai(request)
+    """Anthropic Messages API → per-model роутинг (GLM или настоящий Anthropic)."""
+    return await _proxy(request)
 
 
 @router.post('/v1/messages/count_tokens')
 async def claude_count_tokens(request: Request):
-    """Счётчик токенов — тоже через GLM."""
-    return await _forward_to_zai(request)
+    return await _proxy(request)
