@@ -80,8 +80,9 @@ rebuild_nat() {
     local count=0 mac
     while IFS= read -r mac; do
         [ -z "$mac" ] && continue
-        # :443 клиента → 192.168.100.1:8443 (nginx на LAN, отдельный сокет)
-        iptables -t nat -A "$REDIR_CHAIN" -m mac --mac-source "$mac" \
+        # :443 клиента → 192.168.100.1:8443 (nginx на LAN, отдельный сокет).
+        # -p tcp обязателен: DNAT с портом (:8443) требует указания протокола.
+        iptables -t nat -A "$REDIR_CHAIN" -p tcp -m mac --mac-source "$mac" \
             -j DNAT --to-destination "$ROUTER_IP:8443"
         count=$((count+1))
     done < <(read_macs)
