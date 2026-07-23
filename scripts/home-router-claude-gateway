@@ -71,6 +71,12 @@ rebuild_mangle() {
         iptables -t mangle -I PREROUTING 1 -i "$LAN_IFACE" -j "$EXEMPT_CHAIN"
         log "mangle jump в PREROUTING (до TG_VPN_ROUTING)"
     fi
+    # Собственные исходящие роутера к api.anthropic.com → через AWG (Frankfurt):
+    # иначе Anthropic геоблочит IP роутера (403). Нужно для passthrough Sonnet/Opus в панели.
+    if ! iptables -t mangle -C OUTPUT -p tcp --dport 443 -m set --match-set "$IPSET_NAME" dst -j MARK --set-xmark 0x66/0xff 2>/dev/null; then
+        iptables -t mangle -A OUTPUT -p tcp --dport 443 -m set --match-set "$IPSET_NAME" dst -j MARK --set-xmark 0x66/0xff
+        log "OUTPUT → api.anthropic.com через AWG (обход геоблока)"
+    fi
     log "mangle $EXEMPT_CHAIN: $count MAC"
 }
 
@@ -123,6 +129,7 @@ case "${1:-}" in
         iptables -t mangle -D PREROUTING -i "$LAN_IFACE" -j "$EXEMPT_CHAIN" 2>/dev/null || true
         iptables -t mangle -F "$EXEMPT_CHAIN" 2>/dev/null || true
         iptables -t mangle -X "$EXEMPT_CHAIN" 2>/dev/null || true
+        iptables -t mangle -D OUTPUT -p tcp --dport 443 -m set --match-set "$IPSET_NAME" dst -j MARK --set-xmark 0x66/0xff 2>/dev/null || true
         iptables -t nat -D PREROUTING -i "$LAN_IFACE" -p tcp --dport 443 \
             -m set --match-set "$IPSET_NAME" dst -j "$REDIR_CHAIN" 2>/dev/null || true
         iptables -t nat -F "$REDIR_CHAIN" 2>/dev/null || true
