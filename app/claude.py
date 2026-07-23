@@ -127,6 +127,8 @@ async def _forward_to_zai(request: Request) -> StreamingResponse:
         'content-type': 'application/json',
         'authorization': f'Bearer {key}',
         'anthropic-version': request.headers.get('anthropic-version', ANTHROPIC_VERSION_DEFAULT),
+        # z.ai не жмёт → отдаём клиенту как есть, без возни с Content-Encoding
+        'accept-encoding': 'identity',
     }
     if request.headers.get('anthropic-beta'):
         fwd_headers['anthropic-beta'] = request.headers['anthropic-beta']
