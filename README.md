@@ -1,10 +1,10 @@
 # Home Router Panel
 
-[![Python](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/python.svg)](https://docs.python.org/3/)
-[![FastAPI](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/fastapi.svg)](https://fastapi.tiangolo.com/release-notes/)
-[![Uvicorn](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/uvicorn.svg)](https://www.uvicorn.org/)
-[![Jinja](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/jinja.svg)](https://jinja.palletsprojects.com/)
-[![Nginx](https://k2bz83mrsg.cdn.twcstorage.ru/images/shields/home_router/nginx.svg)](https://nginx.org/en/docs/)
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB)](https://docs.python.org/3/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688)](https://fastapi.tiangolo.com/release-notes/)
+[![Uvicorn](https://img.shields.io/badge/Uvicorn-ASGI-4996C8)](https://www.uvicorn.org/)
+[![Jinja](https://img.shields.io/badge/Jinja2-templates-B41717)](https://jinja.palletsprojects.com/)
+[![Nginx](https://img.shields.io/badge/Nginx-reverse_proxy-009639)](https://nginx.org/en/docs/)
 
 Веб-панель на FastAPI для локального управления домашним роутером под Linux. Управление VPN, DHCP, системными сервисами и бэкапом — всё через браузер в локальной сети.
 

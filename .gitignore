@@ -112,6 +112,12 @@ temp/
 # Backup archive (local encrypted copy)
 secure/
 
+# Crypto material / archives (defensive — never expected in tree)
+*.key
+*.crt
+*.pem
+*.7z
+
 # Local project files (not for git)
 CLAUDE.md
 config.yaml

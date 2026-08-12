@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-08-12T12:45:18.469898+00:00",
+  "generated_at": "2026-08-12T15:31:14.356973+00:00",
   "generator": "tools/extract_api_map.py",
   "target": "app",
   "scanned_python_files": 9,
@@ -13,9 +13,9 @@
     "modules": 8,
     "classes": 4,
     "dataclasses": 4,
-    "functions": 103,
+    "functions": 105,
     "methods": 0,
-    "constants": 34
+    "constants": 33
   },
   "modules": [
     {
@@ -269,7 +269,7 @@
         {
           "name": "_DEFAULT_LISTS",
           "annotation": null,
-          "value_repr": "[{'key': 'tg_nets', 'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, {'key': 'figma_domains', 'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'claude_domains', 'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'custom_domains', 'title': 'Custom домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'ss_server_ips', 'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, {'key': 'vpn_device_macs', 'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}]",
+          "value_repr": "[{'key': 'tg_nets', 'title': 'Telegram сети', 'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'}, {'key': 'figma_domains', 'title': 'Figma домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'claude_domains', 'title': 'Claude / Anthropic домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'custom_domains', 'title': 'Кастомные домены', 'hint': 'Домены, чьи IP резолвятся и идут через VPN'}, {'key': 'ss_server_ips', 'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'}, {'key': 'vpn_device_macs', 'title': 'Устройства по MAC', 'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'}]",
           "lineno": 18
         },
         {
@@ -579,42 +579,42 @@
               "name": "expiry",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 39
+              "lineno": 65
             },
             {
               "name": "ts",
               "annotation": "int",
               "value_repr": null,
-              "lineno": 40
+              "lineno": 66
             },
             {
               "name": "mac",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 41
+              "lineno": 67
             },
             {
               "name": "ip",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 42
+              "lineno": 68
             },
             {
               "name": "hostname",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 43
+              "lineno": 69
             },
             {
               "name": "client_id",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 44
+              "lineno": 70
             }
           ],
           "methods": [],
-          "lineno": 36,
-          "end_lineno": 44
+          "lineno": 62,
+          "end_lineno": 70
         },
         {
           "name": "StaticEntry",
@@ -631,33 +631,43 @@
               "name": "mac",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 51
+              "lineno": 77
             },
             {
               "name": "ip",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 52
+              "lineno": 78
             },
             {
               "name": "hostname",
               "annotation": "str",
               "value_repr": null,
-              "lineno": 53
+              "lineno": 79
             },
             {
               "name": "mac_from_lease",
               "annotation": "bool",
               "value_repr": "False",
-              "lineno": 54
+              "lineno": 80
             }
           ],
           "methods": [],
-          "lineno": 48,
-          "end_lineno": 54
+          "lineno": 74,
+          "end_lineno": 80
         }
       ],
       "functions": [
+        {
+          "name": "_get_ip_groups",
+          "signature": "_get_ip_groups() -> list[tuple[int, int, str]]",
+          "docstring": "Возвращает IP-группы из config.yaml, фолбэк на _DEFAULT_IP_GROUPS.\n\nКлюч config.yaml: ``ip_groups`` — список ``[lo, hi, \"название\"]``.\nПри отсутствии ключа или невалидных данных возвращает дефолт.",
+          "summary": "Возвращает IP-группы из config.yaml, фолбэк на _DEFAULT_IP_GROUPS.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 37,
+          "end_lineno": 56
+        },
         {
           "name": "_test_config",
           "signature": "_test_config() -> tuple[bool, str]",
@@ -665,8 +675,8 @@
           "summary": "Запускает dnsmasq --test для проверки конфига. Возвращает (ok, вывод).",
           "kind": "function",
           "decorators": [],
-          "lineno": 59,
-          "end_lineno": 71
+          "lineno": 85,
+          "end_lineno": 97
         },
         {
           "name": "validate_entry",
@@ -675,8 +685,8 @@
           "summary": "Проверяет корректность полей записи. Возвращает строку ошибки или None.",
           "kind": "function",
           "decorators": [],
-          "lineno": 76,
-          "end_lineno": 99
+          "lineno": 102,
+          "end_lineno": 125
         },
         {
           "name": "read_leases",
@@ -685,8 +695,8 @@
           "summary": "Читает файл аренд dnsmasq, возвращает список отсортированный по IP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 104,
-          "end_lineno": 131
+          "lineno": 130,
+          "end_lineno": 157
         },
         {
           "name": "read_system_static",
@@ -695,8 +705,8 @@
           "summary": "Читает dhcp-host записи из /etc/dnsmasq.d/*.conf. Только для отображения, не редактируется.",
           "kind": "function",
           "decorators": [],
-          "lineno": 134,
-          "end_lineno": 154
+          "lineno": 160,
+          "end_lineno": 180
         },
         {
           "name": "read_static",
@@ -705,8 +715,8 @@
           "summary": "Читает управляемый файл резерваций dnsmasq-static.conf, сортирует по IP.",
           "kind": "function",
           "decorators": [],
-          "lineno": 157,
-          "end_lineno": 185
+          "lineno": 183,
+          "end_lineno": 211
         },
         {
           "name": "write_static",
@@ -715,8 +725,8 @@
           "summary": "Записывает список резерваций в файл. Проверяет конфиг через dnsmasq --test, при ошибке откатывает.",
           "kind": "function",
           "decorators": [],
-          "lineno": 190,
-          "end_lineno": 212
+          "lineno": 216,
+          "end_lineno": 238
         },
         {
           "name": "add_static",
@@ -725,8 +735,8 @@
           "summary": "Добавляет или обновляет резервацию. Возвращает (ok, ошибка_или_пусто).",
           "kind": "function",
           "decorators": [],
-          "lineno": 215,
-          "end_lineno": 249
+          "lineno": 241,
+          "end_lineno": 275
         },
         {
           "name": "remove_static",
@@ -735,8 +745,8 @@
           "summary": "Удаляет резервацию по MAC или имени устройства. Возвращает (ok, ошибка_или_пусто).",
           "kind": "function",
           "decorators": [],
-          "lineno": 252,
-          "end_lineno": 265
+          "lineno": 278,
+          "end_lineno": 291
         },
         {
           "name": "get_dnsmasq_state",
@@ -745,8 +755,8 @@
           "summary": "Возвращает строку состояния сервиса dnsmasq (active / inactive / failed / unknown).",
           "kind": "function",
           "decorators": [],
-          "lineno": 270,
-          "end_lineno": 279
+          "lineno": 296,
+          "end_lineno": 305
         },
         {
           "name": "reload_dnsmasq",
@@ -755,8 +765,8 @@
           "summary": "Отправляет SIGHUP dnsmasq (применяет конфиг без обрыва аренд). Возвращает (ok, сообщение).",
           "kind": "function",
           "decorators": [],
-          "lineno": 282,
-          "end_lineno": 293
+          "lineno": 308,
+          "end_lineno": 319
         },
         {
           "name": "restart_dnsmasq",
@@ -765,18 +775,18 @@
           "summary": "Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение).",
           "kind": "function",
           "decorators": [],
-          "lineno": 296,
-          "end_lineno": 307
+          "lineno": 322,
+          "end_lineno": 333
         },
         {
           "name": "get_ip_group",
-          "signature": "get_ip_group(ip: str) -> str",
-          "docstring": "Возвращает название группы по последнему октету IP или пустую строку.",
+          "signature": "get_ip_group(ip: str, groups: list[tuple[int, int, str]] | None = None) -> str",
+          "docstring": "Возвращает название группы по последнему октету IP или пустую строку.\n\n``groups`` — опционально предзагруженный список (чтобы не читать config\nна каждый вызов); по умолчанию грузит через :func:`_get_ip_groups`.",
           "summary": "Возвращает название группы по последнему октету IP или пустую строку.",
           "kind": "function",
           "decorators": [],
-          "lineno": 312,
-          "end_lineno": 321
+          "lineno": 338,
+          "end_lineno": 353
         },
         {
           "name": "group_static_entries",
@@ -785,8 +795,8 @@
           "summary": "Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}.",
           "kind": "function",
           "decorators": [],
-          "lineno": 324,
-          "end_lineno": 343
+          "lineno": 356,
+          "end_lineno": 377
         },
         {
           "name": "get_arp_online",
@@ -795,8 +805,8 @@
           "summary": "Возвращает (online_macs, online_ips) из ARP-таблицы интерфейса enp2s0.",
           "kind": "function",
           "decorators": [],
-          "lineno": 348,
-          "end_lineno": 374
+          "lineno": 382,
+          "end_lineno": 408
         }
       ],
       "constants": [
@@ -804,51 +814,45 @@
           "name": "LEASES_FILE",
           "annotation": null,
           "value_repr": "Path('/var/lib/misc/dnsmasq.leases')",
-          "lineno": 12
+          "lineno": 14
         },
         {
           "name": "STATIC_FILE",
           "annotation": null,
           "value_repr": "Path('/etc/home-router-panel/awg/dnsmasq-static.conf')",
-          "lineno": 13
+          "lineno": 15
         },
         {
           "name": "DNSMASQ_D",
           "annotation": null,
           "value_repr": "Path('/etc/dnsmasq.d')",
-          "lineno": 14
+          "lineno": 16
         },
         {
           "name": "_HOSTNAME_RE",
           "annotation": null,
           "value_repr": "re.compile('^[a-zA-Z0-9\\\\-]{1,63}$')",
-          "lineno": 16
+          "lineno": 18
         },
         {
           "name": "_IP_RE",
           "annotation": null,
           "value_repr": "re.compile('^(\\\\d{1,3}\\\\.){3}\\\\d{1,3}$')",
-          "lineno": 17
+          "lineno": 19
         },
         {
-          "name": "_IP_GROUPS",
+          "name": "_DEFAULT_IP_GROUPS",
           "annotation": "list[tuple[int, int, str]]",
           "value_repr": "[(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 59, 'Телефоны'), (60, 79, 'Динамический пул'), (110, 119, 'Группа 110-119'), (200, 209, 'Группа 200-209')]",
-          "lineno": 20
-        },
-        {
-          "name": "IP_GROUP_NAMES",
-          "annotation": "list[str]",
-          "value_repr": "list(dict.fromkeys((n for _, _, n in _IP_GROUPS)))",
-          "lineno": 30
+          "lineno": 25
         }
       ],
       "stats": {
         "classes": 2,
         "dataclasses": 2,
-        "functions": 14,
+        "functions": 15,
         "methods": 0,
-        "constants": 7
+        "constants": 6
       }
     },
     {
@@ -1409,29 +1413,39 @@
     },
     {
       "path": "app/openvpn.py",
-      "module_docstring": "OpenVPN: статус сервиса openvpn@work, управление, список разрешённых MAC.",
-      "module_summary": "OpenVPN: статус сервиса openvpn@work, управление, список разрешённых MAC.",
+      "module_docstring": "OpenVPN: статус сервиса openvpn@<unit>, управление, список разрешённых MAC.",
+      "module_summary": "OpenVPN: статус сервиса openvpn@<unit>, управление, список разрешённых MAC.",
       "classes": [],
       "functions": [
         {
-          "name": "get_openvpn_status",
-          "signature": "get_openvpn_status() -> dict",
-          "docstring": "Возвращает состояние сервиса openvpn@work и наличие интерфейса tun0.",
-          "summary": "Возвращает состояние сервиса openvpn@work и наличие интерфейса tun0.",
+          "name": "_get_service_unit",
+          "signature": "_get_service_unit() -> str",
+          "docstring": "Имя systemd-unit'а OpenVPN из config.yaml (ключ openvpn.service_unit).\n\nFallback на _DEFAULT_SERVICE_UNIT если ключ отсутствует или config не читается.",
+          "summary": "Имя systemd-unit'а OpenVPN из config.yaml (ключ openvpn.service_unit).",
           "kind": "function",
           "decorators": [],
-          "lineno": 12,
-          "end_lineno": 46
+          "lineno": 14,
+          "end_lineno": 22
+        },
+        {
+          "name": "get_openvpn_status",
+          "signature": "get_openvpn_status() -> dict",
+          "docstring": "Возвращает состояние сервиса OpenVPN и наличие интерфейса tun0.\n\nВ dict включён ключ ``service_unit`` — реальное имя unit'а (для шаблона).",
+          "summary": "Возвращает состояние сервиса OpenVPN и наличие интерфейса tun0.",
+          "kind": "function",
+          "decorators": [],
+          "lineno": 25,
+          "end_lineno": 64
         },
         {
           "name": "openvpn_action",
           "signature": "openvpn_action(action: str) -> tuple[bool, str]",
-          "docstring": "Выполняет start/stop/restart для openvpn@work через sudo.",
-          "summary": "Выполняет start/stop/restart для openvpn@work через sudo.",
+          "docstring": "Выполняет start/stop/restart для сервиса OpenVPN через sudo.",
+          "summary": "Выполняет start/stop/restart для сервиса OpenVPN через sudo.",
           "kind": "function",
           "decorators": [],
-          "lineno": 49,
-          "end_lineno": 64
+          "lineno": 67,
+          "end_lineno": 82
         },
         {
           "name": "read_vpn_macs",
@@ -1440,8 +1454,8 @@
           "summary": "Читает список MAC-адресов из vpn_device_macs.txt.",
           "kind": "function",
           "decorators": [],
-          "lineno": 67,
-          "end_lineno": 72
+          "lineno": 85,
+          "end_lineno": 90
         },
         {
           "name": "write_vpn_macs",
@@ -1450,8 +1464,8 @@
           "summary": "Сохраняет список MAC-адресов в vpn_device_macs.txt.",
           "kind": "function",
           "decorators": [],
-          "lineno": 75,
-          "end_lineno": 78
+          "lineno": 93,
+          "end_lineno": 96
         },
         {
           "name": "apply_routing",
@@ -1460,8 +1474,8 @@
           "summary": "Запускает скрипт маршрутизации через sudo.",
           "kind": "function",
           "decorators": [],
-          "lineno": 81,
-          "end_lineno": 94
+          "lineno": 99,
+          "end_lineno": 112
         },
         {
           "name": "helper_available",
@@ -1470,8 +1484,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 97,
-          "end_lineno": 98
+          "lineno": 115,
+          "end_lineno": 116
         },
         {
           "name": "_fmt_bytes",
@@ -1480,8 +1494,8 @@
           "summary": null,
           "kind": "function",
           "decorators": [],
-          "lineno": 101,
-          "end_lineno": 106
+          "lineno": 119,
+          "end_lineno": 124
         },
         {
           "name": "get_tun0_traffic",
@@ -1490,8 +1504,8 @@
           "summary": "Читает статистику tun0 из vnstat.",
           "kind": "function",
           "decorators": [],
-          "lineno": 109,
-          "end_lineno": 157
+          "lineno": 127,
+          "end_lineno": 175
         }
       ],
       "constants": [
@@ -1499,31 +1513,31 @@
           "name": "CONF_DIR",
           "annotation": null,
           "value_repr": "Path('/etc/home-router-panel/openvpn')",
-          "lineno": 6
+          "lineno": 8
         },
         {
           "name": "VPN_MACS_FILE",
           "annotation": null,
           "value_repr": "CONF_DIR / 'vpn_device_macs.txt'",
-          "lineno": 7
+          "lineno": 9
         },
         {
-          "name": "SERVICE_UNIT",
+          "name": "_DEFAULT_SERVICE_UNIT",
           "annotation": null,
           "value_repr": "'openvpn@work'",
-          "lineno": 8
+          "lineno": 10
         },
         {
           "name": "HELPER",
           "annotation": null,
           "value_repr": "'/usr/local/sbin/home-router-openvpn-routing'",
-          "lineno": 9
+          "lineno": 11
         }
       ],
       "stats": {
         "classes": 0,
         "dataclasses": 0,
-        "functions": 8,
+        "functions": 9,
         "methods": 0,
         "constants": 4
       }

@@ -1,20 +1,38 @@
-"""OpenVPN: статус сервиса openvpn@work, управление, список разрешённых MAC."""
+"""OpenVPN: статус сервиса openvpn@<unit>, управление, список разрешённых MAC."""
 
 import subprocess
 from pathlib import Path
 
+from app.config import load_config
+
 CONF_DIR = Path('/etc/home-router-panel/openvpn')
 VPN_MACS_FILE = CONF_DIR / 'vpn_device_macs.txt'
-SERVICE_UNIT = 'openvpn@work'
+_DEFAULT_SERVICE_UNIT = 'openvpn@work'
 HELPER = '/usr/local/sbin/home-router-openvpn-routing'
 
 
+def _get_service_unit() -> str:
+    """Имя systemd-unit'а OpenVPN из config.yaml (ключ openvpn.service_unit).
+
+    Fallback на _DEFAULT_SERVICE_UNIT если ключ отсутствует или config не читается.
+    """
+    try:
+        return load_config().get('openvpn', {}).get('service_unit', _DEFAULT_SERVICE_UNIT)
+    except Exception:
+        return _DEFAULT_SERVICE_UNIT
+
+
 def get_openvpn_status() -> dict:
-    """Возвращает состояние сервиса openvpn@work и наличие интерфейса tun0."""
-    result = {'service_state': 'unknown', 'tun0_up': False, 'service_since': ''}
+    """Возвращает состояние сервиса OpenVPN и наличие интерфейса tun0.
+
+    В dict включён ключ ``service_unit`` — реальное имя unit'а (для шаблона).
+    """
+    service_unit = _get_service_unit()
+    result = {'service_unit': service_unit, 'service_state': 'unknown',
+              'tun0_up': False, 'service_since': ''}
     try:
         r = subprocess.run(
-            ['/usr/bin/systemctl', 'is-active', SERVICE_UNIT],
+            ['/usr/bin/systemctl', 'is-active', service_unit],
             capture_output=True, text=True, timeout=3, check=False,
         )
         result['service_state'] = r.stdout.strip() or 'unknown'
@@ -32,7 +50,7 @@ def get_openvpn_status() -> dict:
 
     try:
         r = subprocess.run(
-            ['/usr/bin/systemctl', 'show', SERVICE_UNIT,
+            ['/usr/bin/systemctl', 'show', service_unit,
              '--property=ActiveEnterTimestampMonotonic,ActiveEnterTimestamp'],
             capture_output=True, text=True, timeout=3, check=False,
         )
@@ -47,12 +65,12 @@ def get_openvpn_status() -> dict:
 
 
 def openvpn_action(action: str) -> tuple[bool, str]:
-    """Выполняет start/stop/restart для openvpn@work через sudo."""
+    """Выполняет start/stop/restart для сервиса OpenVPN через sudo."""
     if action not in ('start', 'stop', 'restart'):
         return False, f'Недопустимое действие: {action}'
     try:
         r = subprocess.run(
-            ['/usr/bin/sudo', '-n', '/usr/bin/systemctl', action, SERVICE_UNIT],
+            ['/usr/bin/sudo', '-n', '/usr/bin/systemctl', action, _get_service_unit()],
             capture_output=True, text=True, timeout=15, check=False,
         )
         if r.returncode == 0:

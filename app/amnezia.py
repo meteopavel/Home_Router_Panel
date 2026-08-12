@@ -19,7 +19,7 @@ _DEFAULT_LISTS = [
     {'key': 'tg_nets',        'title': 'Telegram сети',               'hint': 'IPv4 адреса и CIDR-блоки, по одному на строку'},
     {'key': 'figma_domains',  'title': 'Figma домены',                'hint': 'Домены, чьи IP резолвятся и идут через VPN'},
     {'key': 'claude_domains', 'title': 'Claude / Anthropic домены',   'hint': 'Домены, чьи IP резолвятся и идут через VPN'},
-    {'key': 'custom_domains',  'title': 'Custom домены',                'hint': 'Домены, чьи IP резолвятся и идут через VPN'},
+    {'key': 'custom_domains', 'title': 'Кастомные домены',            'hint': 'Домены, чьи IP резолвятся и идут через VPN'},
     {'key': 'ss_server_ips',  'title': 'SS-серверы (прямой маршрут)', 'hint': 'IP Shadowsocks-серверов — маршрутизируются через awg0 напрямую (не через ipset)'},
     {'key': 'vpn_device_macs','title': 'Устройства по MAC',           'hint': 'xx:xx:xx:xx:xx:xx — можно добавить # комментарий'},
 ]

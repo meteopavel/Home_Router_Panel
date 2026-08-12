@@ -5,7 +5,7 @@
 <section class="section">
     <div class="section-header">
         <div>
-            <h2>OpenVPN — Work</h2>
+            <h2>OpenVPN — рабочая сеть</h2>
             <p>Рабочая сеть через tun0</p>
         </div>
         <div class="actions">
@@ -23,7 +23,7 @@
     <div class="service-list">
         <div class="service-row">
             <div class="service-main">
-                <div class="service-name">openvpn@work</div>
+                <div class="service-name">{{ status.service_unit }}</div>
                 <div class="service-unit">
                     {% if status.service_since %}с {{ status.service_since }}{% endif %}
                 </div>

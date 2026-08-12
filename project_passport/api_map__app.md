@@ -8,9 +8,9 @@
 - модулей: 8
 - классов: 0
 - dataclass: 4
-- функций: 103
+- функций: 105
 - методов: 0
-- констант: 34
+- констант: 33
 
 ---
 
@@ -199,8 +199,7 @@ Anthropic сам (location / → proxy_pass). В Python catch-all не нуже�
 - `DNSMASQ_D = Path('/etc/dnsmasq.d')`
 - `_HOSTNAME_RE = re.compile('^[a-zA-Z0-9\\-]{1,63}$')`
 - `_IP_RE = re.compile('^(\\d{1,3}\\.){3}\\d{1,3}$')`
-- `_IP_GROUPS: list[tuple[int, int, str]] = [(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 5…`
-- `IP_GROUP_NAMES: list[str] = list(dict.fromkeys((n for _, _, n in _IP_GROUPS)))`
+- `_DEFAULT_IP_GROUPS: list[tuple[int, int, str]] = [(1, 9, 'Сетевое оборудование'), (10, 19, 'Компьютеры'), (20, 39, 'IoT'), (40, 49, 'Медиа'), (50, 5…`
 
 Классы:
 
@@ -223,6 +222,12 @@ Anthropic сам (location / → proxy_pass). В Python catch-all не нуже�
   - `mac_from_lease: bool = False`
 
 Функции:
+
+- `_get_ip_groups() -> list[tuple[int, int, str]]`
+  Возвращает IP-группы из config.yaml, фолбэк на _DEFAULT_IP_GROUPS.
+  
+  Ключ config.yaml: ``ip_groups`` — список ``[lo, hi, "название"]``.
+  При отсутствии ключа или невалидных данных возвращает дефолт.
 
 - `_test_config() -> tuple[bool, str]`
   Запускает dnsmasq --test для проверки конфига. Возвращает (ok, вывод).
@@ -257,8 +262,11 @@ Anthropic сам (location / → proxy_pass). В Python catch-all не нуже�
 - `restart_dnsmasq() -> tuple[bool, str]`
   Полный перезапуск dnsmasq. Сбрасывает все аренды. Возвращает (ok, сообщение).
 
-- `get_ip_group(ip: str) -> str`
+- `get_ip_group(ip: str, groups: list[tuple[int, int, str]] | None = None) -> str`
   Возвращает название группы по последнему октету IP или пустую строку.
+  
+  ``groups`` — опционально предзагруженный список (чтобы не читать config
+  на каждый вызов); по умолчанию грузит через :func:`_get_ip_groups`.
 
 - `group_static_entries(entries: list[StaticEntry]) -> list[dict]`
   Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}.
@@ -431,21 +439,28 @@ Anthropic сам (location / → proxy_pass). В Python catch-all не нуже�
 # app/openvpn.py
 
 Модуль:
-OpenVPN: статус сервиса openvpn@work, управление, список разрешённых MAC.
+OpenVPN: статус сервиса openvpn@<unit>, управление, список разрешённых MAC.
 
 Константы:
 - `CONF_DIR = Path('/etc/home-router-panel/openvpn')`
 - `VPN_MACS_FILE = CONF_DIR / 'vpn_device_macs.txt'`
-- `SERVICE_UNIT = 'openvpn@work'`
+- `_DEFAULT_SERVICE_UNIT = 'openvpn@work'`
 - `HELPER = '/usr/local/sbin/home-router-openvpn-routing'`
 
 Функции:
 
+- `_get_service_unit() -> str`
+  Имя systemd-unit'а OpenVPN из config.yaml (ключ openvpn.service_unit).
+  
+  Fallback на _DEFAULT_SERVICE_UNIT если ключ отсутствует или config не читается.
+
 - `get_openvpn_status() -> dict`
-  Возвращает состояние сервиса openvpn@work и наличие интерфейса tun0.
+  Возвращает состояние сервиса OpenVPN и наличие интерфейса tun0.
+  
+  В dict включён ключ ``service_unit`` — реальное имя unit'а (для шаблона).
 
 - `openvpn_action(action: str) -> tuple[bool, str]`
-  Выполняет start/stop/restart для openvpn@work через sudo.
+  Выполняет start/stop/restart для сервиса OpenVPN через sudo.
 
 - `read_vpn_macs() -> list[str]`
   Читает список MAC-адресов из vpn_device_macs.txt.

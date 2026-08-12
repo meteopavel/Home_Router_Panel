@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from app.config import load_config
+
 
 # ── Константы ─────────────────────────────────────────────────────────────────
 
@@ -16,8 +18,11 @@ DNSMASQ_D = Path('/etc/dnsmasq.d')
 _HOSTNAME_RE = re.compile(r'^[a-zA-Z0-9\-]{1,63}$')
 _IP_RE = re.compile(r'^(\d{1,3}\.){3}\d{1,3}$')
 
-# Диапазоны последнего октета IP → название группы устройств
-_IP_GROUPS: list[tuple[int, int, str]] = [
+# Диапазоны последнего октета IP → название группы устройств.
+# Это generic-фолбэк; реальные метки переопределяются в config.yaml (ключ ip_groups),
+# чтобы не публиковать конкретные группы устройств в публичном репозитории.
+# Формат элемента в config.yaml: [lo, hi, "название группы"].
+_DEFAULT_IP_GROUPS: list[tuple[int, int, str]] = [
     (1,   9,   'Сетевое оборудование'),
     (10,  19,  'Компьютеры'),
     (20,  39,  'IoT'),
@@ -27,7 +32,28 @@ _IP_GROUPS: list[tuple[int, int, str]] = [
     (110, 119, 'Группа 110-119'),
     (200, 209, 'Группа 200-209'),
 ]
-IP_GROUP_NAMES: list[str] = list(dict.fromkeys(n for _, _, n in _IP_GROUPS))
+
+
+def _get_ip_groups() -> list[tuple[int, int, str]]:
+    """Возвращает IP-группы из config.yaml, фолбэк на _DEFAULT_IP_GROUPS.
+
+    Ключ config.yaml: ``ip_groups`` — список ``[lo, hi, "название"]``.
+    При отсутствии ключа или невалидных данных возвращает дефолт.
+    """
+    try:
+        custom = load_config().get('ip_groups')
+    except Exception:
+        return _DEFAULT_IP_GROUPS
+    if not isinstance(custom, list) or not custom:
+        return _DEFAULT_IP_GROUPS
+    parsed: list[tuple[int, int, str]] = []
+    for item in custom:
+        try:
+            lo, hi, name = item
+            parsed.append((int(lo), int(hi), str(name)))
+        except (TypeError, ValueError):
+            return _DEFAULT_IP_GROUPS
+    return parsed or _DEFAULT_IP_GROUPS
 
 
 # ── Датаклассы ────────────────────────────────────────────────────────────────
@@ -309,13 +335,19 @@ def restart_dnsmasq() -> tuple[bool, str]:
 
 # ── Группировка по диапазонам IP ──────────────────────────────────────────────
 
-def get_ip_group(ip: str) -> str:
-    """Возвращает название группы по последнему октету IP или пустую строку."""
+def get_ip_group(ip: str, groups: list[tuple[int, int, str]] | None = None) -> str:
+    """Возвращает название группы по последнему октету IP или пустую строку.
+
+    ``groups`` — опционально предзагруженный список (чтобы не читать config
+    на каждый вызов); по умолчанию грузит через :func:`_get_ip_groups`.
+    """
+    if groups is None:
+        groups = _get_ip_groups()
     try:
         last = int(ip.rsplit('.', 1)[-1])
     except (ValueError, IndexError):
         return ''
-    for lo, hi, name in _IP_GROUPS:
+    for lo, hi, name in groups:
         if lo <= last <= hi:
             return name
     return ''
@@ -323,20 +355,22 @@ def get_ip_group(ip: str) -> str:
 
 def group_static_entries(entries: list[StaticEntry]) -> list[dict]:
     """Группирует записи по диапазонам IP. Возвращает список {name, lo, hi, entries}."""
-    buckets: dict[str, list[StaticEntry]] = {n: [] for n in IP_GROUP_NAMES}
+    groups = _get_ip_groups()
+    group_names = list(dict.fromkeys(n for _, _, n in groups))
+    buckets: dict[str, list[StaticEntry]] = {n: [] for n in group_names}
     ungrouped: list[StaticEntry] = []
     for e in entries:
-        g = get_ip_group(e.ip)
+        g = get_ip_group(e.ip, groups)
         if g and g != 'Динамический пул':
             buckets[g].append(e)
         else:
             ungrouped.append(e)
     result = []
-    for name in IP_GROUP_NAMES:
+    for name in group_names:
         if name == 'Динамический пул':
             continue
-        lo = min(lo for lo, hi, n in _IP_GROUPS if n == name)
-        hi = max(hi for lo, hi, n in _IP_GROUPS if n == name)
+        lo = min(lo for lo, hi, n in groups if n == name)
+        hi = max(hi for lo, hi, n in groups if n == name)
         result.append({'name': name, 'lo': lo, 'hi': hi, 'entries': buckets[name]})
     if ungrouped:
         result.append({'name': 'Прочие', 'lo': None, 'hi': None, 'entries': ungrouped})

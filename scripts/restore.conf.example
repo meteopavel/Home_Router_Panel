@@ -1,0 +1,38 @@
+# Конфигурация скрипта restore-databases-to-mac.sh.
+# Скопируйте этот файл в $HOME/.config/home-router-panel/restore.conf
+# (или в путь из переменной RESTORE_CONF) и заполните значениями
+# для вашего окружения.
+
+# Хост backup-сервера (SSH-алиас из ~/.ssh/config)
+BACKUP_HOST=your_backup_host_alias
+
+# Путь к последнему архиву ночного бэкапа БД на backup-сервере
+BACKUP_PATH=/path/to/db-backup-latest.7z
+
+# --- Проект A (postgres) ---
+
+# Каталог проекта с docker-compose (где поднимается postgres/rabbitmq/memcached)
+PROJECT_A_DIR=$HOME/PycharmProjects/your-project-a
+
+# Имя postgres-контейнера (как в `docker compose ps`)
+PROJECT_A_CONTAINER=your-project-a-postgres-1
+
+# Имя восстанавливаемой БД в postgres
+PROJECT_A_DB=your_db_name
+
+# Имя SQL-дампа postgres внутри архива бэкапа
+PROJECT_A_DUMP=your_project_a_postgres.sql
+
+# --- Проект B (mysql) ---
+
+# Каталог проекта с docker-compose (где поднимается mysql)
+PROJECT_B_DIR=$HOME/PycharmProjects/your-project-b
+
+# Имя mysql-контейнера
+PROJECT_B_CONTAINER=your-project-b-mysql-1
+
+# Имя SQL-дампа mysql внутри архива бэкапа
+PROJECT_B_DUMP=your_project_b_mysql.sql
+
+# Пароль root для mysql (для mysqladmin ping / mysql restore)
+MYSQL_ROOT_PASSWORD=your_mysql_root_password

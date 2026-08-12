@@ -11,3 +11,20 @@ services:
 
 hotlists:
   zapret_main: "/opt/zapret/ipset/zapret-hosts-user.txt"
+
+# Диапазоны последнего октета IP → название группы устройств (вкладка dnsmasq).
+# Этот список полностью заменяет дефолт из app/dnsmasq.py — укажите все нужные
+# группы. Формат элемента: [lo, hi, "название группы"].
+ip_groups:
+  - [1,   9,   "Сетевое оборудование"]
+  - [10,  19,  "Компьютеры"]
+  - [20,  39,  "IoT"]
+  - [40,  49,  "Медиа"]
+  - [50,  59,  "Телефоны"]
+  - [60,  79,  "Динамический пул"]
+  - [110, 119, "your-group-label"]
+  - [200, 209, "your-group-label"]
+
+# Имя systemd-unit'а для вкладки OpenVPN (openvpn@<instance>).
+openvpn:
+  service_unit: openvpn@work
