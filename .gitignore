@@ -88,6 +88,7 @@ logs/
 # IDEs / editors
 .idea/
 .vscode/
+.zcode/
 *.swp
 *.swo
 .DS_Store
@@ -114,3 +115,13 @@ secure/
 # Local project files (not for git)
 CLAUDE.md
 config.yaml
+
+# Private docs (по образцу Python_Practice_Hub/Briefing)
+/docs/
+
+# MCP client config (contains bearer token)
+.mcp.json
+
+# Временное: scripts/install-claude-gateway-autostart.sh относится к подсистеме
+# Claude→GLM и удаляется в ref.1; до тех пор не коммитить. Снять исключение в ref.1.
+scripts/install-claude-gateway-autostart.sh

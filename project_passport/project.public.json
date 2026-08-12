@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-07-23T11:01:55.108322+00:00",
+  "generated_at": "2026-08-12T12:45:18.570646+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -46,7 +46,7 @@
     "dataclasses": 4,
     "functions": 103,
     "methods": 0,
-    "constants": 32,
+    "constants": 34,
     "has_cli": false,
     "has_redmine_integration": false,
     "has_document_generation": false,
@@ -101,13 +101,13 @@
       },
       {
         "path": "app/claude.py",
-        "summary": "Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.",
+        "summary": "Вкладка Claude → GLM: перехват api.anthropic.com для выбранных MAC.",
         "stats": {
           "classes": 0,
           "dataclasses": 0,
           "functions": 14,
           "methods": 0,
-          "constants": 9
+          "constants": 11
         }
       },
       {
@@ -142,7 +142,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-07-23T11:01:55.010612+00:00",
+    "api_map_generated_at": "2026-08-12T12:45:18.469898+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"

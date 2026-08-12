@@ -10,7 +10,7 @@
 - dataclass: 4
 - функций: 103
 - методов: 0
-- констант: 32
+- констант: 34
 
 ---
 
@@ -98,17 +98,17 @@
 # app/claude.py
 
 Модуль:
-Вкладка Claude → GLM: редирект api.anthropic.com на GLM (z.ai) для выбранных MAC.
+Вкладка Claude → GLM: перехват api.anthropic.com для выбранных MAC.
 
-Перехват происходит на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC —
-см. scripts/home-router-claude-gateway). Этот модуль отвечает за:
-  - управление списком MAC (/etc/home-router-panel/claude/macs.txt) из UI;
-  - прокси POST /v1/messages → https://api.z.ai/api/anthropic/v1/messages
-    с маппингом модели (haiku→glm-4.7, sonnet/opus→glm-5.2) и z.ai-ключом.
+Перехват на сетевом уровне (dnsmasq ipset + iptables DNAT per-MAC — см.
+scripts/home-router-claude-gateway). Этот модуль:
+  - управляет списком MAC (/etc/home-router-panel/claude/macs.txt) из UI;
+  - per-model роутинг POST /v1/messages*:
+      Fable/Haiku → GLM (z.ai), Sonnet/Opus/прочее → настоящий Anthropic (passthrough).
+    Выбором модели в приложении выбирается бэкенд (GLM без лимитов vs. настоящий Anthropic).
 
 Остальные пути api.anthropic.com (auth/OAuth/телеметрия) nginx отдаёт настоящему
-Anthropic сам (location / → proxy_pass https://api.anthropic.com) — в Python catch-all
-не нужен, поэтому с UI-роутами панели конфликтов нет.
+Anthropic сам (location / → proxy_pass). В Python catch-all не нужен.
 
 Константы:
 - `CONF_DIR = Path('/etc/home-router-panel/claude')`
@@ -116,15 +116,17 @@ Anthropic сам (location / → proxy_pass https://api.anthropic.com) — в Py
 - `ZAI_KEY_FILE = CONF_DIR / 'zai.key'`
 - `HELPER = '/usr/local/sbin/home-router-claude-gateway'`
 - `ZAI_BASE = 'https://api.z.ai/api/anthropic'`
+- `ANTHROPIC_BASE = 'https://api.anthropic.com'`
 - `ANTHROPIC_VERSION_DEFAULT = '2023-06-01'`
-- `DEFAULT_GLM_MODEL = 'glm-5.2'`
-- `MODEL_PREFIX_MAP: tuple[tuple[str, str], ...] = (('haiku', 'glm-4.7'), ('sonnet', 'glm-5.2'), ('opus', 'glm-5.2'))`
+- `ROUTING: tuple[tuple[str, str, str | None], ...] = (('haiku', 'zai', 'glm-5.2'), ('sonnet-4', 'zai', 'glm-4.7'), ('sonnet', 'anthropic', None), ('opus…`
+- `DEFAULT_BACKEND = 'anthropic'`
+- `_HOP_BY_HOP = frozenset({'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization', 'te', 'trailers…`
 - `PROJECT_ROOT = Path(__file__).resolve().parent.parent`
 
 Функции:
 
 - `read_macs() -> list[str]`
-  Список MAC-адресов, для которых api.anthropic.com уходит в GLM.
+  Список MAC-адресов, для которых api.anthropic.com перехватывается.
 
 - `write_macs(macs: list[str]) -> None`
   Нет докстринга.
@@ -138,14 +140,14 @@ Anthropic сам (location / → proxy_pass https://api.anthropic.com) — в Py
 - `get_status() -> dict`
   Нет докстринга.
 
-- `_map_model(model: str) -> str`
-  Нет докстринга.
+- `_route(model: str) -> tuple[str, str | None]`
+  Возвращает (backend, target) по префиксу модели. backend: 'zai' | 'anthropic'.
 
 - `_read_zai_key() -> str | None`
   Нет докстринга.
 
-- `_forward_to_zai(request: Request) -> StreamingResponse`
-  POST /v1/messages* → z.ai: маппинг модели, z.ai-ключ, стриминг ответа.
+- `_proxy(request: Request) -> StreamingResponse`
+  POST /v1/messages* → per-model роутинг: GLM (z.ai) или настоящий Anthropic.
 
 - `_context(request: Request, msg: str = '', error: str = '') -> dict`
   Нет докстринга.
@@ -160,10 +162,10 @@ Anthropic сам (location / → proxy_pass https://api.anthropic.com) — в Py
   Нет докстринга.
 
 - `claude_messages(request: Request)`
-  Anthropic Messages API → GLM (z.ai).
+  Anthropic Messages API → per-model роутинг (GLM или настоящий Anthropic).
 
 - `claude_count_tokens(request: Request)`
-  Счётчик токенов — тоже через GLM.
+  Нет докстринга.
 
 ---
 

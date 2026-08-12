@@ -137,10 +137,15 @@ if [[ "$BACKUP_OK" -eq 1 ]]; then
     if [[ -f "${ARCHIVE_PATH}" ]]; then
         rm -f "${ARCHIVE_PATH}"
     fi
-    log "🔒 Создаём зашифрованный архив (.env)..."
+    # Sensitive-цели: .env + приватная дока (docs/, CLAUDE.md). Только существующие.
+    BACKUP_TARGETS=()
+    [[ -f ".env" ]] && BACKUP_TARGETS+=(".env")
+    [[ -d "docs" ]] && BACKUP_TARGETS+=("docs")
+    [[ -f "CLAUDE.md" ]] && BACKUP_TARGETS+=("CLAUDE.md")
+    log "🔒 Создаём зашифрованный архив (${BACKUP_TARGETS[*]})..."
     (
         cd "${PROJECT_ROOT}"
-        7z a -p"${ARCHIVE_PASSWORD}" -mhe=on "${ARCHIVE_PATH}" ".env" > /dev/null
+        7z a -p"${ARCHIVE_PASSWORD}" -mhe=on "${ARCHIVE_PATH}" "${BACKUP_TARGETS[@]}" > /dev/null
     )
     log "📤 Отправляем архив на backup-сервер..."
     run_with_heartbeat "отправка backup" \
