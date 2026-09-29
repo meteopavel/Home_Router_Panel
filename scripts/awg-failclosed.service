@@ -1,0 +1,27 @@
+# awg-failclosed.service — fail-closed guard маршрутизации AWG
+#
+# При загрузке (и по таймеру awg-failclosed.timer) запускает tg-vpn-routing-up.sh.
+# Даже если awg0 не поднялся: ipset'ы наполняются резолвом, sentinel-правила
+# FORWARD (DROP не-через-awg0) установлены — трафик AWG-списков блокируется,
+# а не уходит напрямую через WAN провайдера.
+#
+# УСТАНОВКА:
+#   sudo cp scripts/awg-failclosed.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now awg-failclosed.service awg-failclosed.timer
+#
+# Пустые ipset'ы к моменту netfilter-persistent создаёт раньше
+# awg-ipsets-bootstrap.service — порядок между ними не критичен:
+# этот юнит дорабатывает наполнение и правила.
+
+[Unit]
+Description=AWG routing fail-closed guard (ipsets + drop rules, works without awg0)
+After=network-online.target dnsmasq.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/tg-vpn-routing-up.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
-# tg-vpn-routing-up.sh — применяет маршрутизацию через AWG (awg0)
+# tg-vpn-routing-up.sh — применяет маршрутизацию через AWG (awg0) + fail-closed guard
 #
 # Читает конфигурацию из /etc/home-router-panel/awg/
-# Вызывается как PostUp в awg0.conf и кнопкой «Применить маршрутизацию» в панели.
+# Вызывается как PostUp в awg0.conf, кнопкой «Применить маршрутизацию» в панели
+# и юнитом awg-failclosed.service (guard-режим при загрузке / таймер обновления).
 #
 # Идемпотентен: безопасно запускать повторно без дублирования правил.
 # Для iptables mangle использует отдельную цепочку TG_VPN_ROUTING —
 # она сбрасывается и перестраивается при каждом запуске. Другие правила не затрагиваются.
+#
+# FAIL-CLOSED: резолв доменов, ipset'ы и sentinel-правила FORWARD строятся ВСЕГДА,
+# независимо от наличия awg0. Sentinel: пакеты к сетям AWG-списков (и от MAC-устройств),
+# выходящие НЕ через awg0 — DROP. Если туннель упал или остановлен, трафик списков
+# не уходит напрямую через WAN провайдера (раньше уходил молча).
 #
 # УСТАНОВКА:
 #   sudo cp scripts/tg-vpn-routing-up.sh /usr/local/sbin/
@@ -34,6 +40,23 @@ CHAIN="TG_VPN_ROUTING"
 log() { echo "[awg-routing] $*"; }
 warn() { echo "[awg-routing] WARN: $*" >&2; }
 
+# ── Сериализация: PostUp/кнопка/таймер могут пересечься ───────────────────────
+mkdir -p /run
+exec 200>/run/tg-vpn-routing.lock
+if ! flock -n 200; then
+    warn "другой экземпляр уже работает — выходим"
+    exit 0
+fi
+
+# ── Режим: awg0 есть или guard без туннеля ────────────────────────────────────
+if ip link show "$AWG_IFACE" &>/dev/null; then
+    AWG_UP="yes"
+    log "Интерфейс $AWG_IFACE найден — полная маршрутизация."
+else
+    AWG_UP="no"
+    warn "Интерфейс $AWG_IFACE отсутствует — режим fail-closed guard: ipset'ы и sentinel DROP строятся, туннельная часть пропускается. Трафик AWG-списков блокируется до подъёма туннеля."
+fi
+
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 read_conf_lines() {
@@ -56,37 +79,19 @@ ensure_ipset() {
     fi
 }
 
-# ── Таблица маршрутизации ─────────────────────────────────────────────────────
+# sentinel-правило в FORWARD: вставить первым, если его ещё нет
+ensure_fwd_drop() {
+    if ! iptables -C FORWARD "$@" -j DROP 2>/dev/null; then
+        iptables -I FORWARD 1 "$@" -j DROP
+    fi
+}
 
-log "Настройка ip route table $ROUTE_TABLE..."
-if ! ip route show table "$ROUTE_TABLE" | grep -q "default dev $AWG_IFACE"; then
-    ip route replace default dev "$AWG_IFACE" table "$ROUTE_TABLE"
-fi
-
-log "Настройка ip rule fwmark $FWMARK/$FWMARK_MASK → table $ROUTE_TABLE..."
-if ! ip rule show | grep -q "fwmark $FWMARK/$FWMARK_MASK.*lookup $ROUTE_TABLE"; then
-    ip rule add fwmark "$FWMARK/$FWMARK_MASK" table "$ROUTE_TABLE" priority 100
-fi
-
-# ── NAT и forwarding ──────────────────────────────────────────────────────────
+# ── Forwarding ────────────────────────────────────────────────────────────────
 
 log "Настройка ip_forward..."
 sysctl -w net.ipv4.ip_forward=1 >/dev/null
 
-log "Настройка MASQUERADE для $AWG_IFACE..."
-if ! iptables -t nat -C POSTROUTING -o "$AWG_IFACE" -j MASQUERADE 2>/dev/null; then
-    iptables -t nat -A POSTROUTING -o "$AWG_IFACE" -j MASQUERADE
-fi
-
-log "Настройка FORWARD правил..."
-if ! iptables -C FORWARD -i "$LAN_IFACE" -o "$AWG_IFACE" -j ACCEPT 2>/dev/null; then
-    iptables -A FORWARD -i "$LAN_IFACE" -o "$AWG_IFACE" -j ACCEPT
-fi
-if ! iptables -C FORWARD -i "$AWG_IFACE" -o "$LAN_IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT 2>/dev/null; then
-    iptables -A FORWARD -i "$AWG_IFACE" -o "$LAN_IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT
-fi
-
-# ── Цепочка TG_VPN_ROUTING ───────────────────────────────────────────────────
+# ── Цепочка TG_VPN_ROUTING (маркировка) ───────────────────────────────────────
 #
 # Цепочка пересоздаётся при каждом запуске — правила обновляются без дублирования.
 # Прыжок из PREROUTING фильтрует:
@@ -116,6 +121,9 @@ log "  tg_nets: $count записей"
 
 iptables -t mangle -A "$CHAIN" -m set --match-set tg_nets dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
 
+log "Sentinel DROP: tg_nets не через $AWG_IFACE..."
+ensure_fwd_drop -m set --match-set tg_nets dst ! -o "$AWG_IFACE"
+
 # ── ipset: домены (все *_domains.txt из CONF_DIR) ────────────────────────────
 
 for domains_file in "$CONF_DIR"/*_domains.txt; do
@@ -135,23 +143,10 @@ for domains_file in "$CONF_DIR"/*_domains.txt; do
     log "  $ipset_name: $count IP"
 
     iptables -t mangle -A "$CHAIN" -m set --match-set "$ipset_name" dst -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+
+    log "Sentinel DROP: $ipset_name не через $AWG_IFACE..."
+    ensure_fwd_drop -m set --match-set "$ipset_name" dst ! -o "$AWG_IFACE"
 done
-
-# ── Статические маршруты для SS-серверов ─────────────────────────────────────
-# IP SS-серверов заблокированы в РФ — маршрутизируем их через awg0 напрямую
-# (трафик ss-local идёт через OUTPUT, не через PREROUTING, поэтому ipset не поможет).
-
-log "Статические маршруты для SS-серверов из $CONF_DIR/ss_server_ips.txt..."
-count=0
-while IFS= read -r ip; do
-    if ip route get "$ip" 2>/dev/null | grep -q "dev $AWG_IFACE"; then
-        true  # маршрут уже есть
-    else
-        ip route replace "$ip" dev "$AWG_IFACE"
-        (( count++ )) || true
-    fi
-done < <(read_conf_lines "ss_server_ips.txt")
-log "  SS-маршрутов добавлено: $count"
 
 # ── MAC-устройства ────────────────────────────────────────────────────────────
 # MAC-правила добавляем в цепочку напрямую.
@@ -161,8 +156,68 @@ log "Настройка MAC-правил из $CONF_DIR/vpn_device_macs.txt..."
 count=0
 while IFS= read -r mac; do
     iptables -t mangle -A "$CHAIN" -m mac --mac-source "$mac" -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
+    log "Sentinel DROP: $mac не через $AWG_IFACE..."
+    ensure_fwd_drop -m mac --mac-source "$mac" ! -o "$AWG_IFACE"
     (( count++ )) || true
 done < <(read_conf_lines "vpn_device_macs.txt")
 log "  MAC-правил: $count"
 
-log "Маршрутизация через AWG применена."
+# ── Туннельная часть: только при живом awg0 ───────────────────────────────────
+
+if [[ "$AWG_UP" == "yes" ]]; then
+    log "Настройка ip route table $ROUTE_TABLE..."
+    if ! ip route show table "$ROUTE_TABLE" | grep -q "default dev $AWG_IFACE"; then
+        ip route replace default dev "$AWG_IFACE" table "$ROUTE_TABLE"
+    fi
+
+    log "Настройка ip rule fwmark $FWMARK/$FWMARK_MASK → table $ROUTE_TABLE..."
+    if ! ip rule show | grep -q "fwmark $FWMARK/$FWMARK_MASK.*lookup $ROUTE_TABLE"; then
+        ip rule add fwmark "$FWMARK/$FWMARK_MASK" table "$ROUTE_TABLE" priority 100
+    fi
+
+    log "Настройка MASQUERADE для $AWG_IFACE..."
+    if ! iptables -t nat -C POSTROUTING -o "$AWG_IFACE" -j MASQUERADE 2>/dev/null; then
+        iptables -t nat -A POSTROUTING -o "$AWG_IFACE" -j MASQUERADE
+    fi
+
+    log "Настройка FORWARD правил..."
+    if ! iptables -C FORWARD -i "$LAN_IFACE" -o "$AWG_IFACE" -j ACCEPT 2>/dev/null; then
+        iptables -A FORWARD -i "$LAN_IFACE" -o "$AWG_IFACE" -j ACCEPT
+    fi
+    if ! iptables -C FORWARD -i "$AWG_IFACE" -o "$LAN_IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT 2>/dev/null; then
+        iptables -A FORWARD -i "$AWG_IFACE" -o "$LAN_IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT
+    fi
+
+    # Клампинг MSS для TCP через тоннель. Клиенты LAN согласуют MSS 1460 не зная
+    # про awg0; ответные сегменты ~1449+ инкапсулируются во внешний UDP ~1477,
+    # который на транзитном пути Frankfurt→дом может теряться (инцидент
+    # 29.09.2026: 4/5 TLS-хендшейков по ~6 c из-за ретрансмиссий). MSS 1352
+    # даёт внешний пакет 1420 — проверенный проходящий размер (ping DF-1392).
+    log "Настройка TCPMSS clamp (MSS 1352) для $AWG_IFACE..."
+    if ! iptables -t mangle -C FORWARD -o "$AWG_IFACE" -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1352 2>/dev/null; then
+        iptables -t mangle -A FORWARD -o "$AWG_IFACE" -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1352
+    fi
+    if ! iptables -t mangle -C FORWARD -i "$AWG_IFACE" -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1352 2>/dev/null; then
+        iptables -t mangle -A FORWARD -i "$AWG_IFACE" -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --set-mss 1352
+    fi
+
+    # ── Статические маршруты для SS-серверов ─────────────────────────────────
+    # IP SS-серверов заблокированы в РФ — маршрутизируем их через awg0 напрямую
+    # (трафик ss-local идёт через OUTPUT, не через PREROUTING, поэтому ipset не поможет).
+
+    log "Статические маршруты для SS-серверов из $CONF_DIR/ss_server_ips.txt..."
+    count=0
+    while IFS= read -r ip; do
+        if ip route get "$ip" 2>/dev/null | grep -q "dev $AWG_IFACE"; then
+            true  # маршрут уже есть
+        else
+            ip route replace "$ip" dev "$AWG_IFACE"
+            (( count++ )) || true
+        fi
+    done < <(read_conf_lines "ss_server_ips.txt")
+    log "  SS-маршрутов добавлено: $count"
+else
+    warn "Пропущено (нет $AWG_IFACE): table $ROUTE_TABLE, ip rule, MASQUERADE, FORWARD ACCEPT, SS-маршруты."
+fi
+
+log "Маршрутизация через AWG применена (fail-closed guard активен)."

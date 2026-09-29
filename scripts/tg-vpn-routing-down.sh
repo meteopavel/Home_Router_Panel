@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# tg-vpn-routing-down.sh — убирает маршрутизацию через AWG (awg0)
+# tg-vpn-routing-down.sh — убирает туннельную часть маршрутизации AWG (awg0)
 #
 # Вызывается как PreDown в awg0.conf.
-# Удаляет только те правила, которые добавил up-скрипт.
-# Другие правила iptables не затрагиваются.
+# Удаляет только то, что относится к туннелю; другие правила iptables не затрагивает.
+#
+# ВАЖНО (fail-closed): ipset'ы и sentinel-правила FORWARD (DROP не-через-awg0)
+# здесь НЕ удаляются и ipset'ы не очищаются — при остановленном туннеле трафик
+# AWG-списков должен блокироваться, а не уходить напрямую через WAN провайдера.
+# Sentinel-правила и наполнение ipset'ов перестраивает tg-vpn-routing-up.sh
+# (PostUp / awg-failclosed.service); их ручное снятие — осознанное действие
+# отдельными командами iptables/ipset.
 #
 # УСТАНОВКА:
 #   sudo cp scripts/tg-vpn-routing-down.sh /usr/local/sbin/
@@ -43,10 +49,4 @@ log "Удаление FORWARD правил..."
 iptables -D FORWARD -i "$LAN_IFACE" -o "$AWG_IFACE" -j ACCEPT 2>/dev/null || true
 iptables -D FORWARD -i "$AWG_IFACE" -o "$LAN_IFACE" -m state --state RELATED,ESTABLISHED -j ACCEPT 2>/dev/null || true
 
-log "Очистка ipset..."
-for name in tg_nets figma_nets claude_nets; do
-    ipset flush "$name" 2>/dev/null || true
-    ipset destroy "$name" 2>/dev/null || true
-done
-
-log "Маршрутизация через AWG удалена."
+log "Туннельная часть удалена. ipset'ы и sentinel DROP сохранены (fail-closed)."

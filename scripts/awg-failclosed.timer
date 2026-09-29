@@ -1,0 +1,23 @@
+# awg-failclosed.timer — периодическое обновление ipset'ов AWG-маршрутизации
+#
+# Известная грабля: IP доменов из *_domains.txt попадали в ipset только при
+# нажатии «Применить» в панели (или подъёме awg0) — ротация CDN-адресов
+# оставляла ipset устаревшим. Таймер раз в час перезапускает up-скрипт
+# (идемпотентен: пересоздаёт цепочку, flush+наполнение ipset'ов).
+#
+# УСТАНОВКА:
+#   sudo cp scripts/awg-failclosed.timer /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now awg-failclosed.timer
+
+[Unit]
+Description=Hourly refresh of AWG routing ipsets (DNS re-resolve)
+
+[Timer]
+OnBootSec=2min
+OnCalendar=hourly
+Persistent=true
+Unit=awg-failclosed.service
+
+[Install]
+WantedBy=timers.target
