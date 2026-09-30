@@ -196,6 +196,25 @@ for domains_file in "$CONF_DIR"/*_domains.txt; do
     ensure_fwd_drop -m set --match-set "$ipset_name" dst ! -o "$table_iface"
 done
 
+# ── Статические сети awg1 (диапазоны Anthropic — не зависят от DNS) ──────────
+# Защита от рассинхрона резолвов: клиент может получить IP из кэша/чужого DNS,
+# которого нет в доменном ipset — статический CIDR закрывает весь диапазон.
+
+if [[ -f "$CONF_DIR/claude_static_nets.txt" ]]; then
+    log "Заполнение ipset claude_static из claude_static_nets.txt..."
+    ensure_ipset claude_static "hash:net"
+    count=0
+    while IFS= read -r net; do
+        ipset add claude_static "$net" 2>/dev/null || true
+        (( count++ )) || true
+    done < <(read_conf_lines "claude_static_nets.txt")
+    log "  claude_static: $count сетей"
+
+    iptables -t mangle -A "$CHAIN" -m set --match-set claude_static dst -j MARK --set-xmark "$FWMARK_SG/$FWMARK_MASK"
+    log "Sentinel DROP: claude_static не через $SG_IFACE..."
+    ensure_fwd_drop -m set --match-set claude_static dst ! -o "$SG_IFACE"
+fi
+
 # ── MAC-устройства ────────────────────────────────────────────────────────────
 # MAC-правила добавляем в цепочку напрямую.
 # -i enp2s0 уже гарантирован jump-правилом в PREROUTING.
