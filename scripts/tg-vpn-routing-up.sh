@@ -219,14 +219,42 @@ fi
 # MAC-правила добавляем в цепочку напрямую.
 # -i enp2s0 уже гарантирован jump-правилом в PREROUTING.
 
+ACTIVE_MACS=()
+while IFS= read -r mac; do
+    ACTIVE_MACS+=("$(echo "$mac" | tr 'A-F' 'a-f')")
+done < <(read_conf_lines "vpn_device_macs.txt")
+
+# Ghost-сентинелы: DROP-правила «<mac> не через awg0» от прошлых прогонов,
+# чьих MAC уже нет в файле. Раньше sentinel вставлялся при добавлении MAC,
+# но не снимался при удалении: маркировка в mangle пересобирается с нуля,
+# а DROP оставался в FORWARD навсегда и рвал устройству весь транзит
+# (fail-closed срабатывал на включение, но не на выключение — инцидент
+# 04.10.2026, макбук без интернета при живых DHCP/DNS).
+mac_is_active() {
+    local mac="$1" m
+    for m in "${ACTIVE_MACS[@]:-}"; do
+        [[ "$m" == "$mac" ]] && return 0
+    done
+    return 1
+}
+for rule_mac in $(iptables -S FORWARD 2>/dev/null \
+        | sed -n "s/^-A FORWARD ! -o $AWG_IFACE -m mac --mac-source \([0-9a-fA-F:]\{17\}\) -j DROP$/\L\1/p"); do
+    if ! mac_is_active "$rule_mac"; then
+        while iptables -C FORWARD -m mac --mac-source "$rule_mac" ! -o "$AWG_IFACE" -j DROP 2>/dev/null; do
+            iptables -D FORWARD -m mac --mac-source "$rule_mac" ! -o "$AWG_IFACE" -j DROP
+        done
+        log "  удалён ghost-sentinel: MAC $rule_mac отсутствует в vpn_device_macs.txt"
+    fi
+done
+
 log "Настройка MAC-правил из $CONF_DIR/vpn_device_macs.txt..."
 count=0
-while IFS= read -r mac; do
+for mac in "${ACTIVE_MACS[@]:-}"; do
     iptables -t mangle -A "$CHAIN" -m mac --mac-source "$mac" -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
     log "Sentinel DROP: $mac не через $AWG_IFACE..."
-    ensure_fwd_drop -m mac --mac-source "$mac" ! -o "$AWG_IFACE"
+    ensure_fwd_drop -m mac --mac-source "$mac" ! -o "$AWG_IFACE" -j DROP
     (( count++ )) || true
-done < <(read_conf_lines "vpn_device_macs.txt")
+done
 log "  MAC-правил: $count"
 
 # ── Туннельная часть ──────────────────────────────────────────────────────────
