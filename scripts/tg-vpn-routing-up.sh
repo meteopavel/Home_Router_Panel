@@ -252,7 +252,10 @@ count=0
 for mac in "${ACTIVE_MACS[@]:-}"; do
     iptables -t mangle -A "$CHAIN" -m mac --mac-source "$mac" -j MARK --set-xmark "$FWMARK/$FWMARK_MASK"
     log "Sentinel DROP: $mac не через $AWG_IFACE..."
-    ensure_fwd_drop -m mac --mac-source "$mac" ! -o "$AWG_IFACE" -j DROP
+    # -j DROP добавляет сама ensure_fwd_drop; тут дополнительно передать его
+    # нельзя — «multiple -j flags» роняет прогон на первом MAC (живой хотфикс
+    # на р1 это уже чинил, в репо сломанный вызов дожил до feat.24).
+    ensure_fwd_drop -m mac --mac-source "$mac" ! -o "$AWG_IFACE"
     (( count++ )) || true
 done
 log "  MAC-правил: $count"
