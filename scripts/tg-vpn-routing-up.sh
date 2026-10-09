@@ -135,10 +135,9 @@ drop_stale_sentinel() {
 }
 
 # Включает conf-dir=/etc/dnsmasq.d в основной конфиг dnsmasq — одноразово
-# (бэкап .bak-awg-ipsets, один restart при первом прогоне; дальше изменения
-# сниппета подхватывает inotify + reload, без рестартов — урок bug.4).
-# Вызывать ДО публикации сниппета: пока conf-dir выключен, dnsmasq --test
-# новый сниппет не увидит, а рестарт с непроверенным конфигом уронил бы DNS.
+# (бэкап .bak-awg-ipsets, один restart при первом прогоне). Вызывать ДО
+# публикации сниппета: пока conf-dir выключен, dnsmasq --test новый сниппет
+# не увидит, а рестарт с непроверенным конфигом уронил бы DNS.
 ensure_dnsmasq_conf_dir() {
     if grep -Eq '^[[:space:]]*conf-dir' "$DNSMASQ_MAIN_CONF"; then
         return 0
@@ -168,7 +167,11 @@ publish_dnsmasq_snippet() {
         printf '%s\n' "${DNS_SNIPPET_LINES[@]}"
     } >"$tmp"
     chmod 644 "$tmp"
-    mv "$tmp" "$DNSMASQ_SNIPPET"
+    # Перезапись ПОВЕРХ существующего файла, не mv: inotify dnsmasq не поймал
+    # MOVED_TO при первом внедрении (конфиг подхватился только рестартом).
+    # Переписывание содержимого — IN_MODIFY, канонический случай живого
+    # перечитывания conf-dir; для несуществующего файла — IN_CREATE.
+    cat "$tmp" >"$DNSMASQ_SNIPPET" && rm -f "$tmp"
     if ! dnsmasq --test >/dev/null 2>&1; then
         warn "dnsmasq --test провалился — откат сниппета, DNS-подача пропущена (getent-слой работает)"
         if [ "$had_old" = "yes" ]; then
@@ -179,6 +182,9 @@ publish_dnsmasq_snippet() {
         return 0
     fi
     if [ "$had_old" = "no" ] || ! printf '%s\n' "$old_backup" | cmp -s - "$DNSMASQ_SNIPPET"; then
+        # reload (SIGHUP) конфиг не перечитывает — только чистит кэш, чтобы
+        # следующие резолвы прошли заново и попали в ipset'ы; сами ipset=
+        # строки подхватывает inotify по перезаписи файла
         systemctl reload dnsmasq 2>/dev/null || killall -HUP dnsmasq 2>/dev/null || true
         log "dnsmasq: сниппет ipset обновлён (${#DNS_SNIPPET_LINES[@]} строк), reload"
     else
