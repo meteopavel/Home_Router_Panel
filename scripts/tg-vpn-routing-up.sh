@@ -29,6 +29,16 @@
 # Строка «*.домен» в списке превращается в паттерн «домен»: dnsmasq матчит
 # все поддомены — getent wildcard не резолвит, строка раньше была мёртвой.
 #
+# РЕЖИМ (регрессия 09.10.2026): подача «в момент резолва» ломает УЖЕ ОТКРЫТЫЕ
+# напрямую соединения — IP прилетает в ipset посреди TCP-потока, пакеты
+# внезапно уходят через awg0 с другим исходным IP → сервер рвёт соединение.
+# PyCharm при старте генерит пачку резолвов (свои + google/gstatic из
+# custom_nets) → каскад умирающих коннектов на клиенте («сеть ложится»).
+# Поэтому DNS-fed выключается флаг-файлом $CONF_DIR/dns_fed_ipsets.off
+# (публикуется пустой сниппет, остаётся часовой getent-снимок — режим
+# «до bug.10»). Включать на время апдейта PyCharm/JetBrains: убрать флаг
+# и нажать Apply; после апдейта — вернуть флаг.
+#
 # УСТАНОВКА:
 #   sudo cp scripts/tg-vpn-routing-up.sh /usr/local/sbin/
 #   sudo chmod 755 /usr/local/sbin/tg-vpn-routing-up.sh
@@ -154,7 +164,14 @@ ensure_dnsmasq_conf_dir() {
 # dnsmasq.d (иначе следующий рестарт службы уронит DNS всей сети).
 publish_dnsmasq_snippet() {
     mkdir -p "$DNSMASQ_SNIPPET_DIR"
-    local tmp had_old="no" old_backup=""
+    local tmp had_old="no" old_backup="" fed_mode="on"
+    # Режимный флаг: при dns_fed_ipsets.off — «как до bug.10» (только часовой
+    # getent-снимок): сниппет публикуется пустым, dnsmasq выгружает ipset=-подачи
+    # перечитыванием файла. Причина выключения — регрессия 09.10, см. шапку.
+    if [ -f "$CONF_DIR/dns_fed_ipsets.off" ]; then
+        fed_mode="off"
+        DNS_SNIPPET_LINES=()
+    fi
     if [ -f "$DNSMASQ_SNIPPET" ]; then
         had_old="yes"
         old_backup=$(cat "$DNSMASQ_SNIPPET")
@@ -164,6 +181,11 @@ publish_dnsmasq_snippet() {
         echo "# Сгенерировано tg-vpn-routing-up.sh — не редактировать вручную."
         echo "# DNS-fed ipsets: dnsmasq добавляет выданные клиентам IP в ipset'ы"
         echo "# AWG-списков в момент резолва (bug.10: CDN-ротация vs часовой getent)."
+        if [ "$fed_mode" = "on" ]; then
+            echo "# Режим: ВКЛ"
+        else
+            echo "# Режим: ВЫКЛ (флаг dns_fed_ipsets.off) — сниппет пуст, работает только getent-снимок"
+        fi
         printf '%s\n' "${DNS_SNIPPET_LINES[@]}"
     } >"$tmp"
     chmod 644 "$tmp"
@@ -189,6 +211,9 @@ publish_dnsmasq_snippet() {
         log "dnsmasq: сниппет ipset обновлён (${#DNS_SNIPPET_LINES[@]} строк), reload"
     else
         log "dnsmasq: сниппет ipset без изменений"
+    fi
+    if [ "$fed_mode" = "off" ]; then
+        log "dnsmasq: DNS-fed ipsets ВЫКЛЮЧЕН (dns_fed_ipsets.off) — режим «до bug.10»"
     fi
     return 0
 }
