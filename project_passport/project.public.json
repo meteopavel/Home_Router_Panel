@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-09-30T04:58:48.248256+00:00",
+  "generated_at": "2026-10-09T04:54:19.253043+00:00",
   "generated_by": "tools/build_project_passport.py",
   "id": "home-router-panel",
   "title": "Home Router Panel",
@@ -142,7 +142,7 @@
   },
   "source": {
     "api_map_schema_version": "1.0",
-    "api_map_generated_at": "2026-09-30T04:58:48.050056+00:00",
+    "api_map_generated_at": "2026-10-09T04:54:19.117919+00:00",
     "api_map_generator": "tools/extract_api_map.py",
     "meta_auto_generated": true,
     "meta_review_status": "draft"

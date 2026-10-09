@@ -21,6 +21,14 @@
 # независимо от наличия туннелей. Sentinel: пакеты к сетям AWG-списков (и от
 # MAC-устройств), выходящие НЕ через свой туннель — DROP.
 #
+# DNS-FED IPSETS (bug.10): кроме часового снимка getent, ipset'ы списков
+# наполняет dnsmasq в момент ответа клиенту (ipset=/<домен>/<ipset> в
+# /etc/dnsmasq.d/home-router-awg-ipsets.conf) — выданный клиенту IP мгновенно
+# в сете, CDN-ротация (CloudFront TTL 6–60 с) больше не уводит трафик мимо
+# туннеля (инцидент: HTTP 451 от download.jetbrains.com при уходе в WAN).
+# Строка «*.домен» в списке превращается в паттерн «домен»: dnsmasq матчит
+# все поддомены — getent wildcard не резолвит, строка раньше была мёртвой.
+#
 # УСТАНОВКА:
 #   sudo cp scripts/tg-vpn-routing-up.sh /usr/local/sbin/
 #   sudo chmod 755 /usr/local/sbin/tg-vpn-routing-up.sh
@@ -40,6 +48,10 @@ SG_IFACE="awg1"            # Сингапур
 LAN_IFACE="enp2s0"
 LOCAL_NET="192.168.100.0/24"
 CONF_DIR="/etc/home-router-panel/awg"
+DNSMASQ_MAIN_CONF="/etc/dnsmasq.conf"
+DNSMASQ_SNIPPET_DIR="/etc/dnsmasq.d"
+DNSMASQ_SNIPPET="$DNSMASQ_SNIPPET_DIR/home-router-awg-ipsets.conf"
+DNS_SNIPPET_LINES=()
 FWMARK="0x66"
 FWMARK_MASK="0xff"
 ROUTE_TABLE="100"
@@ -122,6 +134,59 @@ drop_stale_sentinel() {
     done
 }
 
+# Включает conf-dir=/etc/dnsmasq.d в основной конфиг dnsmasq — одноразово
+# (бэкап .bak-awg-ipsets, один restart при первом прогоне; дальше изменения
+# сниппета подхватывает inotify + reload, без рестартов — урок bug.4).
+# Вызывать ДО публикации сниппета: пока conf-dir выключен, dnsmasq --test
+# новый сниппет не увидит, а рестарт с непроверенным конфигом уронил бы DNS.
+ensure_dnsmasq_conf_dir() {
+    if grep -Eq '^[[:space:]]*conf-dir' "$DNSMASQ_MAIN_CONF"; then
+        return 0
+    fi
+    log "dnsmasq: включаю conf-dir=$DNSMASQ_SNIPPET_DIR в $DNSMASQ_MAIN_CONF (одноразовый restart)..."
+    cp "$DNSMASQ_MAIN_CONF" "${DNSMASQ_MAIN_CONF}.bak-awg-ipsets"
+    printf '\n# AWG DNS-fed ipsets (tg-vpn-routing-up.sh): подача ipset= в момент резолва\nconf-dir=%s/,*.conf\n' "$DNSMASQ_SNIPPET_DIR" >> "$DNSMASQ_MAIN_CONF"
+    systemctl restart dnsmasq
+    log "dnsmasq: conf-dir включён, сервис перезапущен"
+}
+
+# Публикует сниппет ipset=/домен/сет атомарно. Битый конфиг откатывается по
+# dnsmasq --test — dnsmasq никогда не должен остаться с неконсистентным
+# dnsmasq.d (иначе следующий рестарт службы уронит DNS всей сети).
+publish_dnsmasq_snippet() {
+    mkdir -p "$DNSMASQ_SNIPPET_DIR"
+    local tmp had_old="no" old_backup=""
+    if [ -f "$DNSMASQ_SNIPPET" ]; then
+        had_old="yes"
+        old_backup=$(cat "$DNSMASQ_SNIPPET")
+    fi
+    tmp=$(mktemp "$DNSMASQ_SNIPPET_DIR/.awg-ipsets.XXXXXX")
+    {
+        echo "# Сгенерировано tg-vpn-routing-up.sh — не редактировать вручную."
+        echo "# DNS-fed ipsets: dnsmasq добавляет выданные клиентам IP в ipset'ы"
+        echo "# AWG-списков в момент резолва (bug.10: CDN-ротация vs часовой getent)."
+        printf '%s\n' "${DNS_SNIPPET_LINES[@]}"
+    } >"$tmp"
+    chmod 644 "$tmp"
+    mv "$tmp" "$DNSMASQ_SNIPPET"
+    if ! dnsmasq --test >/dev/null 2>&1; then
+        warn "dnsmasq --test провалился — откат сниппета, DNS-подача пропущена (getent-слой работает)"
+        if [ "$had_old" = "yes" ]; then
+            printf '%s\n' "$old_backup" >"$DNSMASQ_SNIPPET"
+        else
+            rm -f "$DNSMASQ_SNIPPET"
+        fi
+        return 0
+    fi
+    if [ "$had_old" = "no" ] || ! printf '%s\n' "$old_backup" | cmp -s - "$DNSMASQ_SNIPPET"; then
+        systemctl reload dnsmasq 2>/dev/null || killall -HUP dnsmasq 2>/dev/null || true
+        log "dnsmasq: сниппет ipset обновлён (${#DNS_SNIPPET_LINES[@]} строк), reload"
+    else
+        log "dnsmasq: сниппет ipset без изменений"
+    fi
+    return 0
+}
+
 # ── Forwarding ────────────────────────────────────────────────────────────────
 
 log "Настройка ip_forward..."
@@ -177,6 +242,14 @@ for domains_file in "$CONF_DIR"/*_domains.txt; do
     ensure_ipset "$ipset_name" "hash:ip"
     count=0
     while IFS= read -r domain; do
+        # DNS-fed: паттерн для dnsmasq (буквальный домен; «*.база» → «база»,
+        # покрывает все поддомены)
+        pattern="${domain#\*.}"
+        if [[ "$pattern" =~ ^[a-zA-Z0-9._-]+$ ]]; then
+            DNS_SNIPPET_LINES+=("ipset=/$pattern/$ipset_name")
+        else
+            warn "  пропущен в dnsmasq-сниппете (не похоже на домен): $domain"
+        fi
         while IFS= read -r ip; do
             ipset add "$ipset_name" "$ip" 2>/dev/null || true
             (( count++ )) || true
@@ -195,6 +268,12 @@ for domains_file in "$CONF_DIR"/*_domains.txt; do
     log "Sentinel DROP: $ipset_name не через $table_iface..."
     ensure_fwd_drop -m set --match-set "$ipset_name" dst ! -o "$table_iface"
 done
+
+# ── DNS-fed ipsets: публикация сниппета для dnsmasq ──────────────────────────
+# Сначала conf-dir (одноразовый рестарт с ещё пустым dnsmasq.d — безопасно),
+# затем сниппет: его уже видит dnsmasq --test, откат при провале.
+ensure_dnsmasq_conf_dir
+publish_dnsmasq_snippet
 
 # ── Статические сети awg1 (диапазоны Anthropic — не зависят от DNS) ──────────
 # Защита от рассинхрона резолвов: клиент может получить IP из кэша/чужого DNS,
